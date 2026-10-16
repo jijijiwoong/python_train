@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>03 학습 콘텐츠 요약</title>
+<style>
+  :root {
+    --bg: #f7f8fa; --card: #ffffff; --text: #1f2328; --muted: #656d76;
+    --border: #d8dee4; --accent: #2563eb; --accent-bg: #e8f0fe;
+    --pub: #2563eb; --hid: #8b5cf6;
+    --ok: #1a7f37; --ok-bg: #dafbe1; --warn-bg: #fff8c5; --warn: #7d5a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8d96a0;
+      --border: #30363d; --accent: #58a6ff; --accent-bg: #15243b;
+      --pub: #4c8dff; --hid: #a78bfa;
+      --ok: #3fb950; --ok-bg: #12261e; --warn-bg: #2b2111; --warn: #e3b341;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif; line-height: 1.65; }
+  main { max-width: 900px; margin: 0 auto; padding: 32px 16px 56px; }
+  a { color: var(--accent); }
+  .back { font-size: .875rem; }
+  h1 { font-size: 1.6rem; margin: 8px 0 4px; }
+  h2 { font-size: 1.15rem; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .meta { color: var(--muted); font-size: .875rem; margin-bottom: 16px; }
+  .overview { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+              border-radius: 8px; padding: 16px 18px; }
+  p.note { color: var(--muted); font-size: .9rem; margin: 8px 0 0; }
+  code { font-family: Consolas, monospace; font-size: .9em; background: var(--accent-bg); padding: 1px 5px; border-radius: 4px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 16px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .kpi .v { font-size: 1.5rem; font-weight: 700; }
+  .kpi .l { font-size: .82rem; color: var(--muted); }
+
+  .days { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+  .day { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .day .n { font-size: .78rem; font-weight: 700; color: var(--accent); }
+  .day h3 { margin: 2px 0 6px; font-size: 1rem; }
+  .day p { margin: 0; font-size: .86rem; color: var(--muted); }
+  .day.review { border-color: var(--accent); }
+
+  .bars { display: grid; gap: 8px; }
+  .bar-row { display: grid; grid-template-columns: 54px 1fr 64px; align-items: center; gap: 10px; font-size: .88rem; }
+  .stack { display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: var(--bg); border: 1px solid var(--border); }
+  .stack span { height: 100%; }
+  .bar-row .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .legend { display: flex; gap: 16px; font-size: .85rem; margin-top: 8px; color: var(--muted); }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; background: var(--card); }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--bg); font-weight: 600; }
+  .tbl { border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; }
+  .tag { display: inline-block; font-size: .78rem; font-weight: 600; border-radius: 999px; padding: 1px 9px; color: var(--ok); background: var(--ok-bg); white-space: nowrap; }
+  .warnbox { background: var(--warn-bg); border-radius: 8px; padding: 12px 16px; font-size: .9rem; }
+  .warnbox b { color: var(--warn); }
+  ol.next li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="../index.html">← 전체 진행 현황</a>
+  <h1>03단계 · 학습 콘텐츠 요약</h1>
+  <div class="meta">상태: 완료 · 2026-10-16</div>
+
+  <div class="overview">
+    첫 주(Day 1~7) 수업을 만들었습니다. 매일 15분 동안 <b>복습 → 개념 설명 → 빈칸 채우기 → 직접 작성 → 정리</b> 순서로 진행됩니다.
+    설명은 모두 한국어이고, 개념 설명 속 예제 코드는 실제로 실행해 화면에 적힌 결과가 나오는 것을 확인했습니다.
+    문제는 모두 15개입니다. 각 문제의 모범 답안은 자동 채점을 통과하고, 처음 주어지는 코드는 통과하지 못하는 것도 확인했습니다.
+    초보자가 자주 하는 실수 10가지가 알맞은 오류로 채점되는지도 테스트했습니다.
+    수업 내용은 코드와 분리된 파일이라 Day 8부터는 파일만 추가하면 됩니다.
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v">7일</div><div class="l">작성한 수업 (전체 168일 중)</div></div>
+    <div class="kpi"><div class="v">15개</div><div class="l">실습 문제 (필수 14 · 도전 1)</div></div>
+    <div class="kpi"><div class="v">64개</div><div class="l">채점 테스트 (공개 25 · 숨김 39)</div></div>
+    <div class="kpi"><div class="v">21개</div><div class="l">복습·정리 퀴즈</div></div>
+  </div>
+
+  <h2>1. 첫 주 수업 구성</h2>
+  <div class="days">
+    <div class="day"><div class="n">DAY 1</div><h3>print와 변수, 기본 자료형</h3><p>화면 출력, 값 저장하기, 정수·실수·문자열·참거짓 구분</p></div>
+    <div class="day"><div class="n">DAY 2</div><h3>연산자와 입력, 형 변환</h3><p>몫·나머지 계산, 키보드 입력 받기, 문자열을 숫자로 바꾸기</p></div>
+    <div class="day"><div class="n">DAY 3</div><h3>문자열 다루기</h3><p>글자 꺼내기·자르기, 공백 제거·대소문자, f-string으로 문장 만들기</p></div>
+    <div class="day"><div class="n">DAY 4</div><h3>조건문</h3><p>상황에 따라 다르게 실행하기, 여러 조건 조합하기</p></div>
+    <div class="day"><div class="n">DAY 5</div><h3>반복문</h3><p>정해진 횟수 반복, 조건이 참인 동안 반복, 값 누적하기</p></div>
+    <div class="day"><div class="n">DAY 6</div><h3>함수 기초</h3><p>자주 쓰는 코드에 이름 붙이기, 결과 돌려주기, 잘못된 입력 알리기</p></div>
+    <div class="day review"><div class="n">DAY 7 · 누적 복습</div><h3>1주차 누적 복습</h3><p>한 주 내용을 섞은 성적 리포트 만들기 + 도전 문제(비밀번호 강도)</p></div>
+  </div>
+
+  <h2>2. Day별 채점 테스트 수</h2>
+  <div class="bars" role="img" aria-label="Day별 공개 테스트와 숨김 테스트 수">
+    <div class="bar-row"><span>Day 1</span><div class="stack"><span style="width:12%; background:var(--pub)"></span></div><span class="n">2 / 0</span></div>
+    <div class="bar-row"><span>Day 2</span><div class="stack"><span style="width:18%; background:var(--pub)"></span><span style="width:29%; background:var(--hid)"></span></div><span class="n">3 / 5</span></div>
+    <div class="bar-row"><span>Day 3</span><div class="stack"><span style="width:12%; background:var(--pub)"></span><span style="width:24%; background:var(--hid)"></span></div><span class="n">2 / 4</span></div>
+    <div class="bar-row"><span>Day 4</span><div class="stack"><span style="width:29%; background:var(--pub)"></span><span style="width:47%; background:var(--hid)"></span></div><span class="n">5 / 8</span></div>
+    <div class="bar-row"><span>Day 5</span><div class="stack"><span style="width:18%; background:var(--pub)"></span><span style="width:35%; background:var(--hid)"></span></div><span class="n">3 / 6</span></div>
+    <div class="bar-row"><span>Day 6</span><div class="stack"><span style="width:24%; background:var(--pub)"></span><span style="width:29%; background:var(--hid)"></span></div><span class="n">4 / 5</span></div>
+    <div class="bar-row"><span>Day 7</span><div class="stack"><span style="width:35%; background:var(--pub)"></span><span style="width:65%; background:var(--hid)"></span></div><span class="n">6 / 11</span></div>
+  </div>
+  <div class="legend"><span><span class="sw" style="background:var(--pub)"></span>공개 테스트 (예시로 보여 줌)</span><span><span class="sw" style="background:var(--hid)"></span>숨김 테스트 (통과 여부만)</span></div>
+  <p class="note">Day 1은 아직 입력을 배우기 전이라 출력이 항상 같으므로 숨김 테스트가 필요 없습니다. 조건문(Day 4)은 경계값(8세, 18세, 19세, 65세 등)을 숨김 테스트로 꼼꼼히 확인합니다.</p>
+
+  <h2>3. 흔한 실수는 이렇게 잡아냅니다</h2>
+  <div class="tbl">
+    <table>
+      <tr><th>실수</th><th>문제</th><th>채점 결과</th></tr>
+      <tr><td><code>input()</code>을 숫자로 바꾸지 않고 더하기</td><td>Day 2 두 수의 합</td><td><span class="tag">자료형 오류</span></td></tr>
+      <tr><td>몫 <code>//</code> 대신 나눗셈 <code>/</code></td><td>Day 2 분 → 시간</td><td><span class="tag">오답</span></td></tr>
+      <tr><td>이름 앞뒤 공백을 지우지 않음</td><td>Day 3 안내문</td><td><span class="tag">오답</span></td></tr>
+      <tr><td>결과는 맞지만 f-string을 안 씀</td><td>Day 3 안내문</td><td><span class="tag">조건 미충족</span></td></tr>
+      <tr><td>경계값 비교 실수 (<code>&gt;</code> vs <code>&gt;=</code>)</td><td>Day 4 입장료</td><td><span class="tag">오답</span></td></tr>
+      <tr><td>금지된 <code>sum()</code> 사용</td><td>Day 5 짝수의 합</td><td><span class="tag">조건 미충족</span></td></tr>
+      <tr><td><code>while</code>에서 값을 안 바꿈</td><td>Day 5 짝수의 합</td><td><span class="tag">시간 초과</span></td></tr>
+      <tr><td>범위 밖 점수에 예외를 안 냄</td><td>Day 6 학점</td><td><span class="tag">예외 불일치</span></td></tr>
+      <tr><td>최고점 대신 마지막 점수 저장</td><td>Day 7 성적 리포트</td><td><span class="tag">오답</span></td></tr>
+    </table>
+  </div>
+  <p class="note">이 실수들은 자동 테스트로 고정해 두었습니다. 나중에 채점기를 고쳐도 같은 결과가 나오는지 계속 확인됩니다.</p>
+
+  <h2>4. 검증 결과</h2>
+  <div class="tbl">
+    <table>
+      <tr><th>검사</th><th>결과</th></tr>
+      <tr><td>수업 파일 형식 (섹션 순서, 15분, 문제·퀴즈 연결, 개념 태그)</td><td><span class="tag">7일 모두 통과 · 경고 0</span></td></tr>
+      <tr><td>모범 답안이 모든 테스트 통과</td><td><span class="tag">15 / 15</span></td></tr>
+      <tr><td>처음 주어지는 코드는 통과하지 못함 (풀지 않고 완료 불가)</td><td><span class="tag">15 / 15</span></td></tr>
+      <tr><td>설명 속 예제 코드의 실제 출력 = 적힌 출력</td><td><span class="tag">20 / 20</span></td></tr>
+      <tr><td>전체 자동 테스트</td><td><span class="tag">106 / 106</span></td></tr>
+    </table>
+  </div>
+
+  <h2>5. 확인이 필요한 점</h2>
+  <div class="warnbox">
+    <b>Day 1 문제:</b> 입력이 없어 정답 문장을 그대로 <code>print</code>해도 통과합니다. 첫날이라 허용했습니다.<br>
+    <b>Day 7 예제:</b> 리스트 <code>[7, 2, 9, 4]</code>가 처음 등장합니다. "2주차에 배움"이라고 안내했고, 문제 풀이에는 필요하지 않습니다.<br>
+    <b>화면 표시:</b> 표와 코드 블록이 실제 앱 화면에서 잘 보이는지는 다음 단계에서 확인합니다.
+  </div>
+
+  <h2>다음 단계</h2>
+  <ol class="next">
+    <li><b>04 화면:</b> 대시보드, 오늘의 수업, 코드 실습, 오답 노트, 학습 기록 화면을 만들고, 이 콘텐츠로 실제 앱을 띄웁니다.</li>
+    <li><b>05~06:</b> 통합 테스트, 실제 실행 확인, README와 PowerShell 실행 명령을 작성합니다.</li>
+  </ol>
+  <p class="note">자세한 기록: <a href="CLAUDE.md">작업 기록</a> · 이전 단계: <a href="../02_core_engine/summary.html">02 핵심 엔진</a></p>
+</main>
+</body>
+</html>

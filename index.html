@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Learning Lab 진행 현황</title>
+<style>
+  :root {
+    --bg: #f7f8fa; --card: #ffffff; --text: #1f2328; --muted: #656d76;
+    --border: #d8dee4; --accent: #2563eb;
+    --done: #1a7f37; --done-bg: #dafbe1;
+    --prog: #9a6700; --prog-bg: #fff8c5;
+    --todo: #656d76; --todo-bg: #eaeef2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8d96a0;
+      --border: #30363d; --accent: #58a6ff;
+      --done: #3fb950; --done-bg: #12261e;
+      --prog: #d29922; --prog-bg: #2b2111;
+      --todo: #8d96a0; --todo-bg: #21262d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif; line-height: 1.6; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { font-size: 1.6rem; margin: 0 0 8px; }
+  .lead { color: var(--muted); margin: 0 0 24px; }
+  .bar { height: 10px; background: var(--todo-bg); border-radius: 5px; overflow: hidden; margin: 8px 0 4px; }
+  .bar > span { display: block; height: 100%; background: var(--accent); }
+  .meta { font-size: .875rem; color: var(--muted); margin-bottom: 24px; }
+  .step { background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+          padding: 16px 18px; margin-bottom: 12px; display: flex; gap: 16px; align-items: flex-start; }
+  .num { font-weight: 700; font-size: 1.1rem; color: var(--accent); min-width: 2ch; }
+  .body { flex: 1; min-width: 0; }
+  .body h2 { font-size: 1.05rem; margin: 0 0 4px; }
+  .body p { margin: 0; color: var(--muted); font-size: .925rem; }
+  .links { margin-top: 8px; font-size: .875rem; }
+  .links a { color: var(--accent); }
+  .links .none { color: var(--muted); }
+  .badge { font-size: .8rem; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+  .badge.done { color: var(--done); background: var(--done-bg); }
+  .badge.prog { color: var(--prog); background: var(--prog-bg); }
+  .badge.todo { color: var(--todo); background: var(--todo-bg); }
+  footer { margin-top: 32px; font-size: .85rem; color: var(--muted); }
+  code { font-family: Consolas, monospace; font-size: .9em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Python Learning Lab 진행 현황</h1>
+  <p class="lead">매일 15분씩 Python 기초부터 딥러닝까지 공부하는 로컬 학습 앱을 만드는 과정입니다.
+    아래 6단계 순서로 진행하며, 단계가 끝날 때마다 요약 보고서 링크가 추가됩니다.</p>
+
+  <div class="bar"><span style="width: 100%"></span></div>
+  <div class="meta">완료 6 / 6 단계 · MVP 완성 · 마지막 업데이트 2026-10-16 · 앱 실행: <code>.\run_app.cmd</code></div>
+
+  <div class="step">
+    <div class="num">01</div>
+    <div class="body">
+      <h2>설계 (design)</h2>
+      <p>요구사항 정리, 폴더 구조, 데이터베이스와 콘텐츠 형식 설계</p>
+      <div class="links"><a href="01_design/summary.html">요약 보고서</a> · <a href="01_design/CLAUDE.md">작업 기록</a></div>
+    </div>
+    <span class="badge done">완료</span>
+  </div>
+
+  <div class="step">
+    <div class="num">02</div>
+    <div class="body">
+      <h2>핵심 엔진 (core engine)</h2>
+      <p>코드를 안전하게 따로 실행하는 장치, 자동 채점기, 학습 기록 저장소</p>
+      <div class="links"><a href="02_core_engine/summary.html">요약 보고서</a> · <a href="02_core_engine/CLAUDE.md">작업 기록</a></div>
+    </div>
+    <span class="badge done">완료</span>
+  </div>
+
+  <div class="step">
+    <div class="num">03</div>
+    <div class="body">
+      <h2>학습 콘텐츠 (content)</h2>
+      <p>전체 커리큘럼과 Day 1~7 수업 및 실습 문제</p>
+      <div class="links"><a href="03_content/summary.html">요약 보고서</a> · <a href="03_content/CLAUDE.md">작업 기록</a></div>
+    </div>
+    <span class="badge done">완료</span>
+  </div>
+
+  <div class="step">
+    <div class="num">04</div>
+    <div class="body">
+      <h2>화면 (UI)</h2>
+      <p>대시보드, 오늘의 수업, 코드 실습, 오답 노트, 학습 기록 화면</p>
+      <div class="links"><a href="04_ui/summary.html">요약 보고서</a> · <a href="04_ui/CLAUDE.md">작업 기록</a></div>
+    </div>
+    <span class="badge done">완료</span>
+  </div>
+
+  <div class="step">
+    <div class="num">05</div>
+    <div class="body">
+      <h2>자동 테스트 (testing)</h2>
+      <p>각 기능이 제대로 동작하는지 자동으로 확인하는 테스트 작성과 실행</p>
+      <div class="links"><a href="05_testing/summary.html">요약 보고서</a> · <a href="05_testing/CLAUDE.md">작업 기록</a></div>
+    </div>
+    <span class="badge done">완료</span>
+  </div>
+
+  <div class="step">
+    <div class="num">06</div>
+    <div class="body">
+      <h2>실행 확인 및 문서 (release)</h2>
+      <p>실제 앱 실행 점검, README와 PowerShell 실행 명령 정리</p>
+      <div class="links"><a href="06_release/summary.html">요약 보고서</a> · <a href="06_release/CLAUDE.md">작업 기록</a> · <a href="README.md">README</a></div>
+    </div>
+    <span class="badge done">완료</span>
+  </div>
+
+  <footer>실제 앱 코드는 <code>lab_app/</code> 폴더에 있고, 각 단계 폴더에는 작업 기록이 들어 있습니다.</footer>
+</main>
+</body>
+</html>

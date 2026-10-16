@@ -1,0 +1,10 @@
+[project]
+name = "python-learning-lab"
+version = "0.1.0"
+description = "Local Python learning platform (Streamlit + SQLite)"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["lab_app/tests"]
+addopts = "-q"

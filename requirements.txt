@@ -1,0 +1,6 @@
+# Python Learning Lab — runtime + test dependencies
+# 설치: .venv\Scripts\python -m pip install -r requirements.txt
+streamlit>=1.40,<2
+streamlit-code-editor==0.1.22
+pytest>=8
+pytest-cov>=6

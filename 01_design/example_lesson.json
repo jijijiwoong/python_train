@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "day": 6,
+  "title": "함수 기초",
+  "stage": "basics",
+  "week": 1,
+  "is_review": false,
+  "objectives": [
+    "def로 함수를 정의하고 호출할 수 있다.",
+    "print와 return의 차이를 설명할 수 있다.",
+    "잘못된 입력에 raise ValueError로 대응할 수 있다."
+  ],
+  "concepts": ["function", "return", "exception", "condition"],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 반복문 떠올리기",
+      "content_md": "어제는 `for`와 `range`로 같은 작업을 여러 번 반복했습니다. `range(1, 4)`는 **1, 2, 3**을 차례로 만듭니다(끝 값 4는 포함하지 않음).",
+      "quiz": [
+        {
+          "id": "d06_review_q1",
+          "question_md": "`for i in range(3): print(i)`의 출력은?",
+          "choices": ["1 2 3", "0 1 2", "0 1 2 3", "1 2"],
+          "answer_index": 1,
+          "explanation_md": "`range(3)`은 0부터 시작해서 3 직전인 2까지 만듭니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "함수: 이름 붙인 코드 묶음",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**함수**는 자주 쓰는 코드에 이름을 붙여 두고 필요할 때 불러 쓰는 방법입니다. `def 이름(매개변수):`로 만들고, 결과를 돌려줄 때는 `return`을 씁니다."
+        },
+        {
+          "kind": "code",
+          "code": "def add(a, b):\n    return a + b\n\nresult = add(3, 4)\nprint(result)\nprint(add(10, 20))\n",
+          "runnable": true,
+          "expected_output": "7\n30\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`print`는 화면에 **보여 주기만** 하고, `return`은 값을 **돌려줍니다**. 돌려받은 값은 변수에 담거나 다른 계산에 쓸 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "def check_age(age):\n    if age < 0:\n        raise ValueError(\"나이는 0 이상이어야 합니다\")\n    return age\n\nprint(check_age(20))\n",
+          "runnable": true,
+          "expected_output": "20\n"
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "`____` 부분을 알맞게 채워 함수를 완성하세요.",
+      "exercise_ids": ["d06_fill_1"]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "조건문과 함수를 함께 써서 문제를 해결해 봅시다.",
+      "exercise_ids": ["d06_code_1"]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`def 이름(매개변수):`로 함수를 정의한다.",
+        "`return`은 값을 돌려주고 함수를 즉시 끝낸다.",
+        "잘못된 입력에는 `raise ValueError(\"메시지\")`로 알린다."
+      ],
+      "quiz": [
+        {
+          "id": "d06_summary_q1",
+          "question_md": "함수 안에 `return`이 없으면 함수를 호출한 결과는?",
+          "choices": ["0", "빈 문자열", "None", "오류 발생"],
+          "answer_index": 2,
+          "explanation_md": "`return`이 없는 함수는 자동으로 `None`을 돌려줍니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d06_fill_1",
+      "kind": "fill_blank",
+      "title": "직사각형 넓이",
+      "prompt_md": "가로 `width`와 세로 `height`를 받아 넓이를 **반환**하는 함수 `area`를 완성하세요.\n\n예: `area(3, 4)` → `12`",
+      "concepts": ["function", "return"],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def area(width, height):\n    return ____\n",
+      "entry": {"mode": "function", "name": "area"},
+      "tests": [
+        {"id": "t1", "hidden": false, "description": "3 x 4", "call": {"args": [3, 4]}, "expect": {"return": 12}},
+        {"id": "h1", "hidden": true, "description": "한 변이 0", "call": {"args": [0, 7]}, "expect": {"return": 0}},
+        {"id": "h2", "hidden": true, "description": "실수", "call": {"args": [2.5, 2]}, "expect": {"return": 5.0}, "compare": {"mode": "float", "tol": 1e-9}}
+      ],
+      "hints": [
+        "넓이는 가로와 세로를 어떤 연산으로 계산하나요?",
+        "매개변수 이름 두 개를 곱셈 연산자로 연결하면 됩니다."
+      ],
+      "solution": "def area(width, height):\n    return width * height\n"
+    },
+    {
+      "id": "d06_code_1",
+      "kind": "coding",
+      "title": "점수를 학점으로",
+      "prompt_md": "점수 `score`(정수)를 받아 학점을 **반환**하는 함수 `grade`를 작성하세요.\n\n| 점수 | 학점 |\n|---|---|\n| 90 이상 | `\"A\"` |\n| 80 이상 | `\"B\"` |\n| 70 이상 | `\"C\"` |\n| 그 외 | `\"F\"` |\n\n점수가 0보다 작거나 100보다 크면 `ValueError`를 발생시키세요.",
+      "concepts": ["function", "return", "condition", "exception"],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def grade(score):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {"mode": "function", "name": "grade"},
+      "tests": [
+        {"id": "t1", "hidden": false, "description": "95점", "call": {"args": [95]}, "expect": {"return": "A"}},
+        {"id": "t2", "hidden": false, "description": "72점", "call": {"args": [72]}, "expect": {"return": "C"}},
+        {"id": "t3", "hidden": false, "description": "범위 밖(120점)", "call": {"args": [120]}, "expect": {"raises": "ValueError"}},
+        {"id": "h1", "hidden": true, "description": "경계값 80", "call": {"args": [80]}, "expect": {"return": "B"}},
+        {"id": "h2", "hidden": true, "description": "경계값 0", "call": {"args": [0]}, "expect": {"return": "F"}},
+        {"id": "h3", "hidden": true, "description": "음수", "call": {"args": [-1]}, "expect": {"raises": "ValueError"}}
+      ],
+      "hints": [
+        "먼저 잘못된 점수인지 검사하고, 그다음 높은 점수부터 차례로 비교해 보세요.",
+        "범위 검사는 `or`로 두 조건을 묶을 수 있습니다. 학점 비교는 `if / elif / else` 구조를 씁니다.",
+        "경계값(90, 80, 70)이 해당 학점에 포함되도록 `>=`를 쓰세요."
+      ],
+      "solution": "def grade(score):\n    if score < 0 or score > 100:\n        raise ValueError(\"점수는 0~100 사이여야 합니다\")\n    if score >= 90:\n        return \"A\"\n    elif score >= 80:\n        return \"B\"\n    elif score >= 70:\n        return \"C\"\n    else:\n        return \"F\"\n",
+      "checks": {"required_syntax": ["def", "if"], "max_lines": 15},
+      "time_limit_sec": 5
+    }
+  ]
+}

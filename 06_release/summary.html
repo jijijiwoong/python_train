@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06 실행 확인 요약</title>
+<style>
+  :root {
+    --bg: #f7f8fa; --card: #ffffff; --text: #1f2328; --muted: #656d76;
+    --border: #d8dee4; --accent: #2563eb; --accent-bg: #e8f0fe;
+    --ok: #1a7f37; --ok-bg: #dafbe1; --warn-bg: #fff8c5; --warn: #7d5a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8d96a0;
+      --border: #30363d; --accent: #58a6ff; --accent-bg: #15243b;
+      --ok: #3fb950; --ok-bg: #12261e; --warn-bg: #2b2111; --warn: #e3b341;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif; line-height: 1.65; }
+  main { max-width: 900px; margin: 0 auto; padding: 32px 16px 56px; }
+  a { color: var(--accent); }
+  .back { font-size: .875rem; }
+  h1 { font-size: 1.6rem; margin: 8px 0 4px; }
+  h2 { font-size: 1.15rem; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .meta { color: var(--muted); font-size: .875rem; margin-bottom: 16px; }
+  .overview { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+              border-radius: 8px; padding: 16px 18px; }
+  p.note { color: var(--muted); font-size: .9rem; margin: 8px 0 0; }
+  code { font-family: Consolas, monospace; font-size: .9em; background: var(--accent-bg); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-size: .88rem; margin: 6px 0 12px; }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 0; }
+  .steps li { position: relative; padding: 0 0 4px 40px; }
+  .steps li::before { counter-increment: s; content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px;
+                      border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: .9rem; }
+  .steps b { display: block; margin-bottom: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; background: var(--card); }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--bg); font-weight: 600; }
+  .tbl { border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; }
+  .tag { display: inline-block; font-size: .78rem; font-weight: 600; border-radius: 999px; padding: 1px 9px; color: var(--ok); background: var(--ok-bg); white-space: nowrap; }
+  .warnbox { background: var(--warn-bg); border-radius: 8px; padding: 12px 16px; font-size: .9rem; }
+  .warnbox b { color: var(--warn); }
+  ol.next li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="../index.html">← 전체 진행 현황</a>
+  <h1>06단계 · 실행 확인 및 문서 요약</h1>
+  <div class="meta">상태: 완료 · 2026-10-16</div>
+
+  <div class="overview">
+    마지막 단계로, 앱을 실제 사용하는 방식 그대로 <code>run_app.cmd</code>로 실행해 보고 사용 설명서(README)를 작성했습니다.
+    앱은 이 PC 안에서만 접속되는 것을 확인했습니다.
+    아무것도 없는 새 가상환경에 설치 파일 목록만으로 다시 설치해 테스트도 돌려 보았습니다. 다른 PC나 나중에 다시 설치할 때도 같은 결과가 나오는지 확인하기 위해서입니다.
+    이 과정에서 실행 파일과 설치 안내의 작은 문제 2가지를 고쳤습니다.
+    이제 MVP가 완성되었습니다. 매일 <code>run_app.cmd</code>를 실행해 Day 1부터 공부하면 됩니다.
+  </div>
+
+  <h2>1. 매일 사용하는 방법</h2>
+  <ol class="steps">
+    <li><b>앱 켜기</b>프로젝트 폴더의 <code>run_app.cmd</code>를 더블클릭합니다(또는 PowerShell에서 아래 명령). 몇 초 뒤 브라우저가 열립니다.
+      <pre>cd C:\Users\jiwoo\python_train
+.\run_app.cmd</pre></li>
+    <li><b>오늘의 수업</b>대시보드에서 "학습 시작" → 다섯 단계를 순서대로 진행합니다.</li>
+    <li><b>문제 풀기</b>실행으로 시험해 보고, 채점으로 확인합니다. 막히면 힌트를 하나씩 엽니다.</li>
+    <li><b>완료</b>필수 문제를 모두 통과하고 정리 퀴즈를 내면 다음 Day가 열립니다.</li>
+    <li><b>끄기</b>실행 창을 닫습니다. 기록은 자동 저장됩니다.</li>
+  </ol>
+
+  <h2>2. 실제 실행 확인 결과</h2>
+  <div class="tbl">
+    <table>
+      <tr><th>확인 항목</th><th>결과</th></tr>
+      <tr><td><code>run_app.cmd</code>를 다른 폴더(홈 폴더)에서 불러도 실행됨</td><td><span class="tag">확인</span></td></tr>
+      <tr><td>접속 주소가 이 PC 전용(<code>127.0.0.1:8501</code>)뿐이고, 네트워크·외부 주소는 열리지 않음</td><td><span class="tag">확인</span></td></tr>
+      <tr><td>브라우저 자동 열림, 실제 학습 기록 파일로 대시보드 표시 (Day 1 열림, Day 2~7 잠김)</td><td><span class="tag">확인</span></td></tr>
+      <tr><td>새 가상환경에 <code>requirements.txt</code>만으로 설치 → 전체 테스트</td><td><span class="tag" id="clean-install">통과 (156/156)</span></td></tr>
+      <tr><td>좁은 화면(약 600px)에서 사이드바 접힘·화면 표시</td><td><span class="tag">확인</span></td></tr>
+    </table>
+  </div>
+
+  <h2>3. 이번 단계에서 고친 것</h2>
+  <div class="tbl">
+    <table>
+      <tr><th>문제</th><th>수정</th></tr>
+      <tr><td>창 없이 실행되면 브라우저 열기 전 대기 명령(<code>timeout</code>)이 실패해서, 서버가 준비되기 전에 브라우저가 열릴 수 있었음</td><td>어디서나 동작하는 대기 방식(<code>ping</code>)으로 교체. 4초 대기 확인</td></tr>
+      <tr><td>설치 경로가 매우 길면 Windows 경로 길이 제한(260자) 때문에 Streamlit 설치가 실패함</td><td>README "문제 해결"에 원인과 해결 방법 추가 (현재 프로젝트 경로는 문제없음)</td></tr>
+      <tr><td>홈 폴더에서 <code>pytest</code>를 실행하면 다른 가상환경이 잡혀 "No module named pytest"가 남</td><td>README 맨 앞에 "프로젝트 폴더에서 실행" 안내와 문제 해결 항목 추가</td></tr>
+    </table>
+  </div>
+
+  <h2>4. README에 담은 내용</h2>
+  <div class="tbl">
+    <table>
+      <tr><th>장</th><th>내용</th></tr>
+      <tr><td>1~2</td><td>설치, 앱 실행 (PowerShell 명령)</td></tr>
+      <tr><td>3</td><td>사용 방법: 수업 진행, 실행·채점·힌트·정답, 완료 조건, 오답 노트, 이어하기</td></tr>
+      <tr><td>4</td><td>테스트 실행</td></tr>
+      <tr><td>5</td><td>폴더 구조</td></tr>
+      <tr><td>6</td><td>학습 기록 백업·초기화</td></tr>
+      <tr><td>7</td><td>Day 8부터 수업 추가하는 방법</td></tr>
+      <tr><td>8</td><td>자주 생기는 문제와 해결</td></tr>
+      <tr><td>9</td><td>다음 단계(AI 연동 등)</td></tr>
+    </table>
+  </div>
+  <p class="note"><a href="../README.md">README.md 열기</a></p>
+
+  <h2>5. 확인이 필요한 점</h2>
+  <div class="warnbox">
+    <b>실제 학습 기록:</b> 실행 확인 중 열린 브라우저에서 Day 1이 "진행 중"으로 바뀌었습니다(수업 화면을 연 기록 3건). 직접 열어 보신 것으로 보이며, 기록은 그대로 두었습니다.<br>
+    <b>에디터 자동 들여쓰기:</b> <code>for ...:</code> 다음 줄에서 Enter를 칠 때 자동 들여쓰기가 되는지 직접 타이핑으로 한 번 확인해 주세요. 확인하려던 중 브라우저 창이 닫혀서 끝까지 보지 못했습니다.<br>
+    <b>git:</b> 현재 git 저장소의 루트가 홈 폴더(<code>C:\Users\jiwoo</code>)입니다. 이 프로젝트만 따로 버전 관리하려면 별도 저장소가 필요합니다. 아직 커밋은 하지 않았습니다.
+  </div>
+
+  <h2>다음 단계</h2>
+  <ol class="next">
+    <li>Day 8~14 (2주차: 리스트와 튜플) 콘텐츠 추가</li>
+    <li>AI 코드 리뷰·힌트 연결 (<code>lab_app/llm</code>)</li>
+    <li>이 프로젝트 전용 git 저장소 만들기와 첫 커밋</li>
+  </ol>
+  <p class="note">자세한 기록: <a href="CLAUDE.md">작업 기록</a> · 이전 단계: <a href="../05_testing/summary.html">05 자동 테스트</a></p>
+</main>
+</body>
+</html>

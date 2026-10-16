@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "day": 4,
+  "title": "조건문",
+  "stage": "basics",
+  "week": 1,
+  "is_review": false,
+  "objectives": [
+    "if / elif / else로 상황에 따라 다른 코드를 실행할 수 있다.",
+    "and, or, not으로 조건을 조합할 수 있다."
+  ],
+  "concepts": [
+    "condition",
+    "logical_operator"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 문자열을 자르고(`s[a:b]`), 메서드로 바꾸고, f-string으로 출력했습니다.",
+      "quiz": [
+        {
+          "id": "d04_review_q1",
+          "question_md": "`\"  hi  \".strip().upper()`의 결과는?",
+          "choices": [
+            "  HI  ",
+            "HI",
+            "hi",
+            "Hi"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`strip()`으로 공백을 지운 뒤 `upper()`로 대문자로 바꿉니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "조건에 따라 다르게 실행하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`if 조건:` 아래 **들여쓴** 코드는 조건이 `True`일 때만 실행됩니다. `elif`로 조건을 더 붙이고, `else`는 앞의 조건이 모두 거짓일 때 실행됩니다. 위에서부터 차례로 검사해서 **처음 참인 블록 하나만** 실행합니다."
+        },
+        {
+          "kind": "code",
+          "code": "temperature = 28\nif temperature >= 30:\n    print(\"덥습니다\")\nelif temperature >= 20:\n    print(\"따뜻합니다\")\nelse:\n    print(\"쌀쌀합니다\")\n",
+          "runnable": true,
+          "expected_output": "따뜻합니다\n"
+        },
+        {
+          "kind": "text",
+          "md": "`and`는 둘 다 참일 때, `or`는 하나라도 참일 때 참입니다. `not`은 참/거짓을 뒤집습니다."
+        },
+        {
+          "kind": "code",
+          "code": "age = 25\nhas_ticket = True\nprint(age >= 19 and has_ticket)\nprint(age < 13 or age >= 65)\nprint(not has_ticket)\n",
+          "runnable": true,
+          "expected_output": "True\nFalse\nFalse\n"
+        },
+        {
+          "kind": "code",
+          "code": "n = 7\nif n % 2 == 0:\n    print(\"짝수\")\nelse:\n    print(\"홀수\")\n",
+          "runnable": true,
+          "expected_output": "홀수\n"
+        },
+        {
+          "kind": "tip",
+          "md": "조건 끝의 콜론(`:`)과 블록의 들여쓰기(공백 4칸)를 잊지 마세요. 값을 비교할 때는 `=`(저장)가 아니라 `==`(같다)를 씁니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "나머지 연산자와 조건문으로 짝수·홀수를 판별하세요.",
+      "exercise_ids": [
+        "d04_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "여러 구간을 나누는 조건문을 직접 작성해 봅시다. 경계값을 꼼꼼히 확인하세요.",
+      "exercise_ids": [
+        "d04_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`if` → `elif` → `else` 순서로 검사하고, 처음 참인 블록 하나만 실행된다.",
+        "블록은 콜론(`:`) 다음 줄부터 들여쓰기로 구분한다.",
+        "`==`는 비교, `=`는 저장.",
+        "`and`(모두 참), `or`(하나라도 참), `not`(뒤집기)."
+      ],
+      "quiz": [
+        {
+          "id": "d04_summary_q1",
+          "question_md": "`x = 15`일 때 `x > 10 and x < 20`의 결과는?",
+          "choices": [
+            "True",
+            "False",
+            "15",
+            "오류"
+          ],
+          "answer_index": 0,
+          "explanation_md": "15는 10보다 크고 20보다 작으므로 두 조건이 모두 참입니다."
+        },
+        {
+          "id": "d04_summary_q2",
+          "question_md": "`if score >= 90:` 다음 `elif score >= 80:`이 있을 때 `score = 95`이면 실행되는 블록은?",
+          "choices": [
+            "두 블록 모두",
+            "첫 번째 블록만",
+            "두 번째 블록만",
+            "아무것도"
+          ],
+          "answer_index": 1,
+          "explanation_md": "처음 참인 블록 하나만 실행되고 나머지 elif/else는 건너뜁니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d04_fill_1",
+      "kind": "fill_blank",
+      "title": "짝수일까 홀수일까",
+      "prompt_md": "정수를 입력받아 짝수면 `짝수`, 홀수면 `홀수`를 출력하세요. (0은 짝수입니다)",
+      "concepts": [
+        "condition",
+        "operator"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "n = int(input())\nif n % 2 ____ 0:\n    print(\"짝수\")\n____:\n    print(\"홀수\")\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "4",
+          "stdin": "4\n",
+          "expect": {
+            "stdout": "짝수\n"
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "7",
+          "stdin": "7\n",
+          "expect": {
+            "stdout": "홀수\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "0\n",
+          "expect": {
+            "stdout": "짝수\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "-3\n",
+          "expect": {
+            "stdout": "홀수\n"
+          }
+        }
+      ],
+      "hints": [
+        "2로 나눈 나머지가 0인지 \"같다\"로 비교해야 합니다. 저장(`=`)과 비교는 기호가 다릅니다.",
+        "앞의 조건이 거짓일 때 실행되는 블록의 키워드를 쓰세요."
+      ],
+      "solution": "n = int(input())\nif n % 2 == 0:\n    print(\"짝수\")\nelse:\n    print(\"홀수\")\n"
+    },
+    {
+      "id": "d04_code_1",
+      "kind": "coding",
+      "title": "놀이공원 입장료",
+      "prompt_md": "나이(정수)를 입력받아 입장료를 출력하세요.\n\n| 나이 | 출력 |\n|---|---|\n| 8세 미만 또는 65세 이상 | `무료` |\n| 8세 이상 18세 이하 | `5000원` |\n| 19세 이상 64세 이하 | `10000원` |\n\n**입력 예시**\n```\n15\n```\n**출력 예시**\n```\n5000원\n```",
+      "concepts": [
+        "condition",
+        "logical_operator"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "age = int(input())\n# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "5세",
+          "stdin": "5\n",
+          "expect": {
+            "stdout": "무료\n"
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "15세",
+          "stdin": "15\n",
+          "expect": {
+            "stdout": "5000원\n"
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "30세",
+          "stdin": "30\n",
+          "expect": {
+            "stdout": "10000원\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "7\n",
+          "expect": {
+            "stdout": "무료\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "8\n",
+          "expect": {
+            "stdout": "5000원\n"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "stdin": "18\n",
+          "expect": {
+            "stdout": "5000원\n"
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "",
+          "stdin": "19\n",
+          "expect": {
+            "stdout": "10000원\n"
+          }
+        },
+        {
+          "id": "h5",
+          "hidden": true,
+          "description": "",
+          "stdin": "64\n",
+          "expect": {
+            "stdout": "10000원\n"
+          }
+        },
+        {
+          "id": "h6",
+          "hidden": true,
+          "description": "",
+          "stdin": "65\n",
+          "expect": {
+            "stdout": "무료\n"
+          }
+        }
+      ],
+      "hints": [
+        "무료인 경우를 먼저 처리하면 나머지 구간이 단순해집니다.",
+        "\"8세 미만 **또는** 65세 이상\"은 `or`로 두 조건을 연결합니다.",
+        "경계값(8, 18, 19, 65)이 어느 구간에 들어가는지 `<`와 `<=`를 구분해 확인하세요."
+      ],
+      "solution": "age = int(input())\nif age < 8 or age >= 65:\n    print(\"무료\")\nelif age <= 18:\n    print(\"5000원\")\nelse:\n    print(\"10000원\")\n",
+      "checks": {
+        "required_syntax": [
+          "if"
+        ]
+      }
+    }
+  ]
+}

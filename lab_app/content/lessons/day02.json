@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "day": 2,
+  "title": "연산자와 입력, 형 변환",
+  "stage": "basics",
+  "week": 1,
+  "is_review": false,
+  "objectives": [
+    "산술·비교 연산자로 값을 계산할 수 있다.",
+    "input()으로 값을 입력받을 수 있다.",
+    "int(), float(), str()로 자료형을 바꿀 수 있다."
+  ],
+  "concepts": [
+    "operator",
+    "input",
+    "type_conversion"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `print()`로 출력하고, 변수에 값을 저장했습니다. 값에는 `int`, `float`, `str`, `bool` 같은 **자료형**이 있었습니다.",
+      "quiz": [
+        {
+          "id": "d02_review_q1",
+          "question_md": "`print(\"나이:\", 20)`의 출력은?",
+          "choices": [
+            "나이:20",
+            "나이: 20",
+            "\"나이:\" 20",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "쉼표로 여러 값을 출력하면 사이에 공백 한 칸이 들어갑니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "연산자와 입력",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "Python의 산술 연산자입니다. `/`는 항상 실수(float)를, `//`는 **몫**을, `%`는 **나머지**를 돌려줍니다."
+        },
+        {
+          "kind": "code",
+          "code": "print(7 + 3)\nprint(7 - 3)\nprint(7 * 3)\nprint(7 / 3)\nprint(7 // 3)\nprint(7 % 3)\nprint(2 ** 10)\n",
+          "runnable": true,
+          "expected_output": "10\n4\n21\n2.3333333333333335\n2\n1\n1024\n"
+        },
+        {
+          "kind": "text",
+          "md": "비교 연산자(`==`, `!=`, `>`, `<`, `>=`, `<=`)의 결과는 `True` 또는 `False`입니다."
+        },
+        {
+          "kind": "code",
+          "code": "print(3 > 2)\nprint(3 == 3.0)\nprint(\"a\" != \"a\")\n",
+          "runnable": true,
+          "expected_output": "True\nTrue\nFalse\n"
+        },
+        {
+          "kind": "text",
+          "md": "`input()`은 사용자가 입력한 한 줄을 **문자열**로 돌려줍니다. 숫자로 계산하려면 `int()`나 `float()`로 바꿔야 합니다."
+        },
+        {
+          "kind": "code",
+          "code": "age = int(input(\"나이를 입력하세요: \"))\nprint(\"내년 나이:\", age + 1)\n",
+          "runnable": false
+        },
+        {
+          "kind": "code",
+          "code": "text = \"42\"\nnumber = int(text)\nprint(number + 8)\nprint(float(\"3.5\") * 2)\nprint(str(100) + \"점\")\nprint(text + text)\n",
+          "runnable": true,
+          "expected_output": "50\n7.0\n100점\n4242\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`input()` 결과를 변환하지 않고 더하면 `\"3\" + \"4\"` → `\"34\"`처럼 글자가 이어 붙습니다. 채점할 때 `input(\"안내 문구\")`의 안내 문구는 출력으로 보지 않으니 자유롭게 써도 됩니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "입력받은 두 수를 계산하는 코드를 완성하세요. 채점은 여러 입력값으로 진행됩니다.",
+      "exercise_ids": [
+        "d02_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "몫(`//`)과 나머지(`%`)를 활용해 봅시다.",
+      "exercise_ids": [
+        "d02_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`/`는 실수 나눗셈, `//`는 몫, `%`는 나머지, `**`는 거듭제곱.",
+        "비교 연산의 결과는 `bool`(`True`/`False`)이다.",
+        "`input()`은 항상 문자열을 돌려준다 → 계산하려면 `int()`/`float()`로 변환.",
+        "`str()`로 숫자를 문자열로 바꾸면 다른 문자열과 `+`로 이어 붙일 수 있다."
+      ],
+      "quiz": [
+        {
+          "id": "d02_summary_q1",
+          "question_md": "`17 // 5`와 `17 % 5`의 결과를 차례로 쓰면?",
+          "choices": [
+            "3, 2",
+            "3.4, 2",
+            "2, 3",
+            "3, 0"
+          ],
+          "answer_index": 0,
+          "explanation_md": "17 = 5 × 3 + 2 이므로 몫은 3, 나머지는 2입니다."
+        },
+        {
+          "id": "d02_summary_q2",
+          "question_md": "`input()`으로 `5`를 입력받아 `x`에 저장했습니다. `x + x`의 결과는?",
+          "choices": [
+            "10",
+            "\"55\"",
+            "오류",
+            "5"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`input()`은 문자열 `\"5\"`를 돌려주므로 `+`는 글자를 이어 붙입니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d02_fill_1",
+      "kind": "fill_blank",
+      "title": "두 수의 합",
+      "prompt_md": "정수 두 개를 한 줄에 하나씩 입력받아 합을 출력하세요.\n\n**입력 예시**\n```\n3\n5\n```\n**출력 예시**\n```\n8\n```",
+      "concepts": [
+        "input",
+        "type_conversion",
+        "operator"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "a = ____(input())\nb = int(input())\nprint(a ____ b)\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3과 5",
+          "stdin": "3\n5\n",
+          "expect": {
+            "stdout": "8\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "10\n-4\n",
+          "expect": {
+            "stdout": "6\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "0\n0\n",
+          "expect": {
+            "stdout": "0\n"
+          }
+        }
+      ],
+      "hints": [
+        "`input()`의 결과는 문자열입니다. 둘째 줄 `b`는 어떻게 바꾸고 있나요?",
+        "합을 구하는 연산자를 두 변수 사이에 넣으세요."
+      ],
+      "solution": "a = int(input())\nb = int(input())\nprint(a + b)\n"
+    },
+    {
+      "id": "d02_code_1",
+      "kind": "coding",
+      "title": "분을 시간과 분으로",
+      "prompt_md": "총 시간(분)을 정수로 입력받아 **몇 시간 몇 분**인지 구하세요. 첫째 줄에 시간, 둘째 줄에 남은 분을 출력합니다.\n\n**입력 예시**\n```\n125\n```\n**출력 예시**\n```\n2\n5\n```",
+      "concepts": [
+        "input",
+        "type_conversion",
+        "operator"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "125분",
+          "stdin": "125\n",
+          "expect": {
+            "stdout": "2\n5\n"
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "60분",
+          "stdin": "60\n",
+          "expect": {
+            "stdout": "1\n0\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "59\n",
+          "expect": {
+            "stdout": "0\n59\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "0\n",
+          "expect": {
+            "stdout": "0\n0\n"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "stdin": "1441\n",
+          "expect": {
+            "stdout": "24\n1\n"
+          }
+        }
+      ],
+      "hints": [
+        "입력값은 문자열이므로 먼저 정수로 바꿔야 합니다.",
+        "1시간은 60분입니다. 시간은 \"60으로 나눈 몫\", 남은 분은 \"60으로 나눈 나머지\"입니다.",
+        "몫과 나머지 연산자를 각각 써서 `print()`를 두 번 호출하세요."
+      ],
+      "solution": "minutes = int(input())\nprint(minutes // 60)\nprint(minutes % 60)\n"
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "title": "Python Learning Lab",
+  "minutes_per_day": 15,
+  "review_every": 7,
+  "stages": [
+    {
+      "id": "basics",
+      "order": 1,
+      "title": "Python 기초",
+      "description": "자료형, 입출력, 제어문, 함수, 자료구조, 예외 처리까지 Python의 기본기를 다집니다.",
+      "weeks": 5,
+      "day_range": [1, 35]
+    },
+    {
+      "id": "advanced_data",
+      "order": 2,
+      "title": "Python 심화 및 데이터 분석",
+      "description": "객체지향과 고급 문법을 익히고 NumPy, pandas, 시각화로 데이터를 다룹니다.",
+      "weeks": 5,
+      "day_range": [36, 70]
+    },
+    {
+      "id": "ml",
+      "order": 3,
+      "title": "머신러닝",
+      "description": "scikit-learn으로 회귀, 분류, 평가, 앙상블, 비지도 학습을 실습합니다.",
+      "weeks": 7,
+      "day_range": [71, 119]
+    },
+    {
+      "id": "dl",
+      "order": 4,
+      "title": "PyTorch 딥러닝",
+      "description": "텐서와 자동 미분부터 CNN, RNN, 전이 학습까지 PyTorch로 구현합니다.",
+      "weeks": 7,
+      "day_range": [120, 168]
+    }
+  ],
+  "weeks": [
+    {"week": 1, "stage": "basics", "title": "Python 첫걸음: 자료형, 입출력, 조건, 반복, 함수"},
+    {"week": 2, "stage": "basics", "title": "리스트와 튜플"},
+    {"week": 3, "stage": "basics", "title": "딕셔너리, 집합, 문자열 심화"},
+    {"week": 4, "stage": "basics", "title": "함수 심화와 모듈"},
+    {"week": 5, "stage": "basics", "title": "예외 처리, 파일 입출력, 미니 프로젝트"},
+    {"week": 6, "stage": "advanced_data", "title": "클래스와 객체지향"},
+    {"week": 7, "stage": "advanced_data", "title": "컴프리헨션, 제너레이터, 데코레이터"},
+    {"week": 8, "stage": "advanced_data", "title": "NumPy 배열 연산"},
+    {"week": 9, "stage": "advanced_data", "title": "pandas 데이터 처리"},
+    {"week": 10, "stage": "advanced_data", "title": "시각화와 탐색적 데이터 분석"},
+    {"week": 11, "stage": "ml", "title": "머신러닝 개요와 scikit-learn"},
+    {"week": 12, "stage": "ml", "title": "회귀 모델"},
+    {"week": 13, "stage": "ml", "title": "분류 모델"},
+    {"week": 14, "stage": "ml", "title": "모델 평가와 교차 검증"},
+    {"week": 15, "stage": "ml", "title": "결정 트리와 앙상블"},
+    {"week": 16, "stage": "ml", "title": "비지도 학습: 군집과 차원 축소"},
+    {"week": 17, "stage": "ml", "title": "특성 공학과 파이프라인 프로젝트"},
+    {"week": 18, "stage": "dl", "title": "텐서와 자동 미분"},
+    {"week": 19, "stage": "dl", "title": "신경망 기초와 학습 루프"},
+    {"week": 20, "stage": "dl", "title": "Dataset, DataLoader, 최적화 기법"},
+    {"week": 21, "stage": "dl", "title": "합성곱 신경망(CNN)"},
+    {"week": 22, "stage": "dl", "title": "순환 신경망과 시퀀스 모델"},
+    {"week": 23, "stage": "dl", "title": "전이 학습"},
+    {"week": 24, "stage": "dl", "title": "딥러닝 종합 프로젝트"}
+  ],
+  "concepts": {
+    "print": "출력(print)",
+    "variable": "변수",
+    "data_type": "기본 자료형",
+    "operator": "연산자",
+    "input": "입력(input)",
+    "type_conversion": "형 변환",
+    "string": "문자열 인덱싱·슬라이싱",
+    "string_method": "문자열 메서드",
+    "fstring": "f-string",
+    "condition": "조건문",
+    "logical_operator": "논리 연산자",
+    "for_loop": "for 반복문",
+    "range": "range",
+    "while_loop": "while 반복문",
+    "accumulation": "누적 패턴",
+    "function": "함수 정의",
+    "return": "반환값",
+    "exception": "예외 발생"
+  },
+  "days": [
+    {"day": 1, "title": "print와 변수, 기본 자료형", "file": "lessons/day01.json", "is_review": false},
+    {"day": 2, "title": "연산자와 입력, 형 변환", "file": "lessons/day02.json", "is_review": false},
+    {"day": 3, "title": "문자열 다루기", "file": "lessons/day03.json", "is_review": false},
+    {"day": 4, "title": "조건문", "file": "lessons/day04.json", "is_review": false},
+    {"day": 5, "title": "반복문", "file": "lessons/day05.json", "is_review": false},
+    {"day": 6, "title": "함수 기초", "file": "lessons/day06.json", "is_review": false},
+    {"day": 7, "title": "1주차 누적 복습", "file": "lessons/day07.json", "is_review": true}
+  ]
+}
