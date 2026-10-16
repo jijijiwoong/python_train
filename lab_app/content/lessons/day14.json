@@ -1,0 +1,540 @@
+{
+  "schema_version": 1,
+  "day": 14,
+  "title": "2주차 누적 복습",
+  "stage": "basics",
+  "week": 2,
+  "is_review": true,
+  "objectives": [
+    "리스트·튜플과 1주차 문법을 섞어 하나의 프로그램을 완성할 수 있다.",
+    "한 줄 입력을 `split()`과 언패킹으로 나눠 처리할 수 있다."
+  ],
+  "concepts": [
+    "list",
+    "list_method",
+    "list_iteration",
+    "sorting",
+    "tuple",
+    "unpacking",
+    "nested_list",
+    "enumerate_zip",
+    "input",
+    "fstring",
+    "function",
+    "exception"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "이번 주에 배운 내용입니다.\n\n| Day | 주제 | 핵심 |\n|---|---|---|\n| 8 | 리스트 기초 | `[a, b]`, `a[0]`, `a[-1]`, `a[1:3]`, `len`, `in` |\n| 9 | 리스트 바꾸기 | `a[i] = x`, `append`, `insert`, `pop`, `remove` |\n| 10 | 리스트와 반복문 | `for x in a`, 골라 담기, `range(len(a))` |\n| 11 | 정렬과 내장 함수 | `sum/max/min`, `sorted` vs `.sort()`, `split()` |\n| 12 | 튜플 | `(a, b)`, 바꿀 수 없음, 언패킹, `return a, b` |\n| 13 | 중첩 리스트 | `grid[r][c]`, `enumerate`, `zip` |",
+      "quiz": [
+        {
+          "id": "d14_review_q1",
+          "question_md": "리스트와 튜플의 차이로 옳은 것은?",
+          "choices": [
+            "튜플은 인덱싱을 할 수 없다",
+            "리스트는 원소를 바꿀 수 있지만 튜플은 바꿀 수 없다",
+            "튜플에는 숫자만 넣을 수 있다",
+            "리스트는 `len()`을 쓸 수 없다"
+          ],
+          "answer_index": 1,
+          "explanation_md": "튜플도 인덱싱·`len()`이 되고 어떤 값이든 담을 수 있습니다. 차이는 바꿀 수 있느냐입니다."
+        },
+        {
+          "id": "d14_review_q2",
+          "question_md": "다음 코드의 출력은?\n```python\na = [5, 2, 8]\nb = sorted(a)\nprint(a[0], b[0])\n```",
+          "choices": [
+            "2 2",
+            "5 2",
+            "5 5",
+            "2 5"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`sorted()`는 새 리스트를 만들 뿐 원본 `a`는 그대로입니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "배운 것을 조합하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "리스트와 튜플은 반복문·조건문·함수와 함께 쓸 때 힘을 발휘합니다. 아래 예제는 문장을 단어 리스트로 나누고, 단어 길이 리스트를 만들어 가장 긴 단어를 찾습니다."
+        },
+        {
+          "kind": "code",
+          "code": "words = \"사과 바나나 키위 블루베리\".split()\nlengths = []\nfor w in words:\n    lengths.append(len(w))\nprint(lengths)\nlongest = max(lengths)\nprint(longest, words[lengths.index(longest)])\n",
+          "runnable": true,
+          "expected_output": "[2, 3, 2, 4]\n4 블루베리\n"
+        },
+        {
+          "kind": "text",
+          "md": "중복을 없앤 목록을 만들 때는 `not in`으로 이미 담았는지 확인합니다. 원래 순서가 그대로 유지됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "data = [3, 1, 3, 2, 3, 1]\nunique = []\nfor x in data:\n    if x not in unique:\n        unique.append(x)\nfor x in unique:\n    print(x, data.count(x))\n",
+          "runnable": true,
+          "expected_output": "3 3\n1 2\n2 1\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`\"민수 85\".split()`은 `[\"민수\", \"85\"]`이므로 `name, score = input().split()`처럼 바로 언패킹할 수 있습니다. `score`는 아직 문자열이니 `int()`로 바꾸는 것을 잊지 마세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "두 리스트에 모두 있는 값을 모아 보세요.",
+      "exercise_ids": [
+        "d14_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제(슬라이싱 회전)는 **도전 문제**로 수업 완료에 필요하지 않습니다.",
+      "exercise_ids": [
+        "d14_code_1",
+        "d14_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "2주차 마무리",
+      "points": [
+        "리스트는 `append/insert/pop/remove/sort`로 바꿀 수 있고, 튜플은 바꿀 수 없다.",
+        "반복은 `for x in a`, 인덱스가 필요하면 `enumerate`, 두 리스트를 짝지을 때는 `zip`.",
+        "`input().split()`과 언패킹으로 한 줄에 여러 값을 받고, 숫자는 `int()`로 바꾼다.",
+        "다음 주에는 이름표로 값을 찾는 **딕셔너리**와 중복 없는 **집합**을 배운다."
+      ],
+      "quiz": [
+        {
+          "id": "d14_summary_q1",
+          "question_md": "다음 코드의 출력은?\n```python\nnums = [4, 7, 1]\nnums.append(nums[0] + nums[-1])\nprint(nums)\n```",
+          "choices": [
+            "[4, 7, 1, 5]",
+            "[4, 7, 1, 11]",
+            "[5, 4, 7, 1]",
+            "[4, 7, 1, 8]"
+          ],
+          "answer_index": 0,
+          "explanation_md": "`nums[0]`은 4, `nums[-1]`은 1이므로 5를 맨 뒤에 붙입니다."
+        },
+        {
+          "id": "d14_summary_q2",
+          "question_md": "`for i, (name, score) in enumerate([(\"A\", 90), (\"B\", 80)]):`에서 두 번째 반복의 `i`와 `score`는?",
+          "choices": [
+            "1, 80",
+            "0, 90",
+            "2, 80",
+            "1, 90"
+          ],
+          "answer_index": 0,
+          "explanation_md": "`enumerate`는 0부터 세므로 두 번째 반복의 `i`는 1이고, 원소 `(\"B\", 80)`이 `name, score`로 언패킹됩니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d14_fill_1",
+      "kind": "fill_blank",
+      "title": "공통 원소",
+      "prompt_md": "두 리스트 `a`, `b`를 받아 **두 리스트에 모두 있는 값**을 `a`에 나온 순서대로, 중복 없이 담아 반환하는 함수 `common`을 완성하세요.\n\n예: `common([1, 2, 3, 4], [4, 2, 9])` → `[2, 4]`",
+      "concepts": [
+        "list_iteration",
+        "list_method",
+        "condition",
+        "function"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def common(a, b):\n    result = []\n    for x in a:\n        if x in b and x ____ result:\n            result.____(x)\n    return result\n",
+      "entry": {
+        "mode": "function",
+        "name": "common"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "([1, 2, 3, 4], [4, 2, 9])",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                4,
+                2,
+                9
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              2,
+              4
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "a가 비어 있음",
+          "call": {
+            "args": [
+              [],
+              [
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "a에 중복",
+          "call": {
+            "args": [
+              [
+                1,
+                1,
+                2
+              ],
+              [
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              1
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "공통 없음",
+          "call": {
+            "args": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c"
+              ]
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "모두 공통",
+          "call": {
+            "args": [
+              [
+                3,
+                2,
+                1
+              ],
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              2,
+              1
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "이미 결과에 담은 값은 다시 담지 않아야 합니다. \"들어 있지 않다\"를 나타내는 연산자는?",
+        "리스트 맨 뒤에 값을 붙이는 메서드는 Day 9에서 배웠습니다."
+      ],
+      "solution": "def common(a, b):\n    result = []\n    for x in a:\n        if x in b and x not in result:\n            result.append(x)\n    return result\n"
+    },
+    {
+      "id": "d14_code_1",
+      "kind": "coding",
+      "title": "반 성적표",
+      "prompt_md": "첫째 줄에 학생 수 `n`(1 이상), 다음 `n`줄에 `이름 점수`가 공백으로 구분되어 주어집니다. 아래 세 줄을 출력하세요.\n\n1. `1등: 지아 92` — 점수가 가장 높은 학생 (동점이면 먼저 입력된 학생)\n2. `평균: 85.0` — 평균 점수, 소수점 아래 한 자리\n3. `평균 이상: 2명` — 점수가 평균 **이상**인 학생 수\n\n**입력 예시**\n```\n3\n민수 85\n지아 92\n현우 78\n```\n**출력 예시**\n```\n1등: 지아 92\n평균: 85.0\n평균 이상: 2명\n```",
+      "concepts": [
+        "list",
+        "tuple",
+        "unpacking",
+        "list_iteration",
+        "input",
+        "fstring"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "n = int(input())\n# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3명",
+          "stdin": "3\n민수 85\n지아 92\n현우 78\n",
+          "expect": {
+            "stdout": "1등: 지아 92\n평균: 85.0\n평균 이상: 2명\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "1명",
+          "stdin": "1\n가 50\n",
+          "expect": {
+            "stdout": "1등: 가 50\n평균: 50.0\n평균 이상: 1명\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "1등 동점",
+          "stdin": "3\nA 70\nB 90\nC 90\n",
+          "expect": {
+            "stdout": "1등: B 90\n평균: 83.3\n평균 이상: 2명\n"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "모두 0점",
+          "stdin": "4\n가 0\n나 0\n다 0\n라 0\n",
+          "expect": {
+            "stdout": "1등: 가 0\n평균: 0.0\n평균 이상: 4명\n"
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "평균 99.5",
+          "stdin": "2\nkim 100\nlee 99\n",
+          "expect": {
+            "stdout": "1등: kim 100\n평균: 99.5\n평균 이상: 1명\n"
+          }
+        }
+      ],
+      "hints": [
+        "평균 이상인 학생 수는 평균을 다 구한 뒤에야 셀 수 있습니다. 그래서 입력을 먼저 리스트에 모두 저장해야 합니다.",
+        "한 줄은 `split()`으로 나눠 이름과 점수로 언패킹하고, 점수를 `int()`로 바꾼 뒤 `(이름, 점수)` 튜플로 리스트에 담으세요.",
+        "1등은 첫 학생을 기준으로 두고 \"더 클 때만\" 바꿉니다. 평균을 구한 다음, 리스트를 한 번 더 돌며 평균 이상인 학생을 세세요."
+      ],
+      "solution": "n = int(input())\nrecords = []\nfor _ in range(n):\n    name, score = input().split()\n    records.append((name, int(score)))\nbest_name, best_score = records[0]\ntotal = 0\nfor name, score in records:\n    total += score\n    if score > best_score:\n        best_name, best_score = name, score\naverage = total / n\ncount = 0\nfor name, score in records:\n    if score >= average:\n        count += 1\nprint(f\"1등: {best_name} {best_score}\")\nprint(f\"평균: {average:.1f}\")\nprint(f\"평균 이상: {count}명\")\n",
+      "checks": {
+        "required_syntax": [
+          "for",
+          "fstring"
+        ]
+      }
+    },
+    {
+      "id": "d14_code_2",
+      "kind": "coding",
+      "title": "[도전] 리스트 회전",
+      "prompt_md": "리스트 `items`와 정수 `k`를 받아 원소를 **오른쪽으로 `k`칸 회전**한 새 리스트를 반환하는 함수 `rotate`를 작성하세요. 오른쪽 끝에서 밀려난 원소는 왼쪽 앞으로 돌아옵니다.\n\n- `k`가 리스트 길이보다 커도 됩니다 (길이만큼 돌면 제자리).\n- 빈 리스트는 빈 리스트를 반환합니다.\n- `k`가 음수이면 `ValueError`를 발생시키세요.\n\n| 호출 | 결과 |\n|---|---|\n| `rotate([1, 2, 3, 4, 5], 2)` | `[4, 5, 1, 2, 3]` |\n| `rotate([1, 2, 3], 4)` | `[3, 1, 2]` |",
+      "concepts": [
+        "list",
+        "operator",
+        "function",
+        "exception"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "def rotate(items, k):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "rotate"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2칸",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              4,
+              5,
+              1,
+              2,
+              3
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "0칸",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              2,
+              3
+            ]
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "음수",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ],
+              -1
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "길이만큼",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              2,
+              3
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "길이보다 큼",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ],
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              1,
+              2
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "빈 리스트",
+          "call": {
+            "args": [
+              [],
+              5
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "문자열 2개",
+          "call": {
+            "args": [
+              [
+                "a",
+                "b"
+              ],
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              "b",
+              "a"
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "오른쪽으로 k칸 돌리면 \"뒤쪽 k개\"가 앞으로, \"나머지\"가 뒤로 갑니다. 두 조각을 슬라이싱으로 잘라 `+`로 이어 붙여 보세요.",
+        "길이보다 큰 k는 나머지 연산자 `%`로 줄일 수 있습니다. 단, 길이가 0이면 0으로 나누게 되니 먼저 처리하세요.",
+        "`k`가 0이면 `items[-0:]`이 리스트 전체가 되는 점에 주의하세요. k가 0인 경우를 따로 처리하거나, 슬라이싱 위치를 `len(items) - k`로 계산하면 안전합니다."
+      ],
+      "solution": "def rotate(items, k):\n    if k < 0:\n        raise ValueError(\"k는 0 이상이어야 합니다\")\n    if len(items) == 0:\n        return []\n    cut = len(items) - k % len(items)\n    return items[cut:] + items[:cut]\n",
+      "checks": {
+        "required_syntax": [
+          "def"
+        ],
+        "max_lines": 12
+      }
+    }
+  ]
+}

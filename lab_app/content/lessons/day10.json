@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "day": 10,
+  "title": "리스트와 반복문",
+  "stage": "basics",
+  "week": 2,
+  "is_review": false,
+  "objectives": [
+    "`for`로 리스트의 원소를 하나씩 꺼내 처리할 수 있다.",
+    "조건에 맞는 원소만 새 리스트에 모을 수 있다.",
+    "`range(len(리스트))`로 인덱스와 원소를 함께 다룰 수 있다."
+  ],
+  "concepts": [
+    "list",
+    "list_iteration",
+    "for_loop",
+    "accumulation",
+    "condition"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 리스트 메서드 떠올리기",
+      "content_md": "어제는 `append`, `insert`, `pop`, `remove`로 리스트를 바꾸고, 빈 리스트에 반복문으로 값을 채웠습니다. 오늘은 반대로 **이미 있는 리스트를 반복문으로 훑는** 방법을 배웁니다.",
+      "quiz": [
+        {
+          "id": "d10_review_q1",
+          "question_md": "다음 코드의 출력은?\n```python\na = [4, 5]\na.insert(0, 3)\na.append(6)\nprint(a)\n```",
+          "choices": [
+            "[4, 5, 3, 6]",
+            "[3, 4, 5, 6]",
+            "[4, 3, 5, 6]",
+            "[3, 6, 4, 5]"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`insert(0, 3)`은 맨 앞에, `append(6)`은 맨 뒤에 넣습니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "리스트를 처음부터 끝까지 훑기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`for 변수 in 리스트:`는 원소를 앞에서부터 하나씩 꺼내 변수에 담습니다. Day 5의 **누적 패턴**을 그대로 쓸 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "scores = [80, 90, 70]\ntotal = 0\nfor s in scores:\n    total += s\nprint(total)\nprint(total / len(scores))\n",
+          "runnable": true,
+          "expected_output": "240\n80.0\n"
+        },
+        {
+          "kind": "text",
+          "md": "조건에 맞는 원소만 골라 **새 리스트**에 모을 수도 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "nums = [3, 8, 1, 6, 5]\nbig = []\nfor n in nums:\n    if n >= 5:\n        big.append(n)\nprint(big)\n",
+          "runnable": true,
+          "expected_output": "[8, 6, 5]\n"
+        },
+        {
+          "kind": "text",
+          "md": "몇 번째 원소인지(인덱스)도 필요하면 `range(len(리스트))`로 인덱스를 돌립니다."
+        },
+        {
+          "kind": "code",
+          "code": "names = [\"민수\", \"지아\", \"현우\"]\nfor i in range(len(names)):\n    print(i + 1, names[i])\n",
+          "runnable": true,
+          "expected_output": "1 민수\n2 지아\n3 현우\n"
+        },
+        {
+          "kind": "tip",
+          "md": "반복하는 도중에 같은 리스트에서 `remove`로 원소를 지우면 일부 원소를 건너뛸 수 있습니다. 골라낸 결과는 새 리스트에 모으세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "반복문과 조건문을 채워 개수를 세어 보세요.",
+      "exercise_ids": [
+        "d10_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "`max()` 없이 최댓값을 직접 찾아봅시다. Day 7의 최댓값 찾기 예제를 떠올려 보세요.",
+      "exercise_ids": [
+        "d10_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`for x in 리스트:`로 원소를 하나씩 꺼낸다.",
+        "합계·개수는 반복 전에 0으로 시작해 누적하고, 골라낸 원소는 빈 리스트에 `append`한다.",
+        "인덱스가 필요하면 `for i in range(len(리스트)):`를 쓴다.",
+        "최댓값은 첫 원소를 기준으로 두고 더 큰 값이 나오면 바꾼다."
+      ],
+      "quiz": [
+        {
+          "id": "d10_summary_q1",
+          "question_md": "다음 코드의 출력은?\n```python\ncount = 0\nfor x in [2, 7, 4, 9]:\n    if x > 4:\n        count += 1\nprint(count)\n```",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answer_index": 1,
+          "explanation_md": "4보다 큰 수는 7과 9, 두 개입니다. 4는 `>` 조건에 해당하지 않습니다."
+        },
+        {
+          "id": "d10_summary_q2",
+          "question_md": "`best = 0`으로 시작해 최댓값을 찾으면 어떤 리스트에서 틀린 답이 나올까요?",
+          "choices": [
+            "[3, 9, 2]",
+            "[0, 5]",
+            "[-5, -2, -8]",
+            "[7]"
+          ],
+          "answer_index": 2,
+          "explanation_md": "모든 원소가 음수이면 어떤 원소도 0보다 크지 않아 0이 그대로 남습니다. 첫 원소로 시작하면 안전합니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d10_fill_1",
+      "kind": "fill_blank",
+      "title": "기준보다 큰 수 세기",
+      "prompt_md": "정수 리스트 `nums`와 기준값 `limit`을 받아 `limit`보다 **큰** 원소의 개수를 반환하는 함수 `count_above`를 완성하세요. `limit`과 같은 값은 세지 않습니다.\n\n예: `count_above([3, 8, 1, 6], 5)` → `2`",
+      "concepts": [
+        "list_iteration",
+        "for_loop",
+        "condition",
+        "accumulation"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def count_above(nums, limit):\n    count = 0\n    for n in ____:\n        if n ____ limit:\n            count += 1\n    return count\n",
+      "entry": {
+        "mode": "function",
+        "name": "count_above"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "([3, 8, 1, 6], 5)",
+          "call": {
+            "args": [
+              [
+                3,
+                8,
+                1,
+                6
+              ],
+              5
+            ]
+          },
+          "expect": {
+            "return": 2
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "빈 리스트",
+          "call": {
+            "args": [
+              [],
+              0
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "기준과 같은 값만",
+          "call": {
+            "args": [
+              [
+                5,
+                5,
+                5
+              ],
+              5
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "음수",
+          "call": {
+            "args": [
+              [
+                -1,
+                -2,
+                0
+              ],
+              -2
+            ]
+          },
+          "expect": {
+            "return": 2
+          }
+        }
+      ],
+      "hints": [
+        "반복할 대상은 함수가 받은 리스트입니다.",
+        "\"같은 값은 세지 않는다\"는 조건에 맞는 비교 연산자를 고르세요."
+      ],
+      "solution": "def count_above(nums, limit):\n    count = 0\n    for n in nums:\n        if n > limit:\n            count += 1\n    return count\n"
+    },
+    {
+      "id": "d10_code_1",
+      "kind": "coding",
+      "title": "최댓값 직접 찾기",
+      "prompt_md": "정수 리스트 `nums`에서 가장 큰 값을 반환하는 함수 `find_max`를 작성하세요. **`max()`, `sorted()`, `sort()`는 쓰지 말고** 반복문으로 직접 찾으세요.\n\n빈 리스트가 들어오면 `ValueError`를 발생시키세요.\n\n| 호출 | 결과 |\n|---|---|\n| `find_max([3, 9, 2])` | `9` |\n| `find_max([-5, -2, -8])` | `-2` |\n| `find_max([])` | `ValueError` |",
+      "concepts": [
+        "list_iteration",
+        "for_loop",
+        "condition",
+        "function",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def find_max(nums):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "find_max"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "[3, 9, 2]",
+          "call": {
+            "args": [
+              [
+                3,
+                9,
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "return": 9
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "모두 음수",
+          "call": {
+            "args": [
+              [
+                -5,
+                -2,
+                -8
+              ]
+            ]
+          },
+          "expect": {
+            "return": -2
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "빈 리스트",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "원소 1개",
+          "call": {
+            "args": [
+              [
+                7
+              ]
+            ]
+          },
+          "expect": {
+            "return": 7
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "같은 값",
+          "call": {
+            "args": [
+              [
+                1,
+                1,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": 1
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "음수와 중복",
+          "call": {
+            "args": [
+              [
+                -3,
+                -3,
+                -10
+              ]
+            ]
+          },
+          "expect": {
+            "return": -3
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "최댓값이 뒤에",
+          "call": {
+            "args": [
+              [
+                4,
+                10,
+                2,
+                11
+              ]
+            ]
+          },
+          "expect": {
+            "return": 11
+          }
+        }
+      ],
+      "hints": [
+        "먼저 빈 리스트인지 확인하고, 그다음 \"지금까지 본 가장 큰 값\"을 담을 변수를 준비하세요.",
+        "그 변수는 0이 아니라 리스트의 첫 원소로 시작해야 음수만 있는 리스트에서도 맞습니다.",
+        "반복하면서 현재 원소가 기준보다 크면 기준을 바꾸고, 반복이 끝나면 기준을 반환합니다."
+      ],
+      "solution": "def find_max(nums):\n    if len(nums) == 0:\n        raise ValueError(\"빈 리스트입니다\")\n    best = nums[0]\n    for n in nums:\n        if n > best:\n            best = n\n    return best\n",
+      "checks": {
+        "required_syntax": [
+          "for",
+          "if"
+        ],
+        "forbidden_calls": [
+          "max",
+          "sorted",
+          "sort"
+        ],
+        "max_lines": 12
+      }
+    }
+  ]
+}

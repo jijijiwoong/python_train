@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "day": 8,
+  "title": "리스트 기초",
+  "stage": "basics",
+  "week": 2,
+  "is_review": false,
+  "objectives": [
+    "대괄호로 리스트를 만들고 인덱스로 원소를 꺼낼 수 있다.",
+    "음수 인덱스와 슬라이싱으로 리스트의 일부를 다룰 수 있다.",
+    "`len()`과 `in`으로 리스트의 길이와 포함 여부를 확인할 수 있다."
+  ],
+  "concepts": [
+    "list",
+    "function",
+    "return",
+    "exception"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "1주차 돌아보기",
+      "content_md": "지난주에는 값을 하나씩 변수에 담았습니다. 점수가 30개라면 변수도 30개가 필요할까요? 이번 주에는 여러 값을 **한 변수에 순서대로** 담는 리스트와 튜플을 배웁니다.\n\nDay 3에서 배운 문자열 인덱싱 `s[0]`, 슬라이싱 `s[1:3]`, `len(s)`가 리스트에도 그대로 쓰입니다.",
+      "quiz": [
+        {
+          "id": "d08_review_q1",
+          "question_md": "`s = \"python\"`일 때 `s[-1]`의 값은?",
+          "choices": [
+            "\"p\"",
+            "\"n\"",
+            "\"o\"",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "음수 인덱스 `-1`은 마지막 글자를 가리킵니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "리스트: 여러 값을 담는 상자",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**리스트**는 여러 값을 순서대로 담는 자료형입니다. 대괄호 `[ ]` 안에 값을 쉼표로 구분해 적습니다. 문자열과 마찬가지로 인덱스는 **0부터** 시작합니다."
+        },
+        {
+          "kind": "code",
+          "code": "fruits = [\"사과\", \"바나나\", \"체리\"]\nprint(fruits)\nprint(fruits[0])\nprint(fruits[-1])\nprint(len(fruits))\n",
+          "runnable": true,
+          "expected_output": "['사과', '바나나', '체리']\n사과\n체리\n3\n"
+        },
+        {
+          "kind": "tip",
+          "md": "없는 인덱스를 쓰면 `IndexError`가 납니다. 원소가 3개인 리스트의 마지막 인덱스는 `2`(또는 `-1`)입니다."
+        },
+        {
+          "kind": "text",
+          "md": "슬라이싱 `리스트[시작:끝]`은 끝 인덱스 **직전까지** 잘라 새 리스트를 만듭니다. `in`은 값이 들어 있는지 True/False로 알려 줍니다."
+        },
+        {
+          "kind": "code",
+          "code": "nums = [10, 20, 30, 40, 50]\nprint(nums[1:3])\nprint(nums[:2])\nprint(nums[::-1])\nprint(30 in nums)\nprint(99 in nums)\n",
+          "runnable": true,
+          "expected_output": "[20, 30]\n[10, 20]\n[50, 40, 30, 20, 10]\nTrue\nFalse\n"
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "인덱스를 채워 함수를 완성하세요.",
+      "exercise_ids": [
+        "d08_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "슬라이싱과 `len()`, Day 6의 예외 처리를 함께 써 봅시다.",
+      "exercise_ids": [
+        "d08_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "리스트는 `[값1, 값2, ...]`로 만들고, 인덱스는 0부터 시작한다.",
+        "`리스트[-1]`은 마지막 원소, `리스트[a:b]`는 a부터 b 직전까지의 새 리스트다.",
+        "`len(리스트)`는 원소 개수, `값 in 리스트`는 포함 여부(True/False)다."
+      ],
+      "quiz": [
+        {
+          "id": "d08_summary_q1",
+          "question_md": "`a = [3, 6, 9, 12]`일 때 `a[1:3]`의 값은?",
+          "choices": [
+            "[3, 6]",
+            "[6, 9]",
+            "[6, 9, 12]",
+            "[3, 6, 9]"
+          ],
+          "answer_index": 1,
+          "explanation_md": "인덱스 1(6)부터 3 직전인 인덱스 2(9)까지입니다."
+        },
+        {
+          "id": "d08_summary_q2",
+          "question_md": "`a = [3, 6, 9]`일 때 `a[3]`을 실행하면?",
+          "choices": [
+            "9",
+            "3",
+            "None",
+            "IndexError 발생"
+          ],
+          "answer_index": 3,
+          "explanation_md": "원소가 3개이면 인덱스는 0~2까지입니다. 범위를 벗어나면 `IndexError`가 납니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d08_fill_1",
+      "kind": "fill_blank",
+      "title": "양 끝 더하기",
+      "prompt_md": "정수 리스트 `nums`를 받아 **첫 번째 원소와 마지막 원소의 합**을 반환하는 함수 `ends_sum`을 완성하세요. `nums`에는 원소가 1개 이상 있습니다.\n\n예: `ends_sum([1, 2, 3])` → `4`",
+      "concepts": [
+        "list",
+        "function",
+        "return"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def ends_sum(nums):\n    return nums[____] + nums[____]\n",
+      "entry": {
+        "mode": "function",
+        "name": "ends_sum"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "[1, 2, 3]",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "expect": {
+            "return": 4
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "원소 1개",
+          "call": {
+            "args": [
+              [
+                5
+              ]
+            ]
+          },
+          "expect": {
+            "return": 10
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "음수 포함",
+          "call": {
+            "args": [
+              [
+                -3,
+                7,
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "return": -1
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "원소 2개",
+          "call": {
+            "args": [
+              [
+                10,
+                20
+              ]
+            ]
+          },
+          "expect": {
+            "return": 30
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "긴 리스트",
+          "call": {
+            "args": [
+              [
+                4,
+                0,
+                0,
+                0,
+                0,
+                9
+              ]
+            ]
+          },
+          "expect": {
+            "return": 13
+          }
+        }
+      ],
+      "hints": [
+        "첫 번째 원소의 인덱스는 몇 번일까요?",
+        "리스트 길이를 몰라도 마지막 원소를 가리킬 수 있는 음수 인덱스가 있습니다."
+      ],
+      "solution": "def ends_sum(nums):\n    return nums[0] + nums[-1]\n"
+    },
+    {
+      "id": "d08_code_1",
+      "kind": "coding",
+      "title": "양 끝 잘라내기",
+      "prompt_md": "리스트 `items`를 받아 **첫 번째와 마지막 원소를 뺀 새 리스트**를 반환하는 함수 `trim`을 작성하세요.\n\n원소가 3개 미만이면 남는 것이 없으므로 `ValueError`를 발생시키세요.\n\n| 호출 | 결과 |\n|---|---|\n| `trim([70, 85, 90, 60])` | `[85, 90]` |\n| `trim([1, 2])` | `ValueError` |",
+      "concepts": [
+        "list",
+        "function",
+        "return",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def trim(items):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "trim"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "원소 4개",
+          "call": {
+            "args": [
+              [
+                70,
+                85,
+                90,
+                60
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              85,
+              90
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "원소 2개",
+          "call": {
+            "args": [
+              [
+                1,
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "원소 3개",
+          "call": {
+            "args": [
+              [
+                5,
+                6,
+                7
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              6
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "빈 리스트",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "문자열 5개",
+          "call": {
+            "args": [
+              [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "b",
+              "c",
+              "d"
+            ]
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "원소 1개",
+          "call": {
+            "args": [
+              [
+                9
+              ]
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        }
+      ],
+      "hints": [
+        "먼저 원소 개수를 확인해 예외를 처리하고, 그다음 필요한 부분만 잘라 내세요.",
+        "원소 개수는 `len()`으로 구합니다. 예외는 `raise ValueError(\"메시지\")`로 발생시킵니다.",
+        "슬라이싱의 끝 값에도 음수 인덱스를 쓸 수 있습니다. `-1`을 끝 값으로 주면 마지막 원소 직전까지 잘립니다."
+      ],
+      "solution": "def trim(items):\n    if len(items) < 3:\n        raise ValueError(\"원소가 3개 이상이어야 합니다\")\n    return items[1:-1]\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "if"
+        ],
+        "max_lines": 10
+      }
+    }
+  ]
+}

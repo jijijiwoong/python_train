@@ -81,7 +81,15 @@
     "accumulation": "누적 패턴",
     "function": "함수 정의",
     "return": "반환값",
-    "exception": "예외 발생"
+    "exception": "예외 발생",
+    "list": "리스트 기초",
+    "list_method": "리스트 메서드",
+    "list_iteration": "리스트 순회",
+    "sorting": "정렬과 내장 함수",
+    "tuple": "튜플",
+    "unpacking": "언패킹",
+    "nested_list": "중첩 리스트",
+    "enumerate_zip": "enumerate·zip"
   },
   "days": [
     {"day": 1, "title": "print와 변수, 기본 자료형", "file": "lessons/day01.json", "is_review": false},
@@ -90,6 +98,13 @@
     {"day": 4, "title": "조건문", "file": "lessons/day04.json", "is_review": false},
     {"day": 5, "title": "반복문", "file": "lessons/day05.json", "is_review": false},
     {"day": 6, "title": "함수 기초", "file": "lessons/day06.json", "is_review": false},
-    {"day": 7, "title": "1주차 누적 복습", "file": "lessons/day07.json", "is_review": true}
+    {"day": 7, "title": "1주차 누적 복습", "file": "lessons/day07.json", "is_review": true},
+    {"day": 8, "title": "리스트 기초", "file": "lessons/day08.json", "is_review": false},
+    {"day": 9, "title": "리스트 바꾸기", "file": "lessons/day09.json", "is_review": false},
+    {"day": 10, "title": "리스트와 반복문", "file": "lessons/day10.json", "is_review": false},
+    {"day": 11, "title": "정렬과 내장 함수", "file": "lessons/day11.json", "is_review": false},
+    {"day": 12, "title": "튜플", "file": "lessons/day12.json", "is_review": false},
+    {"day": 13, "title": "중첩 리스트와 enumerate, zip", "file": "lessons/day13.json", "is_review": false},
+    {"day": 14, "title": "2주차 누적 복습", "file": "lessons/day14.json", "is_review": true}
   ]
 }

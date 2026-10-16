@@ -1,0 +1,535 @@
+{
+  "schema_version": 1,
+  "day": 13,
+  "title": "중첩 리스트와 enumerate, zip",
+  "stage": "basics",
+  "week": 2,
+  "is_review": false,
+  "objectives": [
+    "리스트 안의 리스트(2차원 리스트)에서 원소를 꺼낼 수 있다.",
+    "`enumerate`로 인덱스와 원소를 함께 반복할 수 있다.",
+    "`zip`으로 두 리스트를 짝지어 반복할 수 있다."
+  ],
+  "concepts": [
+    "nested_list",
+    "enumerate_zip",
+    "list_iteration",
+    "for_loop",
+    "accumulation"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 튜플 떠올리기",
+      "content_md": "어제는 튜플을 만들고 `x, y = point`처럼 언패킹했습니다. 오늘은 리스트 안에 리스트를 넣은 **표 모양 데이터**와, 반복을 편하게 해 주는 `enumerate`, `zip`을 배웁니다. 둘 다 언패킹과 함께 씁니다.",
+      "quiz": [
+        {
+          "id": "d13_review_q1",
+          "question_md": "다음 코드의 출력은?\n```python\na, b = 3, 8\na, b = b, a\nprint(a)\n```",
+          "choices": [
+            "3",
+            "8",
+            "(8, 3)",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`a, b = b, a`는 두 값을 맞바꿉니다. 이제 `a`는 8입니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "표 모양 데이터 다루기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "리스트의 원소로 리스트를 넣으면 표처럼 **행과 열**이 있는 데이터를 만들 수 있습니다. `grid[행][열]`처럼 인덱스를 두 번 써서 원소를 꺼냅니다."
+        },
+        {
+          "kind": "code",
+          "code": "grid = [[1, 2, 3],\n        [4, 5, 6]]\nprint(grid[1][0])\nprint(len(grid), len(grid[0]))\nfor row in grid:\n    print(sum(row))\n",
+          "runnable": true,
+          "expected_output": "4\n2 3\n6\n15\n"
+        },
+        {
+          "kind": "text",
+          "md": "`enumerate(리스트)`는 `(인덱스, 원소)` 쌍을, `zip(리스트1, 리스트2)`는 같은 위치의 원소끼리 묶은 쌍을 차례로 만듭니다. `range(len(...))`보다 읽기 쉽습니다."
+        },
+        {
+          "kind": "code",
+          "code": "names = [\"민수\", \"지아\"]\nscores = [85, 92]\nfor i, name in enumerate(names, start=1):\n    print(i, name)\nfor name, score in zip(names, scores):\n    print(f\"{name}: {score}\")\n",
+          "runnable": true,
+          "expected_output": "1 민수\n2 지아\n민수: 85\n지아: 92\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`zip`은 짧은 쪽 리스트가 끝나면 멈춥니다. 길이가 다른 리스트를 짝지으면 남는 원소는 조용히 버려지니, 필요하면 길이를 먼저 확인하세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "2차원 리스트의 행마다 합계를 구하세요.",
+      "exercise_ids": [
+        "d13_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제(`zip`과 예외)는 **도전 문제**로 수업 완료에 필요하지 않습니다.",
+      "exercise_ids": [
+        "d13_code_1",
+        "d13_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "2차원 리스트는 `grid[행][열]`로 원소를 꺼낸다. 행의 개수는 `len(grid)`, 열의 개수는 `len(grid[0])`이다.",
+        "`for row in grid:`는 행(리스트)을 하나씩 꺼낸다.",
+        "`for i, x in enumerate(리스트):`로 인덱스와 원소를 함께 받는다.",
+        "`for a, b in zip(리스트1, 리스트2):`로 같은 위치의 원소를 짝지어 받는다."
+      ],
+      "quiz": [
+        {
+          "id": "d13_summary_q1",
+          "question_md": "`m = [[1, 2], [3, 4], [5, 6]]`일 때 `m[2][1]`의 값은?",
+          "choices": [
+            "4",
+            "5",
+            "6",
+            "3"
+          ],
+          "answer_index": 2,
+          "explanation_md": "`m[2]`는 세 번째 행 `[5, 6]`이고, 그중 인덱스 1은 6입니다."
+        },
+        {
+          "id": "d13_summary_q2",
+          "question_md": "`zip([1, 2, 3], [\"a\", \"b\"])`가 만드는 쌍은 몇 개인가요?",
+          "choices": [
+            "2개",
+            "3개",
+            "5개",
+            "오류"
+          ],
+          "answer_index": 0,
+          "explanation_md": "`zip`은 짧은 쪽 길이(2)에 맞춰 멈춥니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d13_fill_1",
+      "kind": "fill_blank",
+      "title": "행별 합계",
+      "prompt_md": "2차원 정수 리스트 `grid`를 받아 **각 행의 합계**를 담은 리스트를 반환하는 함수 `row_sums`를 완성하세요. 빈 행의 합계는 0입니다.\n\n예: `row_sums([[1, 2], [3, 4]])` → `[3, 7]`",
+      "concepts": [
+        "nested_list",
+        "list_iteration",
+        "for_loop"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def row_sums(grid):\n    result = []\n    for row in ____:\n        result.append(____(row))\n    return result\n",
+      "entry": {
+        "mode": "function",
+        "name": "row_sums"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2 x 2",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              7
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "행 없음",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "1 x 1",
+          "call": {
+            "args": [
+              [
+                [
+                  5
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              5
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "빈 행 포함",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  -1,
+                  0
+                ],
+                [
+                  10,
+                  20,
+                  30
+                ],
+                []
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              60,
+              0
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`for` 문은 2차원 리스트에서 행을 하나씩 꺼냅니다. 무엇을 반복해야 할까요?",
+        "꺼낸 행은 숫자 리스트입니다. 리스트의 합계를 바로 구하는 내장 함수가 있습니다 (Day 11)."
+      ],
+      "solution": "def row_sums(grid):\n    result = []\n    for row in grid:\n        result.append(sum(row))\n    return result\n"
+    },
+    {
+      "id": "d13_code_1",
+      "kind": "coding",
+      "title": "열별 합계",
+      "prompt_md": "직사각형 모양의 2차원 정수 리스트 `grid`(행이 1개 이상, 모든 행의 길이가 같음)를 받아 **각 열의 합계**를 담은 리스트를 반환하는 함수 `column_sums`를 작성하세요.\n\n예: `column_sums([[1, 2, 3], [4, 5, 6]])` → `[5, 7, 9]`\n\n| | 열 0 | 열 1 | 열 2 |\n|---|---|---|---|\n| 행 0 | 1 | 2 | 3 |\n| 행 1 | 4 | 5 | 6 |\n| **합계** | 5 | 7 | 9 |",
+      "concepts": [
+        "nested_list",
+        "for_loop",
+        "accumulation",
+        "function"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "def column_sums(grid):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "column_sums"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2 x 3",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              5,
+              7,
+              9
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "1 x 1",
+          "call": {
+            "args": [
+              [
+                [
+                  7
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              7
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "3 x 2",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              9,
+              12
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "1 x 4",
+          "call": {
+            "args": [
+              [
+                [
+                  0,
+                  -1,
+                  2,
+                  3
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              -1,
+              2,
+              3
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "행별 합계와 달리, 열 하나의 합계를 구하려면 모든 행을 돌며 같은 위치의 원소를 더해야 합니다.",
+        "바깥 반복은 열 번호(0부터 열 개수 직전까지), 안쪽 반복은 행입니다. 열 개수는 첫 행의 길이입니다.",
+        "열 번호 `c`의 합계는 각 행 `row`에서 `row[c]`를 누적해 구하고, 다 더한 뒤 결과 리스트에 붙이세요."
+      ],
+      "solution": "def column_sums(grid):\n    result = []\n    for c in range(len(grid[0])):\n        total = 0\n        for row in grid:\n            total += row[c]\n        result.append(total)\n    return result\n",
+      "checks": {
+        "required_syntax": [
+          "for"
+        ],
+        "max_lines": 12
+      }
+    },
+    {
+      "id": "d13_code_2",
+      "kind": "coding",
+      "title": "[도전] 합격자 명단",
+      "prompt_md": "이름 리스트 `names`, 점수 리스트 `scores`(같은 위치끼리 짝), 합격 기준 `cutoff`를 받아 점수가 `cutoff` **이상**인 학생의 이름을 원래 순서대로 담은 리스트를 반환하는 함수 `passed`를 작성하세요.\n\n두 리스트의 길이가 다르면 `ValueError`를 발생시키세요.\n\n예: `passed([\"가\", \"나\", \"다\"], [70, 50, 90], 60)` → `[\"가\", \"다\"]`",
+      "concepts": [
+        "enumerate_zip",
+        "list_iteration",
+        "condition",
+        "function",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": false,
+      "starter_code": "def passed(names, scores, cutoff):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "passed"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3명 중 2명",
+          "call": {
+            "args": [
+              [
+                "가",
+                "나",
+                "다"
+              ],
+              [
+                70,
+                50,
+                90
+              ],
+              60
+            ]
+          },
+          "expect": {
+            "return": [
+              "가",
+              "다"
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "길이가 다름",
+          "call": {
+            "args": [
+              [
+                "a"
+              ],
+              [
+                1,
+                2
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "기준과 같은 점수",
+          "call": {
+            "args": [
+              [
+                "가"
+              ],
+              [
+                60
+              ],
+              60
+            ]
+          },
+          "expect": {
+            "return": [
+              "가"
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "빈 명단",
+          "call": {
+            "args": [
+              [],
+              [],
+              50
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "합격자 없음",
+          "call": {
+            "args": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                10,
+                20
+              ],
+              100
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "길이가 다름 (이름이 많음)",
+          "call": {
+            "args": [
+              [
+                "a",
+                "b",
+                "c"
+              ],
+              [
+                90,
+                90
+              ],
+              50
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        }
+      ],
+      "hints": [
+        "`zip`은 길이가 달라도 오류 없이 짧은 쪽에 맞춰 멈춥니다. 그래서 길이 비교를 먼저 해야 합니다.",
+        "`for name, score in zip(...)`으로 짝을 받고, 조건에 맞는 이름만 새 리스트에 `append`하세요."
+      ],
+      "solution": "def passed(names, scores, cutoff):\n    if len(names) != len(scores):\n        raise ValueError(\"이름과 점수의 개수가 다릅니다\")\n    result = []\n    for name, score in zip(names, scores):\n        if score >= cutoff:\n            result.append(name)\n    return result\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "for"
+        ],
+        "max_lines": 12
+      }
+    }
+  ]
+}

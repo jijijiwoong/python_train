@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "day": 12,
+  "title": "튜플",
+  "stage": "basics",
+  "week": 2,
+  "is_review": false,
+  "objectives": [
+    "튜플을 만들고 리스트와의 차이(바꿀 수 없음)를 설명할 수 있다.",
+    "언패킹으로 여러 변수에 값을 한 번에 담을 수 있다.",
+    "함수에서 여러 값을 튜플로 반환할 수 있다."
+  ],
+  "concepts": [
+    "tuple",
+    "unpacking",
+    "function",
+    "return",
+    "list_iteration"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 정렬 떠올리기",
+      "content_md": "어제는 `sum`, `max`, `min`, `sorted`, `split()`을 배웠습니다. 오늘은 리스트와 비슷하지만 **한 번 만들면 바꿀 수 없는** 튜플을 배웁니다.",
+      "quiz": [
+        {
+          "id": "d12_review_q1",
+          "question_md": "`sorted([3, 1, 2], reverse=True)`의 결과는?",
+          "choices": [
+            "[1, 2, 3]",
+            "[3, 2, 1]",
+            "[2, 1, 3]",
+            "None"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`reverse=True`는 큰 값부터 정렬합니다. `sorted()`는 새 리스트를 돌려주므로 `None`이 아닙니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "튜플과 언패킹",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**튜플**은 소괄호 `( )`로 만드는 순서 있는 묶음입니다. 인덱싱, 슬라이싱, `len()`, `in`은 리스트와 같지만 원소를 바꾸거나 추가할 수 없습니다. 좌표처럼 함께 다니는 값을 묶을 때 씁니다."
+        },
+        {
+          "kind": "code",
+          "code": "point = (3, 5)\nprint(point[0])\nprint(len(point))\nx, y = point\nprint(x + y)\n",
+          "runnable": true,
+          "expected_output": "3\n2\n8\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`point[0] = 10`처럼 튜플의 원소를 바꾸려 하면 `TypeError`가 납니다. 원소가 하나뿐인 튜플은 `(5,)`처럼 쉼표를 꼭 붙여야 합니다. `(5)`는 그냥 숫자 5입니다."
+        },
+        {
+          "kind": "text",
+          "md": "`x, y = point`처럼 묶음을 여러 변수에 나눠 담는 것을 **언패킹**이라고 합니다. 함수에서 `return a, b`라고 쓰면 두 값이 튜플로 묶여 반환되고, 받는 쪽에서 언패킹합니다."
+        },
+        {
+          "kind": "code",
+          "code": "def min_max(nums):\n    return min(nums), max(nums)\n\nlow, high = min_max([4, 9, 1, 7])\nprint(low, high)\na, b = 1, 2\na, b = b, a\nprint(a, b)\n",
+          "runnable": true,
+          "expected_output": "1 9\n2 1\n"
+        },
+        {
+          "kind": "code",
+          "code": "students = [(\"민수\", 85), (\"지아\", 92)]\nfor name, score in students:\n    print(f\"{name}: {score}점\")\n",
+          "runnable": true,
+          "expected_output": "민수: 85점\n지아: 92점\n"
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "여러 값을 튜플로 반환하는 함수를 완성하세요.",
+      "exercise_ids": [
+        "d12_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "(이름, 점수) 쌍을 언패킹하며 1등을 찾아봅시다.",
+      "exercise_ids": [
+        "d12_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "튜플은 `(값1, 값2)`로 만들고, 만든 뒤에는 바꿀 수 없다.",
+        "`x, y = 묶음`으로 언패킹하고, `a, b = b, a`로 두 값을 바꾼다.",
+        "`return a, b`는 튜플 하나를 돌려준다. 받을 때 `p, q = 함수()`로 나눠 담는다.",
+        "`for name, score in 쌍의_리스트:`로 반복하면서 바로 언패킹할 수 있다."
+      ],
+      "quiz": [
+        {
+          "id": "d12_summary_q1",
+          "question_md": "다음 코드를 실행하면?\n```python\nt = (1, 2, 3)\nt[0] = 9\n```",
+          "choices": [
+            "t가 (9, 2, 3)이 된다",
+            "t가 (1, 2, 3, 9)가 된다",
+            "TypeError가 난다",
+            "아무 일도 일어나지 않는다"
+          ],
+          "answer_index": 2,
+          "explanation_md": "튜플은 원소를 바꿀 수 없어서 `TypeError`가 납니다."
+        },
+        {
+          "id": "d12_summary_q2",
+          "question_md": "`def f(): return 1, 2`일 때 `type(f())`는?",
+          "choices": [
+            "int",
+            "list",
+            "tuple",
+            "str"
+          ],
+          "answer_index": 2,
+          "explanation_md": "쉼표로 여러 값을 반환하면 하나의 튜플로 묶여 돌아옵니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d12_fill_1",
+      "kind": "fill_blank",
+      "title": "몫과 나머지",
+      "prompt_md": "양의 정수 `a`, `b`를 받아 `(몫, 나머지)` 튜플을 반환하는 함수 `divide`를 완성하세요.\n\n예: `divide(17, 5)` → `(3, 2)`",
+      "concepts": [
+        "tuple",
+        "function",
+        "return",
+        "operator"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def divide(a, b):\n    q = a ____ b\n    r = a ____ b\n    return ____\n",
+      "entry": {
+        "mode": "function",
+        "name": "divide"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "17 ÷ 5",
+          "call": {
+            "args": [
+              17,
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              2
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "나누어떨어짐",
+          "call": {
+            "args": [
+              10,
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              5,
+              0
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "a < b",
+          "call": {
+            "args": [
+              3,
+              7
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              3
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "100 ÷ 9",
+          "call": {
+            "args": [
+              100,
+              9
+            ]
+          },
+          "expect": {
+            "return": [
+              11,
+              1
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "몫과 나머지를 구하는 연산자는 Day 2에서 배웠습니다.",
+        "두 값을 쉼표로 이어서 반환하면 튜플로 묶입니다. 순서는 (몫, 나머지)입니다."
+      ],
+      "solution": "def divide(a, b):\n    q = a // b\n    r = a % b\n    return q, r\n"
+    },
+    {
+      "id": "d12_code_1",
+      "kind": "coding",
+      "title": "1등 찾기",
+      "prompt_md": "`[이름, 점수]` 쌍이 들어 있는 리스트 `records`를 받아, 점수가 가장 높은 학생의 `(이름, 점수)` 튜플을 반환하는 함수 `best_student`를 작성하세요. 동점이면 **앞에 있는 학생**을 반환합니다.\n\n`records`가 비어 있으면 `ValueError`를 발생시키세요.\n\n예: `best_student([[\"민수\", 85], [\"지아\", 92], [\"현우\", 78]])` → `(\"지아\", 92)`",
+      "concepts": [
+        "tuple",
+        "unpacking",
+        "list_iteration",
+        "function",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def best_student(records):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "best_student"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3명",
+          "call": {
+            "args": [
+              [
+                [
+                  "민수",
+                  85
+                ],
+                [
+                  "지아",
+                  92
+                ],
+                [
+                  "현우",
+                  78
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "지아",
+              92
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "빈 리스트",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "1명",
+          "call": {
+            "args": [
+              [
+                [
+                  "A",
+                  50
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "A",
+              50
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "동점",
+          "call": {
+            "args": [
+              [
+                [
+                  "A",
+                  90
+                ],
+                [
+                  "B",
+                  90
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "A",
+              90
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "모두 0점",
+          "call": {
+            "args": [
+              [
+                [
+                  "가",
+                  0
+                ],
+                [
+                  "나",
+                  0
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "가",
+              0
+            ]
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "1등이 마지막",
+          "call": {
+            "args": [
+              [
+                [
+                  "가",
+                  10
+                ],
+                [
+                  "나",
+                  20
+                ],
+                [
+                  "다",
+                  30
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "다",
+              30
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "빈 리스트를 먼저 처리하고, 첫 번째 학생을 \"지금까지의 1등\"으로 두고 시작하세요.",
+        "각 쌍은 `name, score = 쌍`처럼 언패킹할 수 있고, `for` 문에서 바로 언패킹해도 됩니다.",
+        "동점일 때 앞 학생을 지키려면 \"같거나 크다\"가 아니라 \"크다\"일 때만 1등을 바꿔야 합니다. 마지막에 이름과 점수를 쉼표로 이어 반환하세요."
+      ],
+      "solution": "def best_student(records):\n    if len(records) == 0:\n        raise ValueError(\"기록이 없습니다\")\n    best_name, best_score = records[0]\n    for name, score in records:\n        if score > best_score:\n            best_name, best_score = name, score\n    return best_name, best_score\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "for"
+        ],
+        "max_lines": 12
+      }
+    }
+  ]
+}

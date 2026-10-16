@@ -19,6 +19,8 @@ SUPPORTED_SYNTAX: dict[str, tuple[tuple[type[ast.AST], ...], str]] = {
     "import": ((ast.Import, ast.ImportFrom), "import 문"),
     "list_comp": ((ast.ListComp,), "리스트 컴프리헨션"),
     "try": ((ast.Try, ast.TryStar), "try/except"),
+    "lambda": ((ast.Lambda,), "lambda 식"),
+    "with": ((ast.With, ast.AsyncWith), "with 문"),
 }
 
 LONG_LINE = 100

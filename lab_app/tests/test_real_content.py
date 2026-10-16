@@ -8,11 +8,11 @@ from lab_app.core.grader import grade, verify_lesson
 REPO = ContentRepository()
 
 
-def test_week_one_is_complete_and_clean():
-    assert REPO.available_days == [1, 2, 3, 4, 5, 6, 7]
+def test_weeks_one_and_two_are_complete_and_clean():
+    assert REPO.available_days == list(range(1, 15))
     assert REPO.warnings == []
     assert REPO.curriculum.total_days == 168
-    assert [d.day for d in REPO.curriculum.days if d.is_review] == [7]
+    assert [d.day for d in REPO.curriculum.days if d.is_review] == [7, 14]
     for lesson in REPO.lessons():
         assert lesson.required_exercise_ids, f"Day {lesson.day} has no required exercise"
 
@@ -40,13 +40,37 @@ def test_lesson_self_check(day):
     ("d07_code_1", 'n = int(input())\ntotal = 0\nbest = 0\nfor _ in range(n):\n    s = int(input())\n    total += s\n'
                    '    best = s\nprint(f"평균: {total / n:.1f}")\nprint(f"최고: {best}")\nprint("합격" if total / n >= 60 else "불합격")\n',
      ErrorType.WRONG_ANSWER),                                                     # best = last, not max
+    ("d08_code_1", "def trim(items):\n    return items[1:-1]\n", ErrorType.WRONG_EXCEPTION),  # no length check
+    ("d09_code_1", "def move_to_front(items, value):\n    items = items.remove(value)\n    items.insert(0, value)\n"
+                   "    return items\n", ErrorType.ATTRIBUTE_ERROR),                 # reassigned None from remove()
+    ("d10_code_1", 'def find_max(nums):\n    if not nums:\n        raise ValueError("빈 리스트")\n    best = 0\n'
+                   "    for n in nums:\n        if n > best:\n            best = n\n    return best\n",
+     ErrorType.WRONG_ANSWER),                                                     # best = 0 fails all-negative list
+    ("d10_code_1", 'def find_max(nums):\n    if not nums:\n        raise ValueError("빈 리스트")\n    for n in nums:\n'
+                   "        pass\n    return max(nums)\n", ErrorType.STATIC_CHECK_FAILED),
+    ("d11_code_1", 'nums = input().split()\nnums.sort()\nprint(f"정렬: {nums}")\nmiddle = nums[1:-1]\n'
+                   'print(f"평균: {sum(middle) / len(middle):.1f}")\n', ErrorType.TYPE_ERROR),  # forgot int()
+    ("d12_code_1", 'def best_student(records):\n    if not records:\n        raise ValueError("없음")\n'
+                   "    best_name, best_score = records[0]\n    for name, score in records:\n        if score >= best_score:\n"
+                   "            best_name, best_score = name, score\n    return best_name, best_score\n",
+     ErrorType.WRONG_ANSWER),                                                     # >= picks the later of a tie
+    ("d13_code_1", "def column_sums(grid):\n    result = []\n    for c in range(len(grid[0])):\n        total = 0\n"
+                   "        for r in range(len(grid)):\n            total += grid[c][r]\n        result.append(total)\n"
+                   "    return result\n", ErrorType.INDEX_ERROR),                    # row/column swapped
+    ("d14_code_1", 'n = int(input())\nbest_name, best_score, total = "", 0, 0\nscores = []\nfor _ in range(n):\n'
+                   "    name, score = input().split()\n    score = int(score)\n    scores.append(score)\n    total += score\n"
+                   "    if score > best_score:\n        best_name, best_score = name, score\n"
+                   "count = 0\nfor s in scores:\n    if s >= total / n:\n        count += 1\n"
+                   'print(f"1등: {best_name} {best_score}")\nprint(f"평균: {total / n:.1f}")\nprint(f"평균 이상: {count}명")\n',
+     ErrorType.WRONG_ANSWER),                                                     # best starts at 0: all-zero class
 ])
 def test_typical_mistakes(exercise_id, code, error_type):
     result = grade(REPO.exercise(exercise_id), code)
     assert result.error_type is error_type, [(t.test_id, t.error_type, t.message) for t in result.tests]
 
 
-def test_optional_challenge_is_not_required():
-    lesson = REPO.lesson(7)
-    assert "d07_code_2" not in lesson.required_exercise_ids
-    assert lesson.exercise("d07_code_2").kind == "coding"
+@pytest.mark.parametrize("day, exercise_id", [(7, "d07_code_2"), (13, "d13_code_2"), (14, "d14_code_2")])
+def test_optional_challenge_is_not_required(day, exercise_id):
+    lesson = REPO.lesson(day)
+    assert exercise_id not in lesson.required_exercise_ids
+    assert lesson.exercise(exercise_id).kind == "coding"
