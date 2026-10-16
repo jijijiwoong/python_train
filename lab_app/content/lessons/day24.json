@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "day": 24,
+  "title": "변수의 범위",
+  "stage": "basics",
+  "week": 4,
+  "is_review": false,
+  "objectives": [
+    "함수 안(지역)과 밖(전역) 변수의 차이를 설명할 수 있다.",
+    "전역 변수 대신 매개변수와 반환값으로 데이터를 주고받을 수 있다."
+  ],
+  "concepts": [
+    "scope",
+    "function",
+    "return"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `*args`, `**kwargs`로 개수가 정해지지 않은 인자를 받았습니다.",
+      "quiz": [
+        {
+          "id": "d24_review_q1",
+          "question_md": "`def f(*a): return a`일 때 `f()`의 결과는?",
+          "choices": [
+            "`None`",
+            "`()`",
+            "`[]`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "인자가 없으면 빈 튜플이 됩니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "변수가 사는 곳",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "함수 안에서 값을 저장한 변수는 그 함수 안에서만 존재하는 **지역 변수**입니다. 바깥의 같은 이름 변수(**전역 변수**)와는 별개입니다."
+        },
+        {
+          "kind": "code",
+          "code": "x = 10\n\ndef show():\n    x = 5\n    print(\"안:\", x)\n\nshow()\nprint(\"밖:\", x)\n",
+          "runnable": true,
+          "expected_output": "안: 5\n밖: 10\n"
+        },
+        {
+          "kind": "text",
+          "md": "함수 안에서 바깥 변수를 **바꾸려고** 하면 오류가 납니다. 아래 코드는 `UnboundLocalError`를 냅니다."
+        },
+        {
+          "kind": "code",
+          "code": "total = 0\n\ndef add(n):\n    total += n   # UnboundLocalError\n",
+          "runnable": false
+        },
+        {
+          "kind": "text",
+          "md": "가장 좋은 해결법은 값을 **매개변수로 받고 `return`으로 돌려주는** 것입니다. 함수가 어디서 무엇을 바꾸는지 한눈에 보입니다."
+        },
+        {
+          "kind": "code",
+          "code": "def add(total, n):\n    return total + n\n\ntotal = 0\ntotal = add(total, 3)\ntotal = add(total, 4)\nprint(total)\n",
+          "runnable": true,
+          "expected_output": "7\n"
+        },
+        {
+          "kind": "tip",
+          "md": "리스트·딕셔너리는 함수 안에서 `append` 등으로 **내용을 바꾸면** 바깥에도 반영됩니다(같은 객체를 가리키기 때문). 의도한 게 아니라면 새 리스트를 만들어 반환하세요. `global` 키워드도 있지만 코드가 복잡해져 권하지 않습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "원본을 바꾸지 않고 새 리스트를 만들어 반환하세요.",
+      "exercise_ids": [
+        "d24_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "잔액을 전역 변수로 바꾸지 말고, 함수의 반환값으로 갱신하세요.",
+      "exercise_ids": [
+        "d24_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "함수 안에서 저장한 변수는 지역 변수, 바깥 변수와 별개.",
+        "함수 안에서 바깥 변수에 `+=` 하면 `UnboundLocalError`.",
+        "데이터는 매개변수로 받고 `return`으로 돌려준다.",
+        "리스트·딕셔너리를 함수 안에서 수정하면 바깥에도 반영된다."
+      ],
+      "quiz": [
+        {
+          "id": "d24_summary_q1",
+          "question_md": "다음 코드의 출력은?\n```python\nn = 1\ndef f():\n    n = 2\nf()\nprint(n)\n```",
+          "choices": [
+            "1",
+            "2",
+            "None",
+            "오류"
+          ],
+          "answer_index": 0,
+          "explanation_md": "함수 안의 `n`은 지역 변수라 바깥 `n`은 그대로 1입니다."
+        },
+        {
+          "id": "d24_summary_q2",
+          "question_md": "다음 코드의 출력은?\n```python\ndef f(items):\n    items.append(9)\na = [1]\nf(a)\nprint(a)\n```",
+          "choices": [
+            "`[1]`",
+            "`[1, 9]`",
+            "`[9]`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "리스트 내용 변경은 바깥에도 반영됩니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d24_fill_1",
+      "kind": "fill_blank",
+      "title": "보너스 점수 (원본 유지)",
+      "prompt_md": "점수 리스트와 보너스를 받아, 각 점수에 보너스를 더한 **새 리스트**를 반환하세요. 원래 리스트는 바꾸지 않습니다.\n\n예: `with_bonus([80, 90], 5)` → `[85, 95]`",
+      "concepts": [
+        "scope",
+        "list"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def with_bonus(scores, bonus):\n    result = ____\n    for s in scores:\n        result.append(s ____ bonus)\n    return result\n",
+      "entry": {
+        "mode": "function",
+        "name": "with_bonus"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                80,
+                90
+              ],
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              85,
+              95
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [],
+              3
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                -1
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              -1
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "새 리스트는 비어 있는 상태에서 시작합니다.",
+        "각 점수에 보너스를 더하는 연산자를 쓰세요."
+      ],
+      "solution": "def with_bonus(scores, bonus):\n    result = []\n    for s in scores:\n        result.append(s + bonus)\n    return result\n"
+    },
+    {
+      "id": "d24_code_1",
+      "kind": "coding",
+      "title": "통장 거래",
+      "prompt_md": "첫째 줄에 거래 수 `n`, 다음 `n`줄에 `+5000`, `-2000`처럼 입금(+)/출금(-) 금액이 주어집니다. 잔액은 0원에서 시작합니다.\n\n- 출금 후 잔액이 음수가 되는 거래는 **거절**하고 잔액을 바꾸지 않습니다.\n- 함수 `apply(balance, amount)`를 만들어 **새 잔액과 성공 여부**를 반환하고, 그 반환값으로 잔액을 갱신하세요.\n\n**입력 예시**\n```\n4\n+5000\n-2000\n-4000\n+1000\n```\n**출력 예시**\n```\n잔액: 4,000원\n거절: 1건\n```",
+      "concepts": [
+        "scope",
+        "function",
+        "return",
+        "formatting"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def apply(balance, amount):\n    # 새 잔액과 성공 여부(True/False)를 반환하세요\n    pass\n\n\nn = int(input())\nbalance = 0\n# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "거절 1건 포함",
+          "stdin": "4\n+5000\n-2000\n-4000\n+1000\n",
+          "expect": {
+            "stdout": "잔액: 4,000원\n거절: 1건\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "1\n-100\n",
+          "expect": {
+            "stdout": "잔액: 0원\n거절: 1건\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "4\n+300000\n-1\n-299999\n-1\n",
+          "expect": {
+            "stdout": "잔액: 0원\n거절: 1건\n"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "stdin": "0\n",
+          "expect": {
+            "stdout": "잔액: 0원\n거절: 0건\n"
+          }
+        }
+      ],
+      "hints": [
+        "`int(\"+5000\")`과 `int(\"-2000\")`은 그대로 양수·음수 정수가 됩니다.",
+        "`apply` 안에서는 새 잔액이 음수인지 검사해 `return balance, False` 또는 `return 새잔액, True`를 돌려줍니다.",
+        "반복문에서 `balance, ok = apply(balance, amount)`로 받고, `ok`가 거짓이면 거절 횟수를 늘립니다."
+      ],
+      "solution": "def apply(balance, amount):\n    new_balance = balance + amount\n    if new_balance < 0:\n        return balance, False\n    return new_balance, True\n\n\nn = int(input())\nbalance = 0\nrejected = 0\nfor _ in range(n):\n    balance, ok = apply(balance, int(input()))\n    if not ok:\n        rejected += 1\nprint(f\"잔액: {balance:,}원\")\nprint(f\"거절: {rejected}건\")\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "return",
+          "fstring"
+        ]
+      }
+    }
+  ]
+}

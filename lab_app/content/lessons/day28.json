@@ -1,0 +1,468 @@
+{
+  "schema_version": 1,
+  "day": 28,
+  "title": "4주차 누적 복습",
+  "stage": "basics",
+  "week": 4,
+  "is_review": true,
+  "objectives": [
+    "함수 기법(기본값, 가변 인자, lambda, 재귀)과 모듈을 조합할 수 있다.",
+    "공동 순위 같은 정렬 문제를 해결할 수 있다."
+  ],
+  "concepts": [
+    "default_args",
+    "variadic_args",
+    "scope",
+    "lambda",
+    "recursion",
+    "module",
+    "sorting"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "| Day | 주제 | 핵심 |\n|---|---|---|\n| 22 | 기본값·키워드 인자 | `def f(a, b=1)`, `f(b=2, a=1)` |\n| 23 | 가변 인자 | `*args` 튜플, `**kwargs` 딕셔너리, `f(*리스트)` |\n| 24 | 변수 범위 | 지역 vs 전역, 반환값으로 주고받기 |\n| 25 | lambda·정렬 | `key=lambda p: (-p[1], p[0])` |\n| 26 | 재귀 | 종료 조건 + 더 작은 문제 |\n| 27 | 모듈 | `math`, `random`, `Counter`, `statistics` |",
+      "quiz": [
+        {
+          "id": "d28_review_q1",
+          "question_md": "`def f(*a, sep=\"-\"): return sep.join(a)`일 때 `f(\"x\", \"y\")`는?",
+          "choices": [
+            "`x y`",
+            "`x-y`",
+            "`xy`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`a`는 `(\"x\", \"y\")`이고 기본 구분자는 `-`입니다."
+        },
+        {
+          "id": "d28_review_q2",
+          "question_md": "`max([\"aa\", \"b\", \"ccc\"], key=len)`의 결과는?",
+          "choices": [
+            "`\"aa\"`",
+            "`\"b\"`",
+            "`\"ccc\"`",
+            "3"
+          ],
+          "answer_index": 2,
+          "explanation_md": "길이가 가장 긴 원소를 돌려줍니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "공동 순위 매기기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "시험 성적처럼 **동점자는 같은 순위**(1, 2, 2, 4…)를 주려면, 정렬한 뒤 \"앞 사람과 점수가 다를 때만 순위를 현재 위치로 바꾸는\" 방법을 씁니다."
+        },
+        {
+          "kind": "code",
+          "code": "rows = [(\"민준\", 85), (\"서연\", 92), (\"지호\", 85)]\nordered = sorted(rows, key=lambda r: (-r[1], r[0]))\nrank = 0\nprev = None\nfor i, (name, score) in enumerate(ordered, start=1):\n    if score != prev:\n        rank = i\n        prev = score\n    print(rank, name, score)\n",
+          "runnable": true,
+          "expected_output": "1 서연 92\n2 민준 85\n2 지호 85\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`enumerate(목록, start=1)`은 번호를 1부터 셉니다(Day 13). 위 코드는 정렬(lambda), 반복, 조건을 조합한 예입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "기본값 매개변수와 슬라이싱으로 페이지를 나눠 보세요.",
+      "exercise_ids": [
+        "d28_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제(재귀)는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d28_code_1",
+        "d28_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "4주차 마무리",
+      "points": [
+        "기본값·키워드 인자로 함수를 유연하게, `*args`로 개수 제한 없이.",
+        "데이터는 매개변수와 반환값으로 주고받는다.",
+        "정렬 기준은 `key=lambda`, 여러 기준은 튜플.",
+        "다음 주에는 예외 처리와 파일 입출력, 그리고 미니 프로젝트를 한다."
+      ],
+      "quiz": [
+        {
+          "id": "d28_summary_q1",
+          "question_md": "점수 [90, 80, 80, 70]의 공동 순위는?",
+          "choices": [
+            "1, 2, 3, 4",
+            "1, 2, 2, 3",
+            "1, 2, 2, 4",
+            "1, 1, 2, 3"
+          ],
+          "answer_index": 2,
+          "explanation_md": "동점은 같은 순위를 받고, 다음 순위는 사람 수만큼 건너뜁니다."
+        },
+        {
+          "id": "d28_summary_q2",
+          "question_md": "`import random as r` 후 올바른 호출은?",
+          "choices": [
+            "`random.randint(1, 3)`",
+            "`r.randint(1, 3)`",
+            "`randint(1, 3)`",
+            "`r(1, 3)`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "별명으로 불러왔으니 `r.`을 씁니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d28_fill_1",
+      "kind": "fill_blank",
+      "title": "페이지 나누기",
+      "prompt_md": "목록에서 `page`번째 쪽(1부터 시작)에 해당하는 항목들을 반환하세요. 한 쪽의 크기는 `size`이고 기본값은 3입니다.\n\n예: `paginate([1, 2, …, 10], 1)` → `[1, 2, 3]`, `paginate([1, 2, …, 10], 4)` → `[10]`",
+      "concepts": [
+        "default_args",
+        "list"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def paginate(items, page, size____):\n    start = (page - 1) * size\n    return items[start:start ____ size]\n",
+      "entry": {
+        "mode": "function",
+        "name": "paginate"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "1쪽",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              2,
+              3
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "마지막 쪽",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              10
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              2
+            ],
+            "kwargs": {
+              "size": 5
+            }
+          },
+          "expect": {
+            "return": [
+              6,
+              7,
+              8,
+              9,
+              10
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "a",
+                "b"
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [],
+              1
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        }
+      ],
+      "hints": [
+        "매개변수에 기본값 3을 주는 문법을 떠올려 보세요.",
+        "끝 위치는 시작 위치에서 한 쪽 크기만큼 더한 곳입니다."
+      ],
+      "solution": "def paginate(items, page, size=3):\n    start = (page - 1) * size\n    return items[start:start + size]\n"
+    },
+    {
+      "id": "d28_code_1",
+      "kind": "coding",
+      "title": "공동 순위표",
+      "prompt_md": "첫째 줄에 학생 수 `n`, 다음 `n`줄에 `이름 점수`가 주어집니다. 점수 높은 순(동점이면 이름 사전 순)으로 정렬해 `순위. 이름 점수` 형식으로 출력하세요. **동점자는 같은 순위**이고 다음 순위는 그만큼 건너뜁니다.\n\n**입력 예시**\n```\n4\n민준 85\n서연 92\n지호 85\n하나 70\n```\n**출력 예시**\n```\n1. 서연 92\n2. 민준 85\n2. 지호 85\n4. 하나 70\n```",
+      "concepts": [
+        "lambda",
+        "sorting",
+        "enumerate_zip",
+        "fstring"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "n = int(input())\nrows = []\n# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "동점 포함",
+          "stdin": "4\n민준 85\n서연 92\n지호 85\n하나 70\n",
+          "expect": {
+            "stdout": "1. 서연 92\n2. 민준 85\n2. 지호 85\n4. 하나 70\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "1\na 50\n",
+          "expect": {
+            "stdout": "1. a 50\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "3\nc 10\nb 10\na 10\n",
+          "expect": {
+            "stdout": "1. a 10\n1. b 10\n1. c 10\n"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "stdin": "5\nd 1\nc 2\nb 3\na 3\ne 2\n",
+          "expect": {
+            "stdout": "1. a 3\n1. b 3\n3. c 2\n3. e 2\n5. d 1\n"
+          }
+        }
+      ],
+      "hints": [
+        "각 줄을 `(이름, 정수 점수)` 튜플로 만들어 리스트에 모으세요.",
+        "정렬 key는 Day 25에서 배운 `(-점수, 이름)` 튜플입니다.",
+        "개념 설명의 공동 순위 코드처럼 앞 사람과 점수가 다를 때만 순위를 현재 번호로 바꿉니다."
+      ],
+      "solution": "n = int(input())\nrows = []\nfor _ in range(n):\n    name, score = input().split()\n    rows.append((name, int(score)))\nordered = sorted(rows, key=lambda r: (-r[1], r[0]))\nrank = 0\nprev = None\nfor i, (name, score) in enumerate(ordered, start=1):\n    if score != prev:\n        rank = i\n        prev = score\n    print(f\"{rank}. {name} {score}\")\n",
+      "checks": {
+        "required_syntax": [
+          "lambda",
+          "for"
+        ]
+      }
+    },
+    {
+      "id": "d28_code_2",
+      "kind": "coding",
+      "title": "[도전] 리스트 펼치기",
+      "prompt_md": "리스트가 몇 겹으로 중첩되어 있든 모든 원소를 순서대로 한 줄로 펼친 리스트를 **재귀**로 반환하세요.\n\n예: `flatten([1, [2, [3, 4]], 5])` → `[1, 2, 3, 4, 5]`\n\n원소가 리스트인지는 `isinstance(x, list)`로 확인할 수 있습니다.",
+      "concepts": [
+        "recursion",
+        "list"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "def flatten(items):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "flatten"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "중첩",
+          "call": {
+            "args": [
+              [
+                1,
+                [
+                  2,
+                  [
+                    3,
+                    4
+                  ]
+                ],
+                5
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "빈 리스트",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  []
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  "a",
+                  [
+                    "b"
+                  ]
+                ],
+                "c",
+                [
+                  [
+                    "d"
+                  ]
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "a",
+              "b",
+              "c",
+              "d"
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "결과 리스트를 만들고 원소를 하나씩 확인하세요.",
+        "원소가 리스트이면 그 원소를 다시 `flatten` 한 결과를 결과 리스트에 이어 붙입니다(`extend`).",
+        "리스트가 아니면 그대로 `append` 합니다."
+      ],
+      "solution": "def flatten(items):\n    result = []\n    for x in items:\n        if isinstance(x, list):\n            result.extend(flatten(x))\n        else:\n            result.append(x)\n    return result\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "for"
+        ]
+      }
+    }
+  ]
+}

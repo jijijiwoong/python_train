@@ -1,0 +1,331 @@
+{
+  "schema_version": 1,
+  "day": 16,
+  "title": "딕셔너리 순회와 개수 세기",
+  "stage": "basics",
+  "week": 3,
+  "is_review": false,
+  "objectives": [
+    "for문과 keys(), values(), items()로 딕셔너리를 순회할 수 있다.",
+    "딕셔너리로 개수를 세는 패턴을 쓸 수 있다."
+  ],
+  "concepts": [
+    "dict",
+    "dict_iteration",
+    "accumulation",
+    "for_loop"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `{키: 값}` 딕셔너리를 만들고 `get()`으로 안전하게 값을 꺼냈습니다.",
+      "quiz": [
+        {
+          "id": "d16_review_q1",
+          "question_md": "`d = {}` 다음 `d[\"a\"] = d.get(\"a\", 0) + 1`을 두 번 실행하면 `d[\"a\"]`는?",
+          "choices": [
+            "0",
+            "1",
+            "2",
+            "오류"
+          ],
+          "answer_index": 2,
+          "explanation_md": "처음엔 `get`이 0을 돌려줘 1이 되고, 두 번째엔 1 + 1 = 2가 됩니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "모든 항목 돌아보기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`for 키 in 딕셔너리:`는 **키**를 하나씩 꺼냅니다. 키와 값을 함께 쓰려면 `items()`를, 값만 필요하면 `values()`를 씁니다. 딕셔너리는 넣은 순서를 기억합니다."
+        },
+        {
+          "kind": "code",
+          "code": "prices = {\"김밥\": 3000, \"라면\": 4000}\nfor name in prices:\n    print(name)\nfor name, price in prices.items():\n    print(f\"{name}: {price}원\")\nprint(list(prices.keys()))\nprint(sum(prices.values()))\n",
+          "runnable": true,
+          "expected_output": "김밥\n라면\n김밥: 3000원\n라면: 4000원\n['김밥', '라면']\n7000\n"
+        },
+        {
+          "kind": "text",
+          "md": "**개수 세기 패턴**: 처음 보는 키는 0에서 시작하고, 볼 때마다 1씩 더합니다."
+        },
+        {
+          "kind": "code",
+          "code": "counts = {}\nfor ch in \"banana\":\n    counts[ch] = counts.get(ch, 0) + 1\nprint(counts)\n",
+          "runnable": true,
+          "expected_output": "{'b': 1, 'a': 3, 'n': 2}\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`for`로 돌고 있는 딕셔너리에 항목을 추가하거나 지우면 `RuntimeError`가 납니다. 바꿀 내용은 따로 모아 두었다가 반복이 끝난 뒤 적용하세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "개수 세기 패턴을 완성하세요.",
+      "exercise_ids": [
+        "d16_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "`items()`로 순회하며 가장 큰 값을 찾습니다. 동점 처리에 주의하세요.",
+      "exercise_ids": [
+        "d16_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`for k in d` → 키, `for k, v in d.items()` → 키와 값, `d.values()` → 값.",
+        "개수 세기: `counts[x] = counts.get(x, 0) + 1`.",
+        "딕셔너리는 넣은 순서대로 순회한다.",
+        "순회 중에는 딕셔너리에 항목을 추가·삭제하지 않는다."
+      ],
+      "quiz": [
+        {
+          "id": "d16_summary_q1",
+          "question_md": "`for x in {\"a\": 1, \"b\": 2}: print(x)`의 출력은?",
+          "choices": [
+            "1, 2",
+            "a, b",
+            "(a, 1), (b, 2)",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "딕셔너리를 그대로 순회하면 키가 나옵니다."
+        },
+        {
+          "id": "d16_summary_q2",
+          "question_md": "값의 합계를 구하는 코드는?",
+          "choices": [
+            "`sum(d)`",
+            "`sum(d.keys())`",
+            "`sum(d.values())`",
+            "`len(d)`"
+          ],
+          "answer_index": 2,
+          "explanation_md": "`values()`가 값들을 모아 줍니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d16_fill_1",
+      "kind": "fill_blank",
+      "title": "단어 개수 세기",
+      "prompt_md": "단어 리스트를 받아 단어별 등장 횟수를 담은 딕셔너리를 **반환**하세요.\n\n예: `count_words([\"a\", \"b\", \"a\"])` → `{\"a\": 2, \"b\": 1}`",
+      "concepts": [
+        "dict",
+        "accumulation"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def count_words(words):\n    counts = {}\n    for w in words:\n        counts[w] = counts.____(w, 0) ____ 1\n    return counts\n",
+      "entry": {
+        "mode": "function",
+        "name": "count_words"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                "a",
+                "b",
+                "a"
+              ]
+            ]
+          },
+          "expect": {
+            "return": {
+              "a": 2,
+              "b": 1
+            }
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": {}
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "파이썬",
+                "파이썬",
+                "파이썬"
+              ]
+            ]
+          },
+          "expect": {
+            "return": {
+              "파이썬": 3
+            }
+          }
+        }
+      ],
+      "hints": [
+        "처음 보는 단어는 몇에서 시작해야 할까요?",
+        "기존 개수에 1을 더하는 연산자를 쓰세요."
+      ],
+      "solution": "def count_words(words):\n    counts = {}\n    for w in words:\n        counts[w] = counts.get(w, 0) + 1\n    return counts\n"
+    },
+    {
+      "id": "d16_code_1",
+      "kind": "coding",
+      "title": "가장 많이 팔린 메뉴",
+      "prompt_md": "메뉴별 판매 수 딕셔너리 `sales`를 받아 **가장 많이 팔린 메뉴 이름**을 반환하세요.\n\n- 판매 수가 같으면 이름이 사전 순으로 앞서는 메뉴를 고릅니다 (예: `\"a\"`와 `\"b\"`가 동점이면 `\"a\"`).\n- 빈 딕셔너리면 `ValueError`를 발생시킵니다.\n- `for`문을 사용하세요.",
+      "concepts": [
+        "dict_iteration",
+        "condition",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def top_seller(sales):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "top_seller"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "가장 많이 팔린 메뉴",
+          "call": {
+            "args": [
+              {
+                "김밥": 5,
+                "라면": 9,
+                "떡볶이": 7
+              }
+            ]
+          },
+          "expect": {
+            "return": "라면"
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "동점",
+          "call": {
+            "args": [
+              {
+                "b": 3,
+                "a": 3
+              }
+            ]
+          },
+          "expect": {
+            "return": "a"
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "빈 딕셔너리",
+          "call": {
+            "args": [
+              {}
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "순대": 2
+              }
+            ]
+          },
+          "expect": {
+            "return": "순대"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "다": 1,
+                "가": 1,
+                "나": 1
+              }
+            ]
+          },
+          "expect": {
+            "return": "가"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "x": 0,
+                "y": 0
+              }
+            ]
+          },
+          "expect": {
+            "return": "x"
+          }
+        }
+      ],
+      "hints": [
+        "빈 딕셔너리를 먼저 처리하세요. 그다음 첫 항목을 임시 1등으로 정해 두고 나머지와 비교합니다.",
+        "더 많이 팔렸거나, 판매 수가 같으면서 이름이 더 앞서면 1등을 바꿉니다. 문자열도 `<`로 사전 순 비교가 됩니다.",
+        "`list(sales.items())`로 바꾸면 첫 항목을 꺼내기 쉽습니다."
+      ],
+      "solution": "def top_seller(sales):\n    if not sales:\n        raise ValueError(\"판매 기록이 없습니다\")\n    items = list(sales.items())\n    best_name, best_count = items[0]\n    for name, count in items[1:]:\n        if count > best_count or (count == best_count and name < best_name):\n            best_name, best_count = name, count\n    return best_name\n",
+      "checks": {
+        "required_syntax": [
+          "for",
+          "if"
+        ],
+        "max_lines": 12
+      }
+    }
+  ]
+}

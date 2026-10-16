@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "day": 21,
+  "title": "3주차 누적 복습",
+  "stage": "basics",
+  "week": 3,
+  "is_review": true,
+  "objectives": [
+    "딕셔너리·집합·문자열 처리를 조합해 데이터를 정리할 수 있다.",
+    "어떤 자료형이 문제에 알맞은지 고를 수 있다."
+  ],
+  "concepts": [
+    "dict",
+    "dict_iteration",
+    "nested_dict",
+    "set",
+    "string_parsing",
+    "formatting",
+    "function"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "| Day | 주제 | 핵심 |\n|---|---|---|\n| 15 | 딕셔너리 기초 | `d[키]`, `in`, `get(키, 기본값)` |\n| 16 | 순회와 세기 | `items()`, `counts.get(x, 0) + 1` |\n| 17 | 중첩과 그룹화 | `data[\"a\"][\"b\"]`, 키별 리스트 |\n| 18 | 집합 | 중복 제거, 합·교·차집합 |\n| 19 | 문자열 메서드 | `split`, `join`, `find`, `isdigit` |\n| 20 | 서식 | `{x:,}`, `{x:.1%}`, `{s:<6}`, `[::-1]` |\n\n**어떤 자료형을 쓸까?** 순서가 중요하면 리스트, 이름으로 찾으면 딕셔너리, 중복 없이 포함 여부만 보면 집합입니다.",
+      "quiz": [
+        {
+          "id": "d21_review_q1",
+          "question_md": "학생 이름으로 점수를 빠르게 찾고 싶다면 알맞은 자료형은?",
+          "choices": [
+            "리스트",
+            "튜플",
+            "딕셔너리",
+            "집합"
+          ],
+          "answer_index": 2,
+          "explanation_md": "이름(키)으로 값을 찾는 것이 딕셔너리의 역할입니다."
+        },
+        {
+          "id": "d21_review_q2",
+          "question_md": "방문한 페이지를 중복 없이 기록하고 방문 여부만 확인하려면?",
+          "choices": [
+            "리스트",
+            "딕셔너리",
+            "집합",
+            "문자열"
+          ],
+          "answer_index": 2,
+          "explanation_md": "중복 없는 모음 + 빠른 `in` 검사 → 집합."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "자료형 조합하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "실제 문제는 여러 자료형을 섞어 풉니다. 아래 예제는 문장을 단어로 나누고(문자열), 단어별 개수를 세고(딕셔너리), 서로 다른 단어 수를 셉니다(집합)."
+        },
+        {
+          "kind": "code",
+          "code": "sentence = \"the cat and the hat and the bat\"\nwords = sentence.split()\ncounts = {}\nfor w in words:\n    counts[w] = counts.get(w, 0) + 1\nprint(f\"단어 {len(words)}개, 종류 {len(set(words))}개\")\nfor w in sorted(counts):\n    print(f\"{w:<4}{counts[w]}\")\n",
+          "runnable": true,
+          "expected_output": "단어 8개, 종류 5개\nand 2\nbat 1\ncat 1\nhat 1\nthe 3\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`sorted(딕셔너리)`는 **키**를 정렬한 리스트를 돌려줍니다. 값 기준 정렬은 다음 주 `key=`와 `lambda`에서 배웁니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "글자 종류별 개수를 딕셔너리로 정리합니다.",
+      "exercise_ids": [
+        "d21_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d21_code_1",
+        "d21_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "3주차 마무리",
+      "points": [
+        "딕셔너리: 이름으로 찾기·세기·그룹화.",
+        "집합: 중복 제거와 포함 여부, 집합 연산.",
+        "문자열: `split`/`join`/`strip`으로 다듬고, f-string 서식으로 출력.",
+        "다음 주에는 함수를 더 유연하게 만드는 법과 모듈을 배운다."
+      ],
+      "quiz": [
+        {
+          "id": "d21_summary_q1",
+          "question_md": "`sorted({\"b\": 1, \"a\": 2})`의 결과는?",
+          "choices": [
+            "`[1, 2]`",
+            "`['a', 'b']`",
+            "`[('a', 2), ('b', 1)]`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "딕셔너리를 정렬하면 키 목록이 나옵니다."
+        },
+        {
+          "id": "d21_summary_q2",
+          "question_md": "`len(set(\"banana\"))`의 결과는?",
+          "choices": [
+            "6",
+            "3",
+            "2",
+            "1"
+          ],
+          "answer_index": 1,
+          "explanation_md": "b, a, n 세 글자만 남습니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d21_fill_1",
+      "kind": "fill_blank",
+      "title": "글자 종류 세기",
+      "prompt_md": "문자열을 받아 **문자**(letters), **숫자**(digits), **그 밖**(others)의 개수를 딕셔너리로 반환하세요. 한글도 문자입니다.\n\n예: `char_types(\"a1b2!\")` → `{\"letters\": 2, \"digits\": 2, \"others\": 1}`",
+      "concepts": [
+        "dict",
+        "string_method",
+        "condition"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def char_types(text):\n    counts = {\"letters\": 0, \"digits\": 0, \"others\": 0}\n    for ch in text:\n        if ch.____():\n            counts[\"letters\"] += 1\n        elif ch.____():\n            counts[\"digits\"] += 1\n        else:\n            counts[____] += 1\n    return counts\n",
+      "entry": {
+        "mode": "function",
+        "name": "char_types"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "섞인 문자열",
+          "call": {
+            "args": [
+              "a1b2!"
+            ]
+          },
+          "expect": {
+            "return": {
+              "letters": 2,
+              "digits": 2,
+              "others": 1
+            }
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              ""
+            ]
+          },
+          "expect": {
+            "return": {
+              "letters": 0,
+              "digits": 0,
+              "others": 0
+            }
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "한글·공백·점",
+          "call": {
+            "args": [
+              "파이썬 3.14"
+            ]
+          },
+          "expect": {
+            "return": {
+              "letters": 3,
+              "digits": 3,
+              "others": 2
+            }
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "12345"
+            ]
+          },
+          "expect": {
+            "return": {
+              "letters": 0,
+              "digits": 5,
+              "others": 0
+            }
+          }
+        }
+      ],
+      "hints": [
+        "Day 19에서 배운, 문자로만 되어 있는지·숫자로만 되어 있는지 검사하는 메서드를 떠올려 보세요.",
+        "마지막 빈칸은 딕셔너리의 키 이름(문자열)입니다."
+      ],
+      "solution": "def char_types(text):\n    counts = {\"letters\": 0, \"digits\": 0, \"others\": 0}\n    for ch in text:\n        if ch.isalpha():\n            counts[\"letters\"] += 1\n        elif ch.isdigit():\n            counts[\"digits\"] += 1\n        else:\n            counts[\"others\"] += 1\n    return counts\n"
+    },
+    {
+      "id": "d21_code_1",
+      "kind": "coding",
+      "title": "해시태그 정리",
+      "prompt_md": "해시태그가 공백으로 구분된 한 줄을 입력받습니다. `#`을 떼고 소문자로 바꾼 뒤 **중복을 없애고 사전 순으로 정렬**하여 출력하세요.\n\n**입력 예시**\n```\n#Python #AI #python #ai #데이터\n```\n**출력 예시**\n```\n태그 3개\nai, python, 데이터\n```",
+      "concepts": [
+        "set",
+        "string_parsing",
+        "string_method",
+        "fstring"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "line = input()\n# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "중복·대소문자",
+          "stdin": "#Python #AI #python #ai #데이터\n",
+          "expect": {
+            "stdout": "태그 3개\nai, python, 데이터\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "#solo\n",
+          "expect": {
+            "stdout": "태그 1개\nsolo\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "#B #a #b #A #c\n",
+          "expect": {
+            "stdout": "태그 3개\na, b, c\n"
+          }
+        }
+      ],
+      "hints": [
+        "`split()`으로 태그를 나누고, 각 태그에서 `#`을 떼는 방법을 생각해 보세요 (`lstrip(\"#\")`, `replace`, 슬라이싱 모두 가능).",
+        "중복 제거에는 집합이 좋습니다. 출력 전에 `sorted()`로 정렬하세요.",
+        "두 번째 줄은 `\", \".join(...)`으로 만들 수 있습니다."
+      ],
+      "solution": "line = input()\ntags = set()\nfor word in line.split():\n    tags.add(word.lstrip(\"#\").lower())\nordered = sorted(tags)\nprint(f\"태그 {len(ordered)}개\")\nprint(\", \".join(ordered))\n",
+      "checks": {
+        "required_syntax": [
+          "for"
+        ],
+        "max_lines": 10
+      }
+    },
+    {
+      "id": "d21_code_2",
+      "kind": "coding",
+      "title": "[도전] 애너그램 묶기",
+      "prompt_md": "단어 리스트를 받아, 글자 구성이 같은 단어(애너그램)끼리 묶은 **리스트의 리스트**를 반환하세요.\n\n- 2개 이상 묶인 그룹만 포함합니다.\n- 그룹 순서는 그 그룹의 첫 단어가 처음 등장한 순서, 그룹 안 단어도 등장 순서를 따릅니다.\n\n예: `[\"eat\", \"tea\", \"tan\", \"ate\", \"nat\", \"bat\"]` → `[[\"eat\", \"tea\", \"ate\"], [\"tan\", \"nat\"]]`",
+      "concepts": [
+        "dict",
+        "nested_dict",
+        "string",
+        "sorting"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "def group_anagrams(words):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "group_anagrams"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                "eat",
+                "tea",
+                "tan",
+                "ate",
+                "nat",
+                "bat"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "eat",
+                "tea",
+                "ate"
+              ],
+              [
+                "tan",
+                "nat"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "묶음 없음",
+          "call": {
+            "args": [
+              [
+                "abc"
+              ]
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "listen",
+                "silent",
+                "enlist",
+                "google"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "listen",
+                "silent",
+                "enlist"
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "애너그램끼리는 글자를 정렬하면 같아집니다. `\"\".join(sorted(word))`를 키로 써 보세요.",
+        "Day 17의 그룹화 패턴으로 키별 단어 리스트를 만듭니다.",
+        "마지막에 길이가 2 이상인 리스트만 골라 반환합니다."
+      ],
+      "solution": "def group_anagrams(words):\n    groups = {}\n    for w in words:\n        key = \"\".join(sorted(w))\n        if key not in groups:\n            groups[key] = []\n        groups[key].append(w)\n    result = []\n    for group in groups.values():\n        if len(group) > 1:\n            result.append(group)\n    return result\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "for"
+        ]
+      }
+    }
+  ]
+}

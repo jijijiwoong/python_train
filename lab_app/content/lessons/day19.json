@@ -1,0 +1,310 @@
+{
+  "schema_version": 1,
+  "day": 19,
+  "title": "문자열 메서드 심화",
+  "stage": "basics",
+  "week": 3,
+  "is_review": false,
+  "objectives": [
+    "split()과 join()으로 문자열을 나누고 합칠 수 있다.",
+    "find, startswith, isdigit 등으로 문자열을 검사할 수 있다."
+  ],
+  "concepts": [
+    "string_parsing",
+    "string_method",
+    "dict"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 집합으로 중복을 없애고 공통 원소를 찾았습니다.",
+      "quiz": [
+        {
+          "id": "d19_review_q1",
+          "question_md": "빈 집합을 만드는 코드는?",
+          "choices": [
+            "`{}`",
+            "`set()`",
+            "`[]`",
+            "`set[]`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`{}`는 빈 딕셔너리입니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "문자열 나누고 합치기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`split(구분자)`는 문자열을 잘라 **리스트**로, `구분자.join(리스트)`는 문자열 리스트를 하나로 이어 줍니다. `split()`에 아무것도 주지 않으면 공백(여러 칸 포함) 기준으로 나눕니다."
+        },
+        {
+          "kind": "code",
+          "code": "line = \"  홍길동, 25, 서울  \"\nparts = line.strip().split(\", \")\nprint(parts)\nname, age, city = parts\nprint(f\"{name}({age})\")\nprint(\"-\".join([\"2026\", \"10\", \"16\"]))\nprint(\"a  b   c\".split())\n",
+          "runnable": true,
+          "expected_output": "['홍길동', '25', '서울']\n홍길동(25)\n2026-10-16\n['a', 'b', 'c']\n"
+        },
+        {
+          "kind": "text",
+          "md": "검사용 메서드들입니다. `find()`는 위치를(없으면 -1), `startswith()`/`endswith()`는 시작·끝 여부를, `isdigit()`/`isalpha()`는 숫자·문자로만 되어 있는지 알려 줍니다."
+        },
+        {
+          "kind": "code",
+          "code": "s = \"Hello, Python\"\nprint(s.find(\"Py\"))\nprint(s.find(\"Java\"))\nprint(s.startswith(\"Hello\"))\nprint(s.endswith(\"!\"))\nprint(\"2026\".isdigit(), \"abc\".isalpha())\nprint(s.lower().count(\"o\"))\n",
+          "runnable": true,
+          "expected_output": "7\n-1\nTrue\nFalse\nTrue True\n2\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`join()`은 **문자열 리스트**만 이어 붙일 수 있습니다. 숫자가 섞여 있으면 `str()`로 먼저 바꿔야 합니다. `\", \".join([1, 2])`는 `TypeError`예요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "이름의 머리글자를 대문자로 모아 봅시다.",
+      "exercise_ids": [
+        "d19_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "`split()`과 `strip()`으로 설정 문자열을 딕셔너리로 바꿉니다.",
+      "exercise_ids": [
+        "d19_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`s.split(구분자)` → 리스트, `구분자.join(리스트)` → 문자열.",
+        "`split()`(인자 없음)은 여러 칸 공백도 한 번에 처리한다.",
+        "`find()`는 위치 또는 -1, `startswith()`·`endswith()`·`isdigit()`·`isalpha()`는 참/거짓.",
+        "`join()`할 리스트는 모두 문자열이어야 한다."
+      ],
+      "quiz": [
+        {
+          "id": "d19_summary_q1",
+          "question_md": "`\"a,b,,c\".split(\",\")`의 결과는?",
+          "choices": [
+            "`['a', 'b', 'c']`",
+            "`['a', 'b', '', 'c']`",
+            "`['a,b,,c']`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "쉼표 사이의 빈 문자열도 하나의 항목이 됩니다."
+        },
+        {
+          "id": "d19_summary_q2",
+          "question_md": "`\"\".join([\"P\", \"y\"])`의 결과는?",
+          "choices": [
+            "`\"P y\"`",
+            "`\"Py\"`",
+            "`[\"Py\"]`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "빈 문자열을 구분자로 쓰면 그대로 붙습니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d19_fill_1",
+      "kind": "fill_blank",
+      "title": "머리글자",
+      "prompt_md": "이름(영문, 공백으로 구분)을 받아 각 단어의 첫 글자를 대문자로 이어 붙여 **반환**하세요. 공백이 여러 칸일 수도 있습니다.\n\n예: `initials(\"kim min jun\")` → `\"KMJ\"`",
+      "concepts": [
+        "string_parsing",
+        "string_method"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def initials(name):\n    words = name.____()\n    result = \"\"\n    for w in words:\n        result += w[0].____()\n    return result\n",
+      "entry": {
+        "mode": "function",
+        "name": "initials"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "세 단어",
+          "call": {
+            "args": [
+              "kim min jun"
+            ]
+          },
+          "expect": {
+            "return": "KMJ"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "python"
+            ]
+          },
+          "expect": {
+            "return": "P"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "공백 여러 개",
+          "call": {
+            "args": [
+              "  lee   ha  na "
+            ]
+          },
+          "expect": {
+            "return": "LHN"
+          }
+        }
+      ],
+      "hints": [
+        "공백이 여러 칸이어도 단어만 골라내려면 `split`에 아무것도 넣지 않아야 합니다.",
+        "대문자로 바꾸는 문자열 메서드를 쓰세요."
+      ],
+      "solution": "def initials(name):\n    words = name.split()\n    result = \"\"\n    for w in words:\n        result += w[0].upper()\n    return result\n"
+    },
+    {
+      "id": "d19_code_1",
+      "kind": "coding",
+      "title": "설정 문자열 해석",
+      "prompt_md": "`\"키=값, 키=값\"` 형식의 문자열을 딕셔너리로 바꿔 **반환**하세요.\n\n- 항목은 쉼표(`,`)로, 키와 값은 `=`로 구분합니다. 키·값 앞뒤 공백은 제거합니다.\n- 빈 문자열이면 `{}`를 반환합니다.\n- `=`가 없는 항목이 있으면 `ValueError`를 발생시킵니다.\n\n예: `parse_settings(\"name=민준, age=20\")` → `{\"name\": \"민준\", \"age\": \"20\"}`",
+      "concepts": [
+        "string_parsing",
+        "dict",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def parse_settings(text):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "parse_settings"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "두 항목",
+          "call": {
+            "args": [
+              "name=민준, age=20"
+            ]
+          },
+          "expect": {
+            "return": {
+              "name": "민준",
+              "age": "20"
+            }
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "빈 문자열",
+          "call": {
+            "args": [
+              ""
+            ]
+          },
+          "expect": {
+            "return": {}
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "= 없음",
+          "call": {
+            "args": [
+              "name=민준, age"
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "city = 서울"
+            ]
+          },
+          "expect": {
+            "return": {
+              "city": "서울"
+            }
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "a=1,b=2,c=3"
+            ]
+          },
+          "expect": {
+            "return": {
+              "a": "1",
+              "b": "2",
+              "c": "3"
+            }
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "only"
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        }
+      ],
+      "hints": [
+        "빈 문자열(공백만 있는 경우 포함)을 먼저 처리하세요.",
+        "쉼표로 나눈 각 조각에 `=`가 있는지 `in`으로 확인하고, 없으면 예외를 발생시킵니다.",
+        "`조각.split(\"=\")`으로 키와 값을 나눈 뒤 각각 `strip()` 하세요."
+      ],
+      "solution": "def parse_settings(text):\n    if not text.strip():\n        return {}\n    result = {}\n    for part in text.split(\",\"):\n        if \"=\" not in part:\n            raise ValueError(f\"잘못된 항목: {part}\")\n        key, value = part.split(\"=\", 1)\n        result[key.strip()] = value.strip()\n    return result\n",
+      "checks": {
+        "required_syntax": [
+          "for",
+          "if"
+        ],
+        "max_lines": 12
+      }
+    }
+  ]
+}

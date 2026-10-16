@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "day": 18,
+  "title": "집합",
+  "stage": "basics",
+  "week": 3,
+  "is_review": false,
+  "objectives": [
+    "집합으로 중복을 없애고 포함 여부를 빠르게 확인할 수 있다.",
+    "합집합·교집합·차집합을 계산할 수 있다."
+  ],
+  "concepts": [
+    "set",
+    "list",
+    "function"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 딕셔너리 안에 리스트를 넣어 값을 그룹으로 묶었습니다.",
+      "quiz": [
+        {
+          "id": "d18_review_q1",
+          "question_md": "그룹화 패턴에서 키가 처음 나왔을 때 먼저 해야 할 일은?",
+          "choices": [
+            "키를 지운다",
+            "빈 리스트를 넣는다",
+            "`append`를 두 번 한다",
+            "아무것도 안 한다"
+          ],
+          "answer_index": 1,
+          "explanation_md": "빈 리스트가 있어야 그 뒤에 `append`할 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "중복 없는 모음",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**집합**(set)은 중복이 없고 순서가 없는 모음입니다. `set(리스트)`로 중복을 없앨 수 있고, `in` 검사가 매우 빠릅니다."
+        },
+        {
+          "kind": "code",
+          "code": "nums = [3, 1, 3, 2, 1]\nunique = set(nums)\nprint(len(unique))\nprint(2 in unique)\nunique.add(5)\nunique.discard(1)\nprint(sorted(unique))\n",
+          "runnable": true,
+          "expected_output": "3\nTrue\n[2, 3, 5]\n"
+        },
+        {
+          "kind": "text",
+          "md": "집합끼리는 `|`(합집합), `&`(교집합), `-`(차집합)으로 계산합니다."
+        },
+        {
+          "kind": "code",
+          "code": "a = {\"파이썬\", \"자바\", \"C\"}\nb = {\"파이썬\", \"고\"}\nprint(sorted(a | b))\nprint(sorted(a & b))\nprint(sorted(a - b))\n",
+          "runnable": true,
+          "expected_output": "['C', '고', '자바', '파이썬']\n['파이썬']\n['C', '자바']\n"
+        },
+        {
+          "kind": "tip",
+          "md": "집합에는 순서가 없어서 `s[0]`처럼 인덱스로 꺼낼 수 없고, 그대로 출력하면 실행할 때마다 순서가 달라질 수 있습니다. 결과를 보여 줄 때는 `sorted()`로 정렬하세요. 빈 집합은 `{}`가 아니라 `set()`입니다. `{}`는 빈 딕셔너리예요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "집합 연산으로 두 사람의 공통 친구를 찾습니다.",
+      "exercise_ids": [
+        "d18_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "집합을 \"이미 본 값\" 기록용으로 활용해 보세요.",
+      "exercise_ids": [
+        "d18_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`set(리스트)`로 중복 제거, `add()`·`discard()`로 추가·삭제.",
+        "`a | b` 합집합, `a & b` 교집합, `a - b` 차집합.",
+        "집합은 순서가 없다 → 출력할 때는 `sorted()`.",
+        "빈 집합은 `set()`, `{}`는 빈 딕셔너리."
+      ],
+      "quiz": [
+        {
+          "id": "d18_summary_q1",
+          "question_md": "`len(set([1, 1, 2, 2, 2]))`의 결과는?",
+          "choices": [
+            "5",
+            "3",
+            "2",
+            "1"
+          ],
+          "answer_index": 2,
+          "explanation_md": "중복이 제거되어 `{1, 2}`만 남습니다."
+        },
+        {
+          "id": "d18_summary_q2",
+          "question_md": "`{1, 2, 3} - {2, 3, 4}`의 결과는?",
+          "choices": [
+            "`{1}`",
+            "`{4}`",
+            "`{1, 4}`",
+            "`{2, 3}`"
+          ],
+          "answer_index": 0,
+          "explanation_md": "첫 번째 집합에만 있는 원소입니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d18_fill_1",
+      "kind": "fill_blank",
+      "title": "공통 친구",
+      "prompt_md": "두 사람의 친구 목록(리스트)을 받아 **둘 다 친구인 사람**을 사전 순으로 정렬한 리스트로 반환하세요.\n\n예: `common_friends([\"민준\", \"서연\"], [\"서연\", \"하나\"])` → `[\"서연\"]`",
+      "concepts": [
+        "set"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def common_friends(a, b):\n    return ____(set(a) ____ set(b))\n",
+      "entry": {
+        "mode": "function",
+        "name": "common_friends"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "공통 2명",
+          "call": {
+            "args": [
+              [
+                "민준",
+                "서연",
+                "지호"
+              ],
+              [
+                "지호",
+                "하나",
+                "민준"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "민준",
+              "지호"
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "a"
+              ],
+              [
+                "b"
+              ]
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [],
+              [
+                "a"
+              ]
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "c",
+                "a",
+                "b",
+                "a"
+              ],
+              [
+                "b",
+                "a",
+                "a"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "a",
+              "b"
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "두 집합 모두에 있는 원소를 구하는 연산자는 무엇인가요?",
+        "집합은 순서가 없으니 정렬된 리스트로 바꿔 주는 내장 함수가 필요합니다."
+      ],
+      "solution": "def common_friends(a, b):\n    return sorted(set(a) & set(b))\n"
+    },
+    {
+      "id": "d18_code_1",
+      "kind": "coding",
+      "title": "순서를 지키며 중복 제거",
+      "prompt_md": "리스트에서 중복을 없애되 **처음 나온 순서를 유지**한 새 리스트를 반환하세요.\n\n예: `unique_in_order([3, 1, 3, 2, 1])` → `[3, 1, 2]`\n\n`set(items)`만 쓰면 순서가 사라집니다. 이미 본 값을 집합에 기록해 보세요.",
+      "concepts": [
+        "set",
+        "list",
+        "for_loop"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def unique_in_order(items):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "unique_in_order"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "숫자",
+          "call": {
+            "args": [
+              [
+                3,
+                1,
+                3,
+                2,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              1,
+              2
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "문자열",
+          "call": {
+            "args": [
+              [
+                "b",
+                "a",
+                "b"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "b",
+              "a"
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                7,
+                7,
+                7
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              7
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                5,
+                4,
+                3,
+                2,
+                1,
+                5,
+                4
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              5,
+              4,
+              3,
+              2,
+              1
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "결과 리스트와 \"이미 본 값\"을 기록할 빈 집합을 준비하세요.",
+        "값이 처음 나왔을 때만 결과에 추가하고, 집합에도 기록합니다."
+      ],
+      "solution": "def unique_in_order(items):\n    seen = set()\n    result = []\n    for x in items:\n        if x not in seen:\n            seen.add(x)\n            result.append(x)\n    return result\n",
+      "checks": {
+        "required_syntax": [
+          "for"
+        ],
+        "max_lines": 10
+      }
+    }
+  ]
+}

@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "day": 32,
+  "title": "텍스트 데이터 처리",
+  "stage": "basics",
+  "week": 5,
+  "is_review": false,
+  "objectives": [
+    "쉼표로 구분된 데이터(CSV)를 읽어 리스트·딕셔너리로 바꿀 수 있다.",
+    "잘못된 행을 건너뛰며 집계할 수 있다."
+  ],
+  "concepts": [
+    "text_processing",
+    "string_parsing",
+    "dict",
+    "try_except"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `with open(...)`으로 파일을 쓰고 읽었습니다.",
+      "quiz": [
+        {
+          "id": "d32_review_q1",
+          "question_md": "파일에서 읽은 각 줄 끝의 `\\n`을 없애는 메서드는?",
+          "choices": [
+            "`split()`",
+            "`strip()`",
+            "`join()`",
+            "`lower()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`strip()`은 앞뒤 공백과 줄바꿈을 지웁니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "표 형태의 텍스트",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**CSV**는 한 줄이 한 행이고 값이 쉼표로 구분된 텍스트 형식입니다. 엑셀에서도 열 수 있어 데이터 분석의 출발점이 됩니다. 첫 줄은 보통 열 이름(헤더)입니다."
+        },
+        {
+          "kind": "code",
+          "code": "data = \"\"\"이름,국어,수학\n민준,90,80\n서연,85,95\"\"\"\nrows = data.split(\"\\n\")\nheader = rows[0].split(\",\")\nprint(header)\nfor row in rows[1:]:\n    name, kor, mat = row.split(\",\")\n    print(name, int(kor) + int(mat))\n",
+          "runnable": true,
+          "expected_output": "['이름', '국어', '수학']\n민준 170\n서연 180\n"
+        },
+        {
+          "kind": "text",
+          "md": "헤더와 값을 `zip()`으로 짝지으면 행 하나를 딕셔너리로 만들 수 있습니다. 표준 모듈 `csv`는 따옴표 안의 쉼표 같은 까다로운 경우까지 처리해 줍니다."
+        },
+        {
+          "kind": "code",
+          "code": "import csv\n\nwith open(\"scores.csv\", \"w\", encoding=\"utf-8\", newline=\"\") as f:\n    writer = csv.writer(f)\n    writer.writerow([\"이름\", \"점수\"])\n    writer.writerow([\"민준\", 90])\n\nwith open(\"scores.csv\", encoding=\"utf-8\", newline=\"\") as f:\n    for row in csv.DictReader(f):\n        print(row)\n",
+          "runnable": true,
+          "expected_output": "{'이름': '민준', '점수': '90'}\n"
+        },
+        {
+          "kind": "tip",
+          "md": "파일이나 입력에서 읽은 값은 **모두 문자열**입니다. 계산하려면 `int()`/`float()`로 바꾸고, 바꿀 수 없는 행은 `try/except`로 건너뛰세요. 실제 데이터에는 빈 칸, 오타, 열 개수가 다른 행이 흔합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "헤더와 한 행을 짝지어 딕셔너리로 만드세요.",
+      "exercise_ids": [
+        "d32_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "과목별 평균을 구하고, 잘못된 행은 건너뛴 뒤 개수를 보고합니다.",
+      "exercise_ids": [
+        "d32_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "CSV 한 줄 → `line.split(\",\")` → 값 리스트.",
+        "`dict(zip(헤더, 값들))`로 행을 딕셔너리로.",
+        "읽은 값은 문자열 → 숫자 변환 + `try/except`로 잘못된 행 처리.",
+        "`csv` 모듈의 `reader`/`DictReader`/`writer`를 쓰면 더 안전하다."
+      ],
+      "quiz": [
+        {
+          "id": "d32_summary_q1",
+          "question_md": "`dict(zip([\"a\", \"b\"], [1, 2]))`의 결과는?",
+          "choices": [
+            "`{'a': 1, 'b': 2}`",
+            "`[('a', 1), ('b', 2)]`",
+            "`{'a': 'b'}`",
+            "오류"
+          ],
+          "answer_index": 0,
+          "explanation_md": "`zip`이 짝지은 (키, 값)들로 딕셔너리를 만듭니다."
+        },
+        {
+          "id": "d32_summary_q2",
+          "question_md": "`\"민준,90\".split(\",\")[1]`의 자료형은?",
+          "choices": [
+            "`int`",
+            "`float`",
+            "`str`",
+            "`list`"
+          ],
+          "answer_index": 2,
+          "explanation_md": "나눈 결과는 문자열 리스트입니다. 숫자로 쓰려면 변환해야 합니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d32_fill_1",
+      "kind": "fill_blank",
+      "title": "행을 딕셔너리로",
+      "prompt_md": "열 이름 리스트 `header`와 CSV 한 줄 `line`을 받아 `{열 이름: 값}` 딕셔너리를 **반환**하세요.\n\n예: `to_record([\"이름\", \"나이\"], \"민준,20\")` → `{\"이름\": \"민준\", \"나이\": \"20\"}`",
+      "concepts": [
+        "text_processing",
+        "string_parsing",
+        "enumerate_zip"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def to_record(header, line):\n    values = line.____(\",\")\n    return dict(____(header, values))\n",
+      "entry": {
+        "mode": "function",
+        "name": "to_record"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                "이름",
+                "나이"
+              ],
+              "민준,20"
+            ]
+          },
+          "expect": {
+            "return": {
+              "이름": "민준",
+              "나이": "20"
+            }
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "a"
+              ],
+              "x"
+            ]
+          },
+          "expect": {
+            "return": {
+              "a": "x"
+            }
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "k",
+                "v",
+                "w"
+              ],
+              "1,,3"
+            ]
+          },
+          "expect": {
+            "return": {
+              "k": "1",
+              "v": "",
+              "w": "3"
+            }
+          }
+        }
+      ],
+      "hints": [
+        "문자열을 구분자로 나누는 메서드입니다.",
+        "두 리스트를 같은 위치끼리 짝지어 주는 내장 함수입니다 (Day 13)."
+      ],
+      "solution": "def to_record(header, line):\n    values = line.split(\",\")\n    return dict(zip(header, values))\n"
+    },
+    {
+      "id": "d32_code_1",
+      "kind": "coding",
+      "title": "과목별 평균",
+      "prompt_md": "첫째 줄에 데이터 행 수 `n`, 둘째 줄에 헤더 `이름,과목,점수`, 그다음 `n`줄에 데이터가 주어집니다.\n\n- 과목별 평균을 과목 이름 사전 순으로 `과목: 평균 85.0점 (2명)` 형식으로 출력합니다.\n- 값이 3개가 아니거나 점수가 정수가 아닌 행은 건너뛰고, 마지막에 `건너뛴 줄: k`를 출력합니다.\n\n**입력 예시**\n```\n5\n이름,과목,점수\n민준,국어,90\n서연,수학,85\n지호,국어,70\n하나,수학,abc\n잘못된줄\n```\n**출력 예시**\n```\n국어: 평균 80.0점 (2명)\n수학: 평균 85.0점 (1명)\n건너뛴 줄: 2\n```",
+      "concepts": [
+        "text_processing",
+        "dict",
+        "try_except",
+        "formatting"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "n = int(input())\nheader = input()\n# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "잘못된 행 포함",
+          "stdin": "5\n이름,과목,점수\n민준,국어,90\n서연,수학,85\n지호,국어,70\n하나,수학,abc\n잘못된줄\n",
+          "expect": {
+            "stdout": "국어: 평균 80.0점 (2명)\n수학: 평균 85.0점 (1명)\n건너뛴 줄: 2\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "1\n이름,과목,점수\na,영어,100\n",
+          "expect": {
+            "stdout": "영어: 평균 100.0점 (1명)\n건너뛴 줄: 0\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "5\n이름,과목,점수\na,x,1\nb,x,2\nc,y,3\nd,y,,\ne,y,4\n",
+          "expect": {
+            "stdout": "x: 평균 1.5점 (2명)\ny: 평균 3.5점 (2명)\n건너뛴 줄: 1\n"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "stdin": "0\n이름,과목,점수\n",
+          "expect": {
+            "stdout": "건너뛴 줄: 0\n"
+          }
+        }
+      ],
+      "hints": [
+        "과목 → 점수 리스트 딕셔너리(Day 17의 그룹화)와 건너뛴 줄 수를 준비하세요.",
+        "`split(\",\")` 결과의 길이 검사와 `int()` 변환을 `try` 안에 두고, 길이가 3이 아니면 직접 `raise ValueError`를 하면 처리가 한곳으로 모입니다.",
+        "출력할 때는 `sorted(딕셔너리)`로 과목을 정렬하고 평균을 `:.1f`로 맞춥니다."
+      ],
+      "solution": "n = int(input())\nheader = input()\ngroups = {}\nskipped = 0\nfor _ in range(n):\n    parts = input().split(\",\")\n    try:\n        if len(parts) != 3:\n            raise ValueError(\"열 개수 오류\")\n        name, subject, score = parts\n        score = int(score)\n    except ValueError:\n        skipped += 1\n        continue\n    if subject not in groups:\n        groups[subject] = []\n    groups[subject].append(score)\nfor subject in sorted(groups):\n    scores = groups[subject]\n    print(f\"{subject}: 평균 {sum(scores) / len(scores):.1f}점 ({len(scores)}명)\")\nprint(f\"건너뛴 줄: {skipped}\")\n",
+      "checks": {
+        "required_syntax": [
+          "try",
+          "for"
+        ]
+      }
+    }
+  ]
+}

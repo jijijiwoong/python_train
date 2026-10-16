@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "day": 17,
+  "title": "딕셔너리 활용: 중첩과 그룹화",
+  "stage": "basics",
+  "week": 3,
+  "is_review": false,
+  "objectives": [
+    "딕셔너리 안의 딕셔너리, 딕셔너리를 담은 리스트를 다룰 수 있다.",
+    "기준에 따라 값을 묶는 그룹화 패턴을 쓸 수 있다."
+  ],
+  "concepts": [
+    "dict",
+    "nested_dict",
+    "dict_iteration",
+    "list"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `items()`로 딕셔너리를 순회하고 개수를 세는 패턴을 연습했습니다.",
+      "quiz": [
+        {
+          "id": "d17_review_q1",
+          "question_md": "`for k, v in d.items():`에서 `v`는?",
+          "choices": [
+            "키",
+            "값",
+            "(키, 값) 튜플",
+            "인덱스"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`items()`는 (키, 값) 쌍을 주고, 이를 `k, v`로 나눠 받습니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "구조가 있는 데이터",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "딕셔너리의 값으로 리스트나 다른 딕셔너리를 넣을 수 있습니다. 대괄호를 이어 붙여 안쪽 값에 접근합니다."
+        },
+        {
+          "kind": "code",
+          "code": "student = {\"name\": \"민준\", \"scores\": {\"국어\": 90, \"수학\": 80}}\nprint(student[\"scores\"][\"수학\"])\nstudent[\"scores\"][\"영어\"] = 70\nprint(len(student[\"scores\"]))\n",
+          "runnable": true,
+          "expected_output": "80\n3\n"
+        },
+        {
+          "kind": "text",
+          "md": "실제 데이터는 **딕셔너리를 담은 리스트**인 경우가 많습니다. 표의 한 줄이 딕셔너리 하나라고 생각하면 됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "books = [\n    {\"title\": \"파이썬\", \"price\": 20000},\n    {\"title\": \"자료구조\", \"price\": 25000},\n]\ntotal = 0\nfor book in books:\n    total += book[\"price\"]\nprint(total)\nprint(books[1][\"title\"])\n",
+          "runnable": true,
+          "expected_output": "45000\n자료구조\n"
+        },
+        {
+          "kind": "text",
+          "md": "**그룹화 패턴**: 기준값을 키로, 해당하는 항목들의 리스트를 값으로 모읍니다."
+        },
+        {
+          "kind": "code",
+          "code": "words = [\"apple\", \"avocado\", \"banana\", \"blueberry\", \"cherry\"]\ngroups = {}\nfor w in words:\n    first = w[0]\n    if first not in groups:\n        groups[first] = []\n    groups[first].append(w)\nprint(groups)\n",
+          "runnable": true,
+          "expected_output": "{'a': ['apple', 'avocado'], 'b': ['banana', 'blueberry'], 'c': ['cherry']}\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`groups[first].append(w)`처럼 딕셔너리 안의 리스트는 꺼내서 바로 바꿀 수 있습니다. 키가 없을 때 먼저 빈 리스트를 넣어 주는 것을 잊지 마세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "딕셔너리를 담은 리스트에서 값을 꺼내 평균을 구합니다.",
+      "exercise_ids": [
+        "d17_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "그룹화 패턴으로 반별 명단을 만드세요.",
+      "exercise_ids": [
+        "d17_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "중첩 접근: `data[\"scores\"][\"수학\"]`.",
+        "표 형태 데이터는 딕셔너리의 리스트로 표현한다.",
+        "그룹화: 키가 없으면 빈 리스트를 만들고, 있으면 `append`.",
+        "딕셔너리 안의 리스트·딕셔너리는 꺼내서 바로 수정할 수 있다."
+      ],
+      "quiz": [
+        {
+          "id": "d17_summary_q1",
+          "question_md": "`d = {\"a\": [1, 2]}`에서 `d[\"a\"].append(3)` 후 `d`는?",
+          "choices": [
+            "`{'a': [1, 2]}`",
+            "`{'a': [1, 2, 3]}`",
+            "`{'a': 3}`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "딕셔너리 안의 리스트 자체가 바뀝니다."
+        },
+        {
+          "id": "d17_summary_q2",
+          "question_md": "`books[0][\"title\"]`이 뜻하는 것은?",
+          "choices": [
+            "첫 번째 책의 제목",
+            "제목 목록 전체",
+            "`title` 키의 개수",
+            "오류"
+          ],
+          "answer_index": 0,
+          "explanation_md": "`books[0]`이 첫 번째 딕셔너리이고, 거기서 `\"title\"` 값을 꺼냅니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d17_fill_1",
+      "kind": "fill_blank",
+      "title": "평균 점수",
+      "prompt_md": "`{\"name\": 이름, \"score\": 점수}` 딕셔너리들의 리스트를 받아 **평균 점수**를 반환하세요. (학생은 1명 이상)\n\n예: `[{\"name\": \"a\", \"score\": 80}, {\"name\": \"b\", \"score\": 90}]` → `85.0`",
+      "concepts": [
+        "nested_dict",
+        "accumulation"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def average_score(students):\n    total = 0\n    for s in students:\n        total += s[____]\n    return total / ____(students)\n",
+      "entry": {
+        "mode": "function",
+        "name": "average_score"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "두 명",
+          "call": {
+            "args": [
+              [
+                {
+                  "name": "a",
+                  "score": 80
+                },
+                {
+                  "name": "b",
+                  "score": 90
+                }
+              ]
+            ]
+          },
+          "expect": {
+            "return": 85.0
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                {
+                  "name": "c",
+                  "score": 77
+                }
+              ]
+            ]
+          },
+          "expect": {
+            "return": 77.0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                {
+                  "name": "x",
+                  "score": 70
+                },
+                {
+                  "name": "y",
+                  "score": 85
+                },
+                {
+                  "name": "z",
+                  "score": 91
+                }
+              ]
+            ]
+          },
+          "expect": {
+            "return": 82.0
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "각 학생 딕셔너리에서 점수가 저장된 키 이름은 무엇인가요?",
+        "학생 수를 세는 내장 함수를 쓰세요."
+      ],
+      "solution": "def average_score(students):\n    total = 0\n    for s in students:\n        total += s[\"score\"]\n    return total / len(students)\n"
+    },
+    {
+      "id": "d17_code_1",
+      "kind": "coding",
+      "title": "반별 명단",
+      "prompt_md": "학생 딕셔너리 리스트(`{\"name\": 이름, \"class\": 반}`)를 받아 **반 → 이름 리스트** 딕셔너리를 반환하세요. 이름은 입력 순서를 유지합니다.\n\n예: `[{\"name\": \"민준\", \"class\": \"A\"}, {\"name\": \"서연\", \"class\": \"B\"}, {\"name\": \"지호\", \"class\": \"A\"}]`\n→ `{\"A\": [\"민준\", \"지호\"], \"B\": [\"서연\"]}`",
+      "concepts": [
+        "nested_dict",
+        "dict",
+        "list"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def group_by_class(students):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "group_by_class"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "두 반",
+          "call": {
+            "args": [
+              [
+                {
+                  "name": "민준",
+                  "class": "A"
+                },
+                {
+                  "name": "서연",
+                  "class": "B"
+                },
+                {
+                  "name": "지호",
+                  "class": "A"
+                }
+              ]
+            ]
+          },
+          "expect": {
+            "return": {
+              "A": [
+                "민준",
+                "지호"
+              ],
+              "B": [
+                "서연"
+              ]
+            }
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "학생 없음",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": {}
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                {
+                  "name": "하나",
+                  "class": "C"
+                }
+              ]
+            ]
+          },
+          "expect": {
+            "return": {
+              "C": [
+                "하나"
+              ]
+            }
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                {
+                  "name": "가",
+                  "class": "B"
+                },
+                {
+                  "name": "나",
+                  "class": "A"
+                },
+                {
+                  "name": "다",
+                  "class": "B"
+                },
+                {
+                  "name": "라",
+                  "class": "B"
+                }
+              ]
+            ]
+          },
+          "expect": {
+            "return": {
+              "B": [
+                "가",
+                "다",
+                "라"
+              ],
+              "A": [
+                "나"
+              ]
+            }
+          }
+        }
+      ],
+      "hints": [
+        "결과 딕셔너리를 빈 `{}`로 시작하고 학생을 한 명씩 확인합니다.",
+        "그 학생의 반이 아직 키로 없으면 빈 리스트를 먼저 넣으세요.",
+        "그다음 해당 반의 리스트에 이름을 `append` 합니다."
+      ],
+      "solution": "def group_by_class(students):\n    groups = {}\n    for s in students:\n        key = s[\"class\"]\n        if key not in groups:\n            groups[key] = []\n        groups[key].append(s[\"name\"])\n    return groups\n",
+      "checks": {
+        "required_syntax": [
+          "for"
+        ],
+        "max_lines": 12
+      }
+    }
+  ]
+}

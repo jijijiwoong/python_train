@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "day": 35,
+  "title": "1단계 마무리 누적 복습",
+  "stage": "basics",
+  "week": 5,
+  "is_review": true,
+  "objectives": [
+    "1단계(Python 기초) 전체 문법을 조합해 작은 프로그램을 완성할 수 있다.",
+    "다음 단계(객체지향·데이터 분석)를 위한 기초를 점검할 수 있다."
+  ],
+  "concepts": [
+    "try_except",
+    "file_io",
+    "dict",
+    "function",
+    "recursion",
+    "text_processing",
+    "string_parsing"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "1단계 5주 돌아보기",
+      "content_md": "| 주차 | 주제 | 핵심 |\n|---|---|---|\n| 1 | 첫걸음 | 변수·자료형, 입출력, 조건문, 반복문, 함수 |\n| 2 | 리스트와 튜플 | 인덱싱·슬라이싱, 메서드, 정렬, `enumerate`/`zip` |\n| 3 | 딕셔너리·집합·문자열 | 개수 세기, 그룹화, 집합 연산, `split`/`join`, 서식 |\n| 4 | 함수 심화·모듈 | 기본값, `*args`, 범위, `lambda`, 재귀, `import` |\n| 5 | 예외·파일·프로젝트 | `try/except`, `raise`, `with open`, CSV, 미니 프로젝트 |\n\n1단계를 마치면 \"입력을 읽고, 자료구조로 정리하고, 결과를 출력하는\" 프로그램을 혼자 만들 수 있습니다.",
+      "quiz": [
+        {
+          "id": "d35_review_q1",
+          "question_md": "이름별 점수를 저장하고, 점수 높은 순으로 출력하려면 필요한 조합은?",
+          "choices": [
+            "리스트 + `while`",
+            "딕셔너리 + `sorted(..., key=lambda)`",
+            "집합 + `max`",
+            "튜플 + `split`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "이름 → 점수는 딕셔너리, 순서는 `key`를 준 정렬로."
+        },
+        {
+          "id": "d35_review_q2",
+          "question_md": "파일을 안전하게 열고 자동으로 닫는 문법은?",
+          "choices": [
+            "`try`",
+            "`with`",
+            "`def`",
+            "`import`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`with open(...) as f:`"
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "데이터를 파일에 저장하기: json",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "딕셔너리·리스트를 그대로 파일에 저장하고 다시 불러올 때는 표준 모듈 `json`을 씁니다. 2단계에서 다룰 데이터 분석에서도 자주 쓰는 형식입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import json\n\ncontacts = {\"민준\": \"010-1111-2222\", \"서연\": \"010-3333-4444\"}\nwith open(\"contacts.json\", \"w\", encoding=\"utf-8\") as f:\n    json.dump(contacts, f, ensure_ascii=False)\n\nwith open(\"contacts.json\", encoding=\"utf-8\") as f:\n    loaded = json.load(f)\nprint(loaded[\"서연\"])\nprint(len(loaded))\n",
+          "runnable": true,
+          "expected_output": "010-3333-4444\n2\n"
+        },
+        {
+          "kind": "tip",
+          "md": "1단계에서 가장 많이 쓴 패턴: **개수 세기**(`get(x, 0) + 1`), **그룹화**(키별 리스트), **여러 기준 정렬**(`key=lambda`), **입력 검증**(`try/except` + `raise`). 2단계에서는 이것들을 class로 묶고(객체지향), NumPy·pandas로 대량의 데이터를 다룹니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "숫자로 바꿀 수 있는 값만 골라 평균을 냅니다.",
+      "exercise_ids": [
+        "d35_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제(재귀 + 딕셔너리)는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d35_code_1",
+        "d35_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "1단계 마무리",
+      "points": [
+        "자료형 선택: 순서는 리스트, 이름으로 찾기는 딕셔너리, 중복 제거는 집합.",
+        "함수로 나누고, 잘못된 입력은 예외로 처리한다.",
+        "데이터는 `with open`과 `json`/CSV로 파일에 남길 수 있다.",
+        "다음 단계: 클래스와 객체지향, 그리고 NumPy·pandas 데이터 분석."
+      ],
+      "quiz": [
+        {
+          "id": "d35_summary_q1",
+          "question_md": "`json.load(f)`의 역할은?",
+          "choices": [
+            "딕셔너리를 파일에 저장",
+            "파일의 JSON을 파이썬 값으로 읽기",
+            "파일 삭제",
+            "문자열을 숫자로 변환"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`dump`는 저장, `load`는 불러오기입니다."
+        },
+        {
+          "id": "d35_summary_q2",
+          "question_md": "다음 중 1단계에서 배우지 **않은** 것은?",
+          "choices": [
+            "`try/except`",
+            "`lambda`",
+            "class 상속",
+            "재귀"
+          ],
+          "answer_index": 2,
+          "explanation_md": "class와 객체지향은 2단계 6주차에서 배웁니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d35_fill_1",
+      "kind": "fill_blank",
+      "title": "안전한 평균",
+      "prompt_md": "문자열 리스트에서 **실수로 바꿀 수 있는 값만** 골라 평균을 **반환**하세요. 바꿀 수 있는 값이 없으면 `0`을 반환합니다.\n\n예: `safe_average([\"1\", \"2\", \"x\"])` → `1.5`",
+      "concepts": [
+        "try_except",
+        "accumulation"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def safe_average(values):\n    total = 0\n    count = 0\n    for v in values:\n        ____:\n            total += float(v)\n            count += 1\n        except ____:\n            pass\n    if count == 0:\n        return 0\n    return total / count\n",
+      "entry": {
+        "mode": "function",
+        "name": "safe_average"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "문자 섞임",
+          "call": {
+            "args": [
+              [
+                "1",
+                "2",
+                "x"
+              ]
+            ]
+          },
+          "expect": {
+            "return": 1.5
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "빈 목록",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "a"
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "3.5",
+                "-1.5"
+              ]
+            ]
+          },
+          "expect": {
+            "return": 1.0
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "10"
+              ]
+            ]
+          },
+          "expect": {
+            "return": 10.0
+          }
+        }
+      ],
+      "hints": [
+        "변환이 실패할 수 있는 코드를 감싸는 키워드입니다.",
+        "`float(\"x\")`가 내는 오류의 종류를 쓰세요."
+      ],
+      "solution": "def safe_average(values):\n    total = 0\n    count = 0\n    for v in values:\n        try:\n            total += float(v)\n            count += 1\n        except ValueError:\n            pass\n    if count == 0:\n        return 0\n    return total / count\n"
+    },
+    {
+      "id": "d35_code_1",
+      "kind": "coding",
+      "title": "도서 대출 관리",
+      "prompt_md": "첫째 줄에 도서 목록(쉼표로 구분), 둘째 줄에 명령 수 `n`, 다음 `n`줄에 명령이 주어집니다. 처음에는 모든 책이 대출 가능합니다.\n\n| 명령 | 출력 |\n|---|---|\n| `대출 책이름` | `대출 완료: 책이름` / 목록에 없으면 `없는 책: 책이름` / 이미 빌려 갔으면 `이미 대출 중: 책이름` |\n| `반납 책이름` | `반납 완료: 책이름` / 빌려 간 책이 아니면 `대출 기록 없음: 책이름` |\n| `목록` | `대출 가능: 책1, 책2` (사전 순) / 하나도 없으면 `대출 가능: 없음` |\n| 그 밖 | `알 수 없는 명령: (그 줄)` |\n\n**입력 예시**\n```\n파이썬,자료구조,알고리즘\n8\n대출 파이썬\n대출 파이썬\n목록\n반납 자료구조\n대출 C언어\n반납 파이썬\n반납\n목록\n```\n**출력 예시**\n```\n대출 완료: 파이썬\n이미 대출 중: 파이썬\n대출 가능: 알고리즘, 자료구조\n대출 기록 없음: 자료구조\n없는 책: C언어\n반납 완료: 파이썬\n대출 기록 없음: \n대출 가능: 알고리즘, 자료구조, 파이썬\n```\n(`반납`처럼 책 이름 없이 온 명령은 빈 이름의 책으로 처리됩니다.)",
+      "concepts": [
+        "dict",
+        "string_parsing",
+        "function",
+        "condition"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "books = input().split(\",\")\nn = int(input())\n# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "여러 명령",
+          "stdin": "파이썬,자료구조,알고리즘\n8\n대출 파이썬\n대출 파이썬\n목록\n반납 자료구조\n대출 C언어\n반납 파이썬\n반납\n목록\n",
+          "expect": {
+            "stdout": "대출 완료: 파이썬\n이미 대출 중: 파이썬\n대출 가능: 알고리즘, 자료구조\n대출 기록 없음: 자료구조\n없는 책: C언어\n반납 완료: 파이썬\n대출 기록 없음: \n대출 가능: 알고리즘, 자료구조, 파이썬\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "책\n3\n목록\n대출 책\n목록\n",
+          "expect": {
+            "stdout": "대출 가능: 책\n대출 완료: 책\n대출 가능: 없음\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "a,b\n4\n삭제 a\n대출 b\n반납 b\n반납 b\n",
+          "expect": {
+            "stdout": "알 수 없는 명령: 삭제 a\n대출 완료: b\n반납 완료: b\n대출 기록 없음: b\n"
+          }
+        }
+      ],
+      "hints": [
+        "책 이름 → 대출 가능 여부(`True`/`False`) 딕셔너리로 상태를 관리하세요.",
+        "문자열의 `partition(\" \")` 메서드는 첫 공백을 기준으로 (앞부분, 공백, 뒷부분) 세 조각을 돌려줍니다. 공백이 없으면 뒷부분은 빈 문자열이에요.",
+        "`반납`의 \"빌려 간 책이 아님\"은 목록에 없거나 이미 대출 가능한 경우입니다. `get(title, True)`로 두 경우를 한 번에 확인할 수 있어요."
+      ],
+      "solution": "books = input().split(\",\")\nn = int(input())\navailable = {}\nfor book in books:\n    available[book] = True\nfor _ in range(n):\n    line = input()\n    cmd, _, title = line.partition(\" \")\n    if cmd == \"대출\":\n        if title not in available:\n            print(f\"없는 책: {title}\")\n        elif not available[title]:\n            print(f\"이미 대출 중: {title}\")\n        else:\n            available[title] = False\n            print(f\"대출 완료: {title}\")\n    elif cmd == \"반납\":\n        if available.get(title, True):\n            print(f\"대출 기록 없음: {title}\")\n        else:\n            available[title] = True\n            print(f\"반납 완료: {title}\")\n    elif cmd == \"목록\":\n        free = []\n        for book in sorted(available):\n            if available[book]:\n                free.append(book)\n        if free:\n            print(\"대출 가능: \" + \", \".join(free))\n        else:\n            print(\"대출 가능: 없음\")\n    else:\n        print(f\"알 수 없는 명령: {line}\")\n",
+      "checks": {
+        "required_syntax": [
+          "for",
+          "if"
+        ]
+      }
+    },
+    {
+      "id": "d35_code_2",
+      "kind": "coding",
+      "title": "[도전] 폴더 용량 계산",
+      "prompt_md": "폴더 구조가 딕셔너리로 주어집니다. 값이 정수이면 파일 크기, 딕셔너리이면 하위 폴더입니다. 전체 파일 크기의 합을 **재귀**로 반환하세요.\n\n예: `total_size({\"a.txt\": 10, \"docs\": {\"b.txt\": 5, \"img\": {\"c.png\": 20}}})` → `35`",
+      "concepts": [
+        "recursion",
+        "dict",
+        "dict_iteration"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "def total_size(folder):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "total_size"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3단계 폴더",
+          "call": {
+            "args": [
+              {
+                "a.txt": 10,
+                "docs": {
+                  "b.txt": 5,
+                  "img": {
+                    "c.png": 20
+                  }
+                }
+              }
+            ]
+          },
+          "expect": {
+            "return": 35
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "빈 폴더",
+          "call": {
+            "args": [
+              {}
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "x": {
+                  "y": {
+                    "z": {}
+                  }
+                }
+              }
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "f1": 1,
+                "f2": 2,
+                "d": {
+                  "f3": 3
+                }
+              }
+            ]
+          },
+          "expect": {
+            "return": 6
+          }
+        }
+      ],
+      "hints": [
+        "`folder.values()`를 하나씩 확인하세요.",
+        "값이 딕셔너리이면(`isinstance(값, dict)`) 그 하위 폴더의 `total_size`를 더하고, 아니면 값을 그대로 더합니다.",
+        "빈 폴더의 합은 0입니다. 종료 조건을 따로 쓰지 않아도 반복이 0번 돌면 0이 됩니다."
+      ],
+      "solution": "def total_size(folder):\n    total = 0\n    for value in folder.values():\n        if isinstance(value, dict):\n            total += total_size(value)\n        else:\n            total += value\n    return total\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "for"
+        ]
+      }
+    }
+  ]
+}

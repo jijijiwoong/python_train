@@ -8,11 +8,14 @@ from lab_app.core.grader import grade, verify_lesson
 REPO = ContentRepository()
 
 
-def test_weeks_one_and_two_are_complete_and_clean():
-    assert REPO.available_days == list(range(1, 15))
+def test_written_days_are_contiguous_and_clean():
+    """Days are written in order from Day 1 with a review every 7th day; adding a day needs no edit here."""
+    last = REPO.available_days[-1]
+    assert last >= 35, "stage 1 (Day 1-35) must stay complete"
+    assert REPO.available_days == list(range(1, last + 1))
     assert REPO.warnings == []
     assert REPO.curriculum.total_days == 168
-    assert [d.day for d in REPO.curriculum.days if d.is_review] == [7, 14]
+    assert [d.day for d in REPO.curriculum.days if d.is_review] == list(range(7, last + 1, 7))
     for lesson in REPO.lessons():
         assert lesson.required_exercise_ids, f"Day {lesson.day} has no required exercise"
 
@@ -63,13 +66,28 @@ def test_lesson_self_check(day):
                    "count = 0\nfor s in scores:\n    if s >= total / n:\n        count += 1\n"
                    'print(f"1등: {best_name} {best_score}")\nprint(f"평균: {total / n:.1f}")\nprint(f"평균 이상: {count}명")\n',
      ErrorType.WRONG_ANSWER),                                                     # best starts at 0: all-zero class
+    ("d15_code_1", "def add_stock(stock, item, count):\n    stock[item] = stock.get(item, 0) + count\n    return stock\n",
+     ErrorType.WRONG_EXCEPTION),                                                  # no count check
+    ("d16_code_1", "def top_seller(sales):\n    if not sales:\n        raise ValueError\n    best = None\n"
+                   "    for name, count in sales.items():\n        if best is None or count > sales[best]:\n"
+                   "            best = name\n    return best\n", ErrorType.WRONG_ANSWER),  # tie keeps first, not a-z
+    ("d18_code_1", "def unique_in_order(items):\n    return list(set(items))\n", ErrorType.WRONG_ANSWER),  # order lost
+    ("d26_code_1", "def sum_digits(n):\n    if n < 0:\n        raise ValueError\n    total = 0\n    while n:\n"
+                   "        total += n % 10\n        n //= 10\n    return total\n", ErrorType.STATIC_CHECK_FAILED),  # loop
+    ("d29_code_1", "n = int(input())\ntotal = 0\nfor _ in range(n):\n    total += int(input())\nprint(total)\n",
+     ErrorType.VALUE_ERROR),                                                      # no try/except
+    ("d31_code_1", "n = int(input())\nwith open('diary.txt', 'w', encoding='utf-8') as f:\n    for i in range(1, n + 1):\n"
+                   "        f.write(f'{i}. {input()}')\nwith open('diary.txt', encoding='utf-8') as f:\n"
+                   "    for line in f:\n        print(line.strip())\nprint(f'총 {n}줄 저장')\n",
+     ErrorType.WRONG_ANSWER),                                                     # forgot \n in write()
 ])
 def test_typical_mistakes(exercise_id, code, error_type):
     result = grade(REPO.exercise(exercise_id), code)
     assert result.error_type is error_type, [(t.test_id, t.error_type, t.message) for t in result.tests]
 
 
-@pytest.mark.parametrize("day, exercise_id", [(7, "d07_code_2"), (13, "d13_code_2"), (14, "d14_code_2")])
+@pytest.mark.parametrize("day, exercise_id", [(7, "d07_code_2"), (13, "d13_code_2"), (14, "d14_code_2"),
+                                              (21, "d21_code_2"), (28, "d28_code_2"), (35, "d35_code_2")])
 def test_optional_challenge_is_not_required(day, exercise_id):
     lesson = REPO.lesson(day)
     assert exercise_id not in lesson.required_exercise_ids

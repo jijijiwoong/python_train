@@ -133,7 +133,7 @@ lab_app/content/
 | `forbidden_calls` | `["eval", "exec", "sum"]` | error (예: 직접 누적 연습 문제에서 sum 금지) |
 | `max_lines` | `15` | warning |
 
-검사 이름 ↔ ast 노드 매핑은 `core/checks.py`에 둔다. 처음 버전에서 지원하는 이름: `for`, `while`, `if`, `def`, `return`, `fstring`, `import`, `list_comp`, `try`.
+검사 이름 ↔ ast 노드 매핑은 `core/checks.py`에 둔다. 처음 버전에서 지원하는 이름: `for`, `while`, `if`, `def`, `return`, `fstring`, `import`, `list_comp`, `try`, `lambda`, `with`(`lambda`·`with`는 Day 15–35 콘텐츠 작업에서 추가).
 
 ## 4. ID 규칙 요약
 | 대상 | 형식 | 예 |

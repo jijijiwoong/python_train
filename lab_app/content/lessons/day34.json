@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "day": 34,
+  "title": "미니 프로젝트 2: 가계부",
+  "stage": "basics",
+  "week": 5,
+  "is_review": false,
+  "objectives": [
+    "명령어를 해석해 상태(잔액, 항목별 합계)를 갱신하는 프로그램을 만들 수 있다.",
+    "잘못된 입력을 예외 처리로 걸러낼 수 있다."
+  ],
+  "concepts": [
+    "function",
+    "try_except",
+    "dict",
+    "formatting",
+    "string_parsing"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "프로젝트 준비",
+      "content_md": "오늘은 **명령어로 동작하는 가계부**를 만듭니다. 입력 한 줄이 명령 하나입니다.\n\n| 명령 | 동작 |\n|---|---|\n| `수입 항목 금액` | 잔액 증가 |\n| `지출 항목 금액` | 잔액 감소, 항목별 지출 합계 기록 |\n| `잔액` | 현재 잔액 출력 |\n| 그 밖 | `잘못된 입력: …` 출력 |",
+      "quiz": [
+        {
+          "id": "d34_review_q1",
+          "question_md": "`\"지출 식비 12000\".split()`의 결과는?",
+          "choices": [
+            "`['지출 식비 12000']`",
+            "`['지출', '식비', '12000']`",
+            "`['지출', '식비', 12000]`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "공백으로 나눈 **문자열** 세 개입니다. 금액은 `int()`로 바꿔야 합니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "명령 처리 구조",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "명령어 프로그램은 보통 **해석(parse) → 실행 → 출력**의 반복입니다. 해석 단계에서 형식이 틀리면 예외를 발생시키고, 반복문에서 그 예외를 잡아 안내 문구를 출력하면 구조가 깔끔해집니다."
+        },
+        {
+          "kind": "code",
+          "code": "def parse(line):\n    parts = line.split()\n    if len(parts) != 2:\n        raise ValueError(\"형식 오류\")\n    return parts[0], int(parts[1])\n\nfor line in [\"더하기 5\", \"빼기\", \"더하기 x\"]:\n    try:\n        cmd, n = parse(line)\n        print(\"실행:\", cmd, n)\n    except ValueError:\n        print(\"잘못된 입력:\", line)\n",
+          "runnable": true,
+          "expected_output": "실행: 더하기 5\n잘못된 입력: 빼기\n잘못된 입력: 더하기 x\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`int(\"x\")`도 `ValueError`를 내므로, 형식 오류와 숫자 오류를 `except ValueError` 하나로 함께 처리할 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "명령 한 줄을 해석하는 `parse_command()`를 완성하세요.",
+      "exercise_ids": [
+        "d34_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "가계부 전체를 완성합니다. `parse_command()`를 재사용하세요.",
+      "exercise_ids": [
+        "d34_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "명령 프로그램 = 해석 → 실행 → 출력의 반복.",
+        "해석 함수는 잘못된 형식에 예외를 발생시키고, 반복문에서 잡는다.",
+        "상태(잔액, 항목별 합계)는 변수와 딕셔너리로 관리한다.",
+        "출력 서식은 `{x:,}`로 통일한다."
+      ],
+      "quiz": [
+        {
+          "id": "d34_summary_q1",
+          "question_md": "`except ValueError`로 함께 잡을 수 있는 것은?",
+          "choices": [
+            "`int(\"x\")` 실패",
+            "없는 키 접근",
+            "0으로 나누기",
+            "없는 파일 열기"
+          ],
+          "answer_index": 0,
+          "explanation_md": "나머지는 각각 `KeyError`, `ZeroDivisionError`, `FileNotFoundError`입니다."
+        },
+        {
+          "id": "d34_summary_q2",
+          "question_md": "항목별 지출 합계를 저장하기 알맞은 자료형은?",
+          "choices": [
+            "리스트",
+            "집합",
+            "딕셔너리",
+            "튜플"
+          ],
+          "answer_index": 2,
+          "explanation_md": "항목 이름 → 합계."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d34_fill_1",
+      "kind": "fill_blank",
+      "title": "명령 해석",
+      "prompt_md": "`\"종류 항목 금액\"` 한 줄을 해석해 `(종류, 항목, 금액)` 튜플을 **반환**하세요. 금액은 정수입니다.\n\n- 단어가 3개가 아니거나, 종류가 `수입`/`지출`이 아니거나, 금액이 0 이하이면 `ValueError`\n- 금액이 정수가 아니면 `int()`가 `ValueError`를 냅니다.",
+      "concepts": [
+        "string_parsing",
+        "try_except",
+        "tuple"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def parse_command(line):\n    parts = line.split()\n    if len(parts) != 3:\n        ____ ValueError(\"형식이 올바르지 않습니다\")\n    kind, category, amount = parts\n    amount = ____(amount)\n    if kind not in (\"수입\", \"지출\") or amount <= 0:\n        raise ValueError(\"잘못된 값입니다\")\n    return kind, category, amount\n",
+      "entry": {
+        "mode": "function",
+        "name": "parse_command"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "정상",
+          "call": {
+            "args": [
+              "지출 식비 12000"
+            ]
+          },
+          "expect": {
+            "return": [
+              "지출",
+              "식비",
+              12000
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "단어 수",
+          "call": {
+            "args": [
+              "잔액"
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "수입 용돈 abc"
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "지출 식비 -5"
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "환불 식비 100"
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "수입 급여 1"
+            ]
+          },
+          "expect": {
+            "return": [
+              "수입",
+              "급여",
+              1
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "예외를 발생시키는 키워드입니다.",
+        "금액 문자열을 정수로 바꾸는 내장 함수입니다."
+      ],
+      "solution": "def parse_command(line):\n    parts = line.split()\n    if len(parts) != 3:\n        raise ValueError(\"형식이 올바르지 않습니다\")\n    kind, category, amount = parts\n    amount = int(amount)\n    if kind not in (\"수입\", \"지출\") or amount <= 0:\n        raise ValueError(\"잘못된 값입니다\")\n    return kind, category, amount\n"
+    },
+    {
+      "id": "d34_code_1",
+      "kind": "coding",
+      "title": "가계부",
+      "prompt_md": "첫째 줄에 명령 수 `n`, 다음 `n`줄에 명령이 주어집니다. 잔액은 0원에서 시작합니다(지출로 음수가 되어도 됩니다).\n\n- `잔액` → `잔액: 2,978,750원`\n- 해석할 수 없는 줄 → `잘못된 입력: (그 줄)`\n- 모든 명령 처리 후 `지출 내역`을 출력하고, 항목별 지출 합계를 많은 순(같으면 항목 이름 순)으로 `- 항목: 금액원` 형식으로 출력합니다. 지출이 없으면 `- 없음`.\n\n**입력 예시**\n```\n7\n수입 급여 3000000\n지출 식비 12000\n지출 교통 1250\n지출 식비 8000\n잔액\n지출 식비 -500\n외식 30000\n```\n**출력 예시**\n```\n잔액: 2,978,750원\n잘못된 입력: 지출 식비 -500\n잘못된 입력: 외식 30000\n지출 내역\n- 식비: 20,000원\n- 교통: 1,250원\n```",
+      "concepts": [
+        "function",
+        "try_except",
+        "dict",
+        "formatting",
+        "lambda"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "def parse_command(line):\n    # 빈칸 채우기에서 만든 함수를 활용하세요\n    pass\n\n\nn = int(input())\nbalance = 0\nspent = {}\n# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "여러 명령",
+          "stdin": "7\n수입 급여 3000000\n지출 식비 12000\n지출 교통 1250\n지출 식비 8000\n잔액\n지출 식비 -500\n외식 30000\n",
+          "expect": {
+            "stdout": "잔액: 2,978,750원\n잘못된 입력: 지출 식비 -500\n잘못된 입력: 외식 30000\n지출 내역\n- 식비: 20,000원\n- 교통: 1,250원\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "1\n잔액\n",
+          "expect": {
+            "stdout": "잔액: 0원\n지출 내역\n- 없음\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "5\n수입 용돈 abc\n지출 책 15000\n지출 카페 4500\n지출 책 15000\n잔액\n",
+          "expect": {
+            "stdout": "잘못된 입력: 수입 용돈 abc\n잔액: -34,500원\n지출 내역\n- 책: 30,000원\n- 카페: 4,500원\n"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "stdin": "3\n지출 a 10\n지출 b 10\n잔액\n",
+          "expect": {
+            "stdout": "잔액: -20원\n지출 내역\n- a: 10원\n- b: 10원\n"
+          }
+        }
+      ],
+      "hints": [
+        "반복문에서 먼저 `잔액` 명령인지 확인하고, 아니면 `parse_command()`를 `try`로 감싸 호출하세요.",
+        "지출이면 잔액을 줄이고 `spent[항목] = spent.get(항목, 0) + 금액`으로 기록합니다.",
+        "마지막 지출 내역은 `sorted(spent.items(), key=lambda kv: (-kv[1], kv[0]))`로 정렬합니다."
+      ],
+      "solution": "def parse_command(line):\n    parts = line.split()\n    if len(parts) != 3:\n        raise ValueError(\"형식이 올바르지 않습니다\")\n    kind, category, amount = parts\n    amount = int(amount)\n    if kind not in (\"수입\", \"지출\") or amount <= 0:\n        raise ValueError(\"잘못된 값입니다\")\n    return kind, category, amount\n\n\nn = int(input())\nbalance = 0\nspent = {}\nfor _ in range(n):\n    line = input()\n    if line.strip() == \"잔액\":\n        print(f\"잔액: {balance:,}원\")\n        continue\n    try:\n        kind, category, amount = parse_command(line)\n    except ValueError:\n        print(f\"잘못된 입력: {line}\")\n        continue\n    if kind == \"수입\":\n        balance += amount\n    else:\n        balance -= amount\n        spent[category] = spent.get(category, 0) + amount\nprint(\"지출 내역\")\nif not spent:\n    print(\"- 없음\")\nfor category, amount in sorted(spent.items(), key=lambda kv: (-kv[1], kv[0])):\n    print(f\"- {category}: {amount:,}원\")\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "try",
+          "for"
+        ]
+      }
+    }
+  ]
+}

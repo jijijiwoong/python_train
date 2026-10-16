@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "day": 20,
+  "title": "문자열 서식과 문자 다루기",
+  "stage": "basics",
+  "week": 3,
+  "is_review": false,
+  "objectives": [
+    "f-string 서식으로 천 단위 쉼표, 백분율, 정렬, 자릿수를 맞출 수 있다.",
+    "문자열을 뒤집고 글자 단위로 검사할 수 있다."
+  ],
+  "concepts": [
+    "formatting",
+    "fstring",
+    "string",
+    "string_method"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `split()`/`join()`으로 문자열을 나누고 합쳤습니다.",
+      "quiz": [
+        {
+          "id": "d20_review_q1",
+          "question_md": "`\" \".join([\"a\", \"b\", \"c\"])`의 결과는?",
+          "choices": [
+            "`abc`",
+            "`a b c`",
+            "`a,b,c`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "공백 한 칸을 구분자로 이어 붙입니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "보기 좋게 출력하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "f-string의 `{값:서식}`으로 출력 모양을 정합니다. `,`는 천 단위 쉼표, `.1%`는 백분율, `<6`/`>6`은 6칸 왼쪽/오른쪽 정렬, `03d`는 3자리 0 채우기입니다."
+        },
+        {
+          "kind": "code",
+          "code": "price = 1234567\nprint(f\"{price:,}원\")\nratio = 0.4567\nprint(f\"{ratio:.1%}\")\nprint(f\"[{'왼쪽':<6}]\")\nprint(f\"[{'오른쪽':>6}]\")\nprint(f\"[{7:03d}]\")\n",
+          "runnable": true,
+          "expected_output": "1,234,567원\n45.7%\n[왼쪽    ]\n[   오른쪽]\n[007]\n"
+        },
+        {
+          "kind": "text",
+          "md": "`[::-1]`은 문자열을 뒤집습니다. `for ch in 문자열`로 한 글자씩 검사할 수도 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "word = \"level\"\nprint(word[::-1])\nprint(word == word[::-1])\ndigits = \"\"\nfor ch in \"a1b2c3\":\n    if ch.isdigit():\n        digits += ch\nprint(digits)\n",
+          "runnable": true,
+          "expected_output": "level\nTrue\n123\n"
+        },
+        {
+          "kind": "tip",
+          "md": "정렬 폭은 **글자 수** 기준입니다. 한글은 화면에서 영문보다 넓게 보여서 칸이 딱 맞지 않을 수 있습니다. 채점은 글자 그대로 비교하니 걱정하지 마세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "공백과 대소문자를 무시하는 회문 검사기를 완성하세요.",
+      "exercise_ids": [
+        "d20_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "입력을 읽어 서식이 있는 영수증을 출력합니다.",
+      "exercise_ids": [
+        "d20_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`{x:,}` 천 단위 쉼표, `{x:.1%}` 백분율, `{x:.2f}` 소수 둘째 자리.",
+        "`{s:<6}` 왼쪽 정렬, `{s:>6}` 오른쪽 정렬, `{n:03d}` 0 채우기.",
+        "`s[::-1]`로 뒤집기, `for ch in s`로 글자 단위 검사.",
+        "서식 결과는 문자열이다."
+      ],
+      "quiz": [
+        {
+          "id": "d20_summary_q1",
+          "question_md": "`f\"{25000:,}\"`의 결과는?",
+          "choices": [
+            "`25000`",
+            "`25,000`",
+            "`25.000`",
+            "`2,5000`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "세 자리마다 쉼표가 들어갑니다."
+        },
+        {
+          "id": "d20_summary_q2",
+          "question_md": "`\"abc\"[::-1]`의 결과는?",
+          "choices": [
+            "`abc`",
+            "`cba`",
+            "`c`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "간격 -1로 끝에서부터 읽습니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d20_fill_1",
+      "kind": "fill_blank",
+      "title": "회문 검사",
+      "prompt_md": "문장이 앞뒤로 같게 읽히는지(회문) **반환**하세요. 공백은 무시하고 대소문자는 구분하지 않습니다.\n\n예: `is_palindrome(\"Level\")` → `True`, `is_palindrome(\"Never odd or even\")` → `True`",
+      "concepts": [
+        "string",
+        "string_method"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def is_palindrome(text):\n    cleaned = text.replace(\" \", \"\").____()\n    return cleaned == cleaned[____]\n",
+      "entry": {
+        "mode": "function",
+        "name": "is_palindrome"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "대소문자",
+          "call": {
+            "args": [
+              "Level"
+            ]
+          },
+          "expect": {
+            "return": true
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "회문 아님",
+          "call": {
+            "args": [
+              "abc"
+            ]
+          },
+          "expect": {
+            "return": false
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "Never odd or even"
+            ]
+          },
+          "expect": {
+            "return": true
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              ""
+            ]
+          },
+          "expect": {
+            "return": true
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "ab a"
+            ]
+          },
+          "expect": {
+            "return": true
+          }
+        }
+      ],
+      "hints": [
+        "대소문자를 무시하려면 모두 한쪽(소문자 등)으로 맞추면 됩니다.",
+        "문자열을 뒤집는 슬라이싱을 떠올려 보세요."
+      ],
+      "solution": "def is_palindrome(text):\n    cleaned = text.replace(\" \", \"\").lower()\n    return cleaned == cleaned[::-1]\n"
+    },
+    {
+      "id": "d20_code_1",
+      "kind": "coding",
+      "title": "영수증 출력",
+      "prompt_md": "첫째 줄에 품목 수 `n`, 다음 `n`줄에 `이름 가격 수량`이 공백으로 구분되어 주어집니다. 아래 형식으로 출력하세요.\n\n**입력 예시**\n```\n2\n커피 4500 2\n케이크 6000 1\n```\n**출력 예시**\n```\n커피 x2 = 9,000원\n케이크 x1 = 6,000원\n합계: 15,000원\n```\n\n금액에는 천 단위 쉼표를 넣고, f-string을 사용하세요.",
+      "concepts": [
+        "formatting",
+        "fstring",
+        "string_parsing",
+        "accumulation"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "n = int(input())\n# 여기에 코드를 작성하세요\n",
+      "entry": {
+        "mode": "program"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2개 품목",
+          "stdin": "2\n커피 4500 2\n케이크 6000 1\n",
+          "expect": {
+            "stdout": "커피 x2 = 9,000원\n케이크 x1 = 6,000원\n합계: 15,000원\n"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "stdin": "1\n물 1000 1\n",
+          "expect": {
+            "stdout": "물 x1 = 1,000원\n합계: 1,000원\n"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "stdin": "3\n빵 2500 4\n우유 1800 2\n잼 12000 1\n",
+          "expect": {
+            "stdout": "빵 x4 = 10,000원\n우유 x2 = 3,600원\n잼 x1 = 12,000원\n합계: 25,600원\n"
+          }
+        }
+      ],
+      "hints": [
+        "한 줄을 `split()`으로 나누면 이름·가격·수량 세 조각이 됩니다. 가격과 수량은 정수로 바꿔야 해요.",
+        "합계를 담을 변수를 반복 전에 0으로 준비하세요.",
+        "천 단위 쉼표 서식은 `{값:,}` 입니다."
+      ],
+      "solution": "n = int(input())\ntotal = 0\nfor _ in range(n):\n    name, price, qty = input().split()\n    amount = int(price) * int(qty)\n    total += amount\n    print(f\"{name} x{qty} = {amount:,}원\")\nprint(f\"합계: {total:,}원\")\n",
+      "checks": {
+        "required_syntax": [
+          "for",
+          "fstring"
+        ],
+        "max_lines": 10
+      }
+    }
+  ]
+}

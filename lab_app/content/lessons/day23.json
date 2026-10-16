@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "day": 23,
+  "title": "가변 인자와 여러 값 반환",
+  "stage": "basics",
+  "week": 4,
+  "is_review": false,
+  "objectives": [
+    "*args로 개수가 정해지지 않은 인자를 받을 수 있다.",
+    "**kwargs와 인자 풀기(*리스트)를 이해하고 여러 값을 반환할 수 있다."
+  ],
+  "concepts": [
+    "variadic_args",
+    "tuple",
+    "unpacking",
+    "function"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 기본값과 키워드 인자로 함수를 유연하게 만들었습니다.",
+      "quiz": [
+        {
+          "id": "d23_review_q1",
+          "question_md": "`def f(a, b=1): return a + b`일 때 `f(b=5, a=2)`는?",
+          "choices": [
+            "3",
+            "6",
+            "7",
+            "오류"
+          ],
+          "answer_index": 2,
+          "explanation_md": "키워드 인자는 순서와 상관없이 이름으로 전달됩니다. 2 + 5 = 7."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "개수가 정해지지 않은 인자",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "매개변수 앞에 `*`를 붙이면 넘어온 위치 인자를 모두 **튜플**로 모아 받습니다. 관례적으로 `*args`라고 씁니다."
+        },
+        {
+          "kind": "code",
+          "code": "def total(*numbers):\n    print(numbers)\n    return sum(numbers)\n\nprint(total(1, 2, 3))\nprint(total())\n",
+          "runnable": true,
+          "expected_output": "(1, 2, 3)\n6\n()\n0\n"
+        },
+        {
+          "kind": "text",
+          "md": "`**`를 붙이면 키워드 인자를 **딕셔너리**로 모아 받습니다(`**kwargs`). 반대로 호출할 때 `*리스트`를 쓰면 리스트를 낱개 인자로 풀어서 넘깁니다."
+        },
+        {
+          "kind": "code",
+          "code": "def profile(name, **info):\n    print(name, info)\n\nprofile(\"민준\", age=20, city=\"서울\")\n\ndef min_max(*values):\n    return min(values), max(values)\n\nnums = [4, 9, 1]\nlow, high = min_max(*nums)\nprint(low, high)\n",
+          "runnable": true,
+          "expected_output": "민준 {'age': 20, 'city': '서울'}\n1 9\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`return a, b`는 튜플 `(a, b)` 하나를 돌려주는 것이고, 받는 쪽에서 `x, y = 함수()`로 나눠 받습니다(Day 12의 언패킹)."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "몇 개든 받을 수 있는 평균 함수를 완성하세요.",
+      "exercise_ids": [
+        "d23_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "가변 인자로 받고, 여러 값을 한 번에 돌려줍니다.",
+      "exercise_ids": [
+        "d23_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`def f(*args)`: 위치 인자를 튜플로 모은다.",
+        "`def f(**kwargs)`: 키워드 인자를 딕셔너리로 모은다.",
+        "호출할 때 `f(*리스트)`는 리스트를 풀어서 전달한다.",
+        "`return a, b`는 튜플을 돌려주고 `x, y = f()`로 받는다."
+      ],
+      "quiz": [
+        {
+          "id": "d23_summary_q1",
+          "question_md": "`def f(*a): return len(a)`일 때 `f(1, 2, 3)`은?",
+          "choices": [
+            "1",
+            "3",
+            "6",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`a`는 `(1, 2, 3)` 튜플입니다."
+        },
+        {
+          "id": "d23_summary_q2",
+          "question_md": "`def g(**k): return k`일 때 `g(x=1)`의 결과는?",
+          "choices": [
+            "`(1,)`",
+            "`{'x': 1}`",
+            "`['x']`",
+            "`1`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "키워드 인자가 딕셔너리로 모입니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d23_fill_1",
+      "kind": "fill_blank",
+      "title": "몇 개든 평균",
+      "prompt_md": "점수를 몇 개든 받아 평균을 **반환**하세요. 아무것도 받지 않으면 `0`을 반환합니다.\n\n예: `average(80, 90)` → `85.0`, `average()` → `0`",
+      "concepts": [
+        "variadic_args"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def average(____scores):\n    if len(scores) == 0:\n        return 0\n    return sum(scores) / ____(scores)\n",
+      "entry": {
+        "mode": "function",
+        "name": "average"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "두 점수",
+          "call": {
+            "args": [
+              80,
+              90
+            ]
+          },
+          "expect": {
+            "return": 85.0
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "인자 없음",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              100
+            ]
+          },
+          "expect": {
+            "return": 100.0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              70,
+              80,
+              95
+            ]
+          },
+          "expect": {
+            "return": 81.66666666666667
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "인자를 튜플로 모아 받으려면 매개변수 앞에 기호 하나를 붙입니다.",
+        "개수를 세는 내장 함수로 나누면 평균입니다."
+      ],
+      "solution": "def average(*scores):\n    if len(scores) == 0:\n        return 0\n    return sum(scores) / len(scores)\n"
+    },
+    {
+      "id": "d23_code_1",
+      "kind": "coding",
+      "title": "개수·합계·평균 한 번에",
+      "prompt_md": "숫자를 몇 개든 받아 **(개수, 합계, 평균)** 세 값을 반환하는 `stats(*nums)`를 작성하세요. 숫자가 하나도 없으면 `ValueError`를 발생시킵니다.\n\n예: `count, total, avg = stats(1, 2, 3)` → `3, 6, 2.0`",
+      "concepts": [
+        "variadic_args",
+        "tuple",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def stats(nums):\n    # 매개변수를 고치고 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "stats"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "세 수",
+          "call": {
+            "args": [
+              1,
+              2,
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              6,
+              2.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "한 수",
+          "call": {
+            "args": [
+              10
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              10,
+              10.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "인자 없음",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2.5,
+              3.5
+            ]
+          },
+          "expect": {
+            "return": [
+              2,
+              6.0,
+              3.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              -4,
+              4,
+              0,
+              8
+            ]
+          },
+          "expect": {
+            "return": [
+              4,
+              8,
+              2.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "매개변수를 가변 인자로 바꾸세요.",
+        "빈 튜플인지 먼저 확인합니다.",
+        "`return 개수, 합계, 평균`처럼 쉼표로 이어 쓰면 세 값을 한 번에 돌려줍니다."
+      ],
+      "solution": "def stats(*nums):\n    if not nums:\n        raise ValueError(\"숫자가 하나 이상 필요합니다\")\n    total = sum(nums)\n    return len(nums), total, total / len(nums)\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "return"
+        ],
+        "max_lines": 8
+      }
+    }
+  ]
+}

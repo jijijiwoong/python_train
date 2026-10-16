@@ -1,0 +1,380 @@
+{
+  "schema_version": 1,
+  "day": 30,
+  "title": "예외 발생시키기와 전달",
+  "stage": "basics",
+  "week": 5,
+  "is_review": false,
+  "objectives": [
+    "raise로 의미 있는 메시지와 함께 예외를 발생시킬 수 있다.",
+    "함수에서 발생한 예외를 호출한 쪽에서 처리할 수 있다."
+  ],
+  "concepts": [
+    "custom_exception",
+    "try_except",
+    "exception",
+    "dict"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `try/except`로 오류를 잡아 프로그램이 멈추지 않게 했습니다.",
+      "quiz": [
+        {
+          "id": "d30_review_q1",
+          "question_md": "`except ValueError as e:`에서 `e`에 담기는 것은?",
+          "choices": [
+            "오류 줄 번호",
+            "오류 객체(메시지 포함)",
+            "`True`",
+            "변수 이름"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`print(e)`로 메시지를 볼 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "문제를 알리고, 위에서 처리하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "함수가 처리할 수 없는 상황에서는 `raise`로 예외를 발생시켜 **호출한 쪽**에 알립니다. 예외는 `try`를 만날 때까지 호출한 함수들을 거슬러 올라갑니다."
+        },
+        {
+          "kind": "code",
+          "code": "def withdraw(balance, amount):\n    if amount > balance:\n        raise ValueError(\"잔액이 부족합니다\")\n    return balance - amount\n\ntry:\n    withdraw(1000, 5000)\nexcept ValueError as e:\n    print(\"실패:\", e)\nprint(withdraw(1000, 300))\n",
+          "runnable": true,
+          "expected_output": "실패: 잔액이 부족합니다\n700\n"
+        },
+        {
+          "kind": "text",
+          "md": "직접 예외 종류를 만들 수도 있습니다. `class 이름(Exception): pass` 두 줄이면 됩니다. class 문법은 6주차에 자세히 배웁니다."
+        },
+        {
+          "kind": "code",
+          "code": "class InvalidAgeError(Exception):\n    pass\n\ndef check_age(age):\n    if age < 0:\n        raise InvalidAgeError(f\"나이는 음수일 수 없습니다: {age}\")\n    return age\n\ntry:\n    check_age(-3)\nexcept InvalidAgeError as e:\n    print(e)\n",
+          "runnable": true,
+          "expected_output": "나이는 음수일 수 없습니다: -3\n"
+        },
+        {
+          "kind": "text",
+          "md": "예외를 잡은 뒤 더 알기 쉬운 메시지로 **다시 발생**시킬 수도 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "def parse_age(text):\n    try:\n        return int(text)\n    except ValueError:\n        raise ValueError(f\"'{text}'는 나이가 아닙니다\")\n\nfor t in [\"20\", \"스물\"]:\n    try:\n        print(parse_age(t))\n    except ValueError as e:\n        print(\"오류:\", e)\n",
+          "runnable": true,
+          "expected_output": "20\n오류: '스물'는 나이가 아닙니다\n"
+        },
+        {
+          "kind": "tip",
+          "md": "오류를 잡아서 아무것도 하지 않고 넘기면(`except: pass`) 문제가 숨겨집니다. 처리할 수 없다면 그냥 위로 올려 보내는 것이 낫습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "범위를 벗어난 값에 예외를 발생시키세요.",
+      "exercise_ids": [
+        "d30_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "여러 종류의 예외를 상황에 맞게 발생시킵니다.",
+      "exercise_ids": [
+        "d30_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`raise 예외종류(\"메시지\")`로 문제를 알린다.",
+        "예외는 `try`를 만날 때까지 호출한 쪽으로 올라간다.",
+        "`class MyError(Exception): pass`로 새 예외 종류를 만든다.",
+        "처리할 수 없는 예외는 숨기지 말고 위로 보낸다."
+      ],
+      "quiz": [
+        {
+          "id": "d30_summary_q1",
+          "question_md": "없는 키를 찾을 때 발생시키기에 가장 알맞은 예외는?",
+          "choices": [
+            "`ValueError`",
+            "`KeyError`",
+            "`IndexError`",
+            "`TypeError`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "딕셔너리 키 관련 문제는 `KeyError`가 자연스럽습니다."
+        },
+        {
+          "id": "d30_summary_q2",
+          "question_md": "함수 안에서 `raise`된 예외를 그 함수가 잡지 않으면?",
+          "choices": [
+            "무시된다",
+            "호출한 쪽으로 전달된다",
+            "`None`이 반환된다",
+            "자동으로 다시 실행된다"
+          ],
+          "answer_index": 1,
+          "explanation_md": "호출한 쪽의 `try`가 잡거나, 끝까지 아무도 안 잡으면 프로그램이 멈춥니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d30_fill_1",
+      "kind": "fill_blank",
+      "title": "점수 검사",
+      "prompt_md": "점수가 0 이상 100 이하이면 그대로 **반환**하고, 아니면 `ValueError`를 발생시키세요.",
+      "concepts": [
+        "custom_exception",
+        "condition"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def check_score(score):\n    if not 0 <= score <= 100:\n        ____ ____(\"점수는 0~100 사이여야 합니다\")\n    return score\n",
+      "entry": {
+        "mode": "function",
+        "name": "check_score"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "정상",
+          "call": {
+            "args": [
+              50
+            ]
+          },
+          "expect": {
+            "return": 50
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "100 초과",
+          "call": {
+            "args": [
+              101
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              -1
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              100
+            ]
+          },
+          "expect": {
+            "return": 100
+          }
+        }
+      ],
+      "hints": [
+        "예외를 발생시키는 키워드를 쓰세요.",
+        "값의 범위가 잘못되었을 때 쓰는 예외 종류입니다."
+      ],
+      "solution": "def check_score(score):\n    if not 0 <= score <= 100:\n        raise ValueError(\"점수는 0~100 사이여야 합니다\")\n    return score\n"
+    },
+    {
+      "id": "d30_code_1",
+      "kind": "coding",
+      "title": "계좌 이체",
+      "prompt_md": "계좌 딕셔너리(이름 → 잔액)에서 `sender`가 `receiver`에게 `amount`원을 보낸 뒤 딕셔너리를 **반환**하세요.\n\n- 보내는 사람이나 받는 사람이 없으면 `KeyError`\n- 금액이 0 이하이거나 잔액보다 많으면 `ValueError`\n\n예: `transfer({\"민준\": 10000, \"서연\": 5000}, \"민준\", \"서연\", 3000)` → `{\"민준\": 7000, \"서연\": 8000}`",
+      "concepts": [
+        "custom_exception",
+        "dict",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def transfer(accounts, sender, receiver, amount):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "transfer"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "정상 이체",
+          "call": {
+            "args": [
+              {
+                "민준": 10000,
+                "서연": 5000
+              },
+              "민준",
+              "서연",
+              3000
+            ]
+          },
+          "expect": {
+            "return": {
+              "민준": 7000,
+              "서연": 8000
+            }
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "없는 계좌",
+          "call": {
+            "args": [
+              {
+                "민준": 10000,
+                "서연": 5000
+              },
+              "민준",
+              "하나",
+              1000
+            ]
+          },
+          "expect": {
+            "raises": "KeyError"
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "잔액 부족",
+          "call": {
+            "args": [
+              {
+                "민준": 10000,
+                "서연": 5000
+              },
+              "서연",
+              "민준",
+              9000
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "민준": 10000,
+                "서연": 5000
+              },
+              "서연",
+              "민준",
+              5000
+            ]
+          },
+          "expect": {
+            "return": {
+              "민준": 15000,
+              "서연": 0
+            }
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "민준": 10000,
+                "서연": 5000
+              },
+              "없음",
+              "민준",
+              1
+            ]
+          },
+          "expect": {
+            "raises": "KeyError"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "민준": 10000,
+                "서연": 5000
+              },
+              "민준",
+              "서연",
+              0
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        }
+      ],
+      "hints": [
+        "두 사람이 모두 딕셔너리에 있는지 `in`으로 먼저 확인하세요.",
+        "금액 검사(0 이하, 잔액 초과)는 그다음입니다. 조건에 맞는 예외 종류를 고르세요.",
+        "모든 검사를 통과한 뒤에만 잔액을 바꿉니다."
+      ],
+      "solution": "def transfer(accounts, sender, receiver, amount):\n    if sender not in accounts or receiver not in accounts:\n        raise KeyError(\"없는 계좌입니다\")\n    if amount <= 0 or accounts[sender] < amount:\n        raise ValueError(\"이체할 수 없는 금액입니다\")\n    accounts[sender] -= amount\n    accounts[receiver] += amount\n    return accounts\n",
+      "checks": {
+        "required_syntax": [
+          "def",
+          "if"
+        ],
+        "max_lines": 10
+      }
+    }
+  ]
+}

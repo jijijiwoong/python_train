@@ -1,0 +1,366 @@
+{
+  "schema_version": 1,
+  "day": 27,
+  "title": "모듈과 import",
+  "stage": "basics",
+  "week": 4,
+  "is_review": false,
+  "objectives": [
+    "import로 표준 라이브러리 모듈을 불러 쓸 수 있다.",
+    "math, random, collections, statistics의 기본 기능을 활용할 수 있다."
+  ],
+  "concepts": [
+    "module",
+    "function"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 종료 조건과 자기 호출로 재귀 함수를 만들었습니다.",
+      "quiz": [
+        {
+          "id": "d27_review_q1",
+          "question_md": "재귀 함수가 끝없이 호출되면 나는 오류는?",
+          "choices": [
+            "`ValueError`",
+            "`RecursionError`",
+            "`IndexError`",
+            "`KeyError`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "호출 깊이 한도를 넘으면 `RecursionError`가 납니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "이미 만들어진 도구 쓰기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**모듈**은 함수·값을 모아 둔 파이썬 파일입니다. Python에는 바로 쓸 수 있는 **표준 라이브러리** 모듈이 많습니다. `import 모듈`로 불러오고 `모듈.이름`으로 씁니다."
+        },
+        {
+          "kind": "code",
+          "code": "import math\nprint(math.sqrt(16))\nprint(math.pi)\nprint(math.floor(3.7), math.ceil(3.2))\n",
+          "runnable": true,
+          "expected_output": "4.0\n3.141592653589793\n3 4\n"
+        },
+        {
+          "kind": "text",
+          "md": "`from 모듈 import 이름`은 이름만 가져오고, `import 모듈 as 별명`은 짧은 별명을 붙입니다. `collections.Counter`는 개수 세기를 한 줄로 해 줍니다."
+        },
+        {
+          "kind": "code",
+          "code": "from collections import Counter\nimport statistics as st\n\nc = Counter(\"banana\")\nprint(c.most_common(2))\nprint(st.mean([1, 2, 3, 4]))\n",
+          "runnable": true,
+          "expected_output": "[('a', 3), ('n', 2)]\n2.5\n"
+        },
+        {
+          "kind": "text",
+          "md": "`random`은 무작위 값을 만듭니다. `random.seed(숫자)`로 시작값을 고정하면 매번 같은 결과가 나와 테스트하기 좋습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import random\nrandom.seed(42)\nprint(random.randint(1, 6))\nprint(random.choice([\"가위\", \"바위\", \"보\"]))\n",
+          "runnable": true,
+          "expected_output": "6\n가위\n"
+        },
+        {
+          "kind": "tip",
+          "md": "내 파일 이름을 `random.py`, `math.py`처럼 표준 모듈과 같게 지으면 표준 모듈 대신 내 파일이 불러와져 이상한 오류가 납니다. 파일 이름이 겹치지 않게 주의하세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "`math` 모듈로 두 점 사이 거리를 구하세요.",
+      "exercise_ids": [
+        "d27_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "`collections.Counter`로 가장 많이 나온 단어를 찾습니다.",
+      "exercise_ids": [
+        "d27_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`import math` → `math.sqrt()`, `from collections import Counter` → `Counter()`.",
+        "`import statistics as st`처럼 별명을 붙일 수 있다.",
+        "`Counter(목록).most_common(n)`: 많이 나온 순 상위 n개.",
+        "`random.seed()`로 무작위 결과를 고정할 수 있다."
+      ],
+      "quiz": [
+        {
+          "id": "d27_summary_q1",
+          "question_md": "`from math import sqrt` 후 올바른 호출은?",
+          "choices": [
+            "`math.sqrt(9)`",
+            "`sqrt(9)`",
+            "`math(sqrt(9))`",
+            "`import sqrt(9)`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "이름을 직접 가져왔으므로 모듈 이름 없이 씁니다."
+        },
+        {
+          "id": "d27_summary_q2",
+          "question_md": "`Counter(\"aab\").most_common(1)`의 결과는?",
+          "choices": [
+            "`[('a', 2)]`",
+            "`[('b', 1)]`",
+            "`{'a': 2}`",
+            "`'a'`"
+          ],
+          "answer_index": 0,
+          "explanation_md": "(값, 개수) 튜플의 리스트입니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d27_fill_1",
+      "kind": "fill_blank",
+      "title": "두 점 사이 거리",
+      "prompt_md": "두 점 (x1, y1), (x2, y2) 사이의 거리를 **반환**하세요. `math` 모듈의 제곱근 함수를 쓰세요.\n\n예: `distance(0, 0, 3, 4)` → `5.0`",
+      "concepts": [
+        "module",
+        "operator"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import ____\n\ndef distance(x1, y1, x2, y2):\n    return math.____((x2 - x1) ** 2 + (y2 - y1) ** 2)\n",
+      "entry": {
+        "mode": "function",
+        "name": "distance"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3-4-5",
+          "call": {
+            "args": [
+              0,
+              0,
+              3,
+              4
+            ]
+          },
+          "expect": {
+            "return": 5.0
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              1,
+              1,
+              1
+            ]
+          },
+          "expect": {
+            "return": 0.0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              -1,
+              2,
+              2,
+              -2
+            ]
+          },
+          "expect": {
+            "return": 5.0
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0,
+              0,
+              1,
+              1
+            ]
+          },
+          "expect": {
+            "return": 1.4142135623730951
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "수학 함수가 모여 있는 표준 모듈의 이름을 쓰세요.",
+        "제곱근(square root)을 구하는 함수 이름은 네 글자입니다."
+      ],
+      "solution": "import math\n\ndef distance(x1, y1, x2, y2):\n    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)\n"
+    },
+    {
+      "id": "d27_code_1",
+      "kind": "coding",
+      "title": "자주 나온 단어",
+      "prompt_md": "문장과 개수 `n`을 받아, 소문자로 바꾼 단어들 중 **가장 많이 나온 n개**를 `[단어, 횟수]` 리스트로 반환하세요. 횟수가 같으면 먼저 등장한 단어가 앞에 옵니다. `collections.Counter`를 사용하세요.\n\n예: `top_words(\"the cat and the hat and the bat\", 2)` → `[[\"the\", 3], [\"and\", 2]]`",
+      "concepts": [
+        "module",
+        "dict",
+        "string_parsing"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def top_words(text, n):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "top_words"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "상위 2개",
+          "call": {
+            "args": [
+              "the cat and the hat and the bat",
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "the",
+                3
+              ],
+              [
+                "and",
+                2
+              ]
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "대소문자",
+          "call": {
+            "args": [
+              "Hello hello HELLO world",
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "hello",
+                3
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "one",
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "one",
+                1
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "b a c b a b",
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "b",
+                3
+              ],
+              [
+                "a",
+                2
+              ],
+              [
+                "c",
+                1
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "",
+              2
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        }
+      ],
+      "hints": [
+        "`collections` 모듈에서 `Counter`만 가져오는 `from … import …` 형태를 쓰세요.",
+        "`text.lower().split()`으로 단어 목록을 만든 뒤 `Counter`에 넣습니다.",
+        "`most_common(n)`이 원하는 순서의 (단어, 횟수) 목록을 줍니다. 튜플은 채점 시 리스트와 같게 비교됩니다."
+      ],
+      "solution": "from collections import Counter\n\ndef top_words(text, n):\n    counts = Counter(text.lower().split())\n    return counts.most_common(n)\n",
+      "checks": {
+        "required_syntax": [
+          "import"
+        ],
+        "max_lines": 8
+      }
+    }
+  ]
+}
