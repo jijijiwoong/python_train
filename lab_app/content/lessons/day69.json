@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "day": 69,
+  "title": "미니 프로젝트: 판매 데이터 분석",
+  "stage": "advanced_data",
+  "week": 10,
+  "is_review": false,
+  "objectives": [
+    "질문을 세우고 pandas로 답을 구한 뒤 그래프로 보여 줄 수 있다."
+  ],
+  "concepts": [
+    "eda",
+    "pandas_groupby",
+    "matplotlib",
+    "pandas_transform"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "프로젝트 준비",
+      "content_md": "오늘은 작은 판매 데이터로 **분석 보고서**를 만듭니다. 질문은 세 가지입니다.\n\n1. 월별 매출은 얼마인가?\n2. 가장 많이 팔린 상품은?\n3. 매출은 지난달보다 몇 % 늘었나(증감률)?",
+      "quiz": [
+        {
+          "id": "d69_review_q1",
+          "question_md": "월별 매출 합계를 구하는 코드는?",
+          "choices": [
+            "`df[\"월\"].sum()`",
+            "`df.groupby(\"월\")[\"매출\"].sum()`",
+            "`df.sum(\"매출\")`",
+            "`df.pivot()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "증감률과 보고 그래프",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`pct_change()`는 바로 앞 값 대비 변화율을 계산합니다(첫 값은 비교 대상이 없어 NaN). ×100 하면 %입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\nmonthly = pd.Series([9000, 27000, 20000], index=[1, 2, 3])\nprint((monthly.pct_change() * 100).round(1).tolist())\n",
+          "runnable": true,
+          "expected_output": "[nan, 200.0, -25.9]\n",
+          "time_limit_sec": 20
+        },
+        {
+          "kind": "code",
+          "code": "import matplotlib.pyplot as plt\nimport pandas as pd\n\ndf = pd.DataFrame({\"월\": [1, 1, 2, 2, 3], \"매출\": [3000, 6000, 4000, 23000, 20000]})\nmonthly = df.groupby(\"월\")[\"매출\"].sum()\nfig, ax = plt.subplots()\nmonthly.plot(kind=\"bar\", ax=ax, title=\"월별 매출\", rot=0)\nfor i, v in enumerate(monthly):\n    ax.text(i, v, f\"{v:,}\", ha=\"center\", va=\"bottom\")\nprint(monthly.tolist())\n",
+          "runnable": true,
+          "expected_output": "[9000, 27000, 20000]\n",
+          "time_limit_sec": 20
+        },
+        {
+          "kind": "tip",
+          "md": "보고서 그래프에는 값을 직접 적어 주면(`ax.text`) 읽는 사람이 축 눈금을 따라가지 않아도 됩니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "월별 매출 합계 리스트를 반환하세요.",
+      "exercise_ids": [
+        "d69_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "세 질문에 답하는 분석 함수를 완성하세요.",
+      "exercise_ids": [
+        "d69_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "분석은 질문 → 집계 → 시각화 순서.",
+        "`pct_change()`로 증감률.",
+        "그래프에 값 표시(`ax.text`)로 읽기 쉽게.",
+        "다음 시간: 2단계 마무리 복습."
+      ],
+      "quiz": [
+        {
+          "id": "d69_summary_q1",
+          "question_md": "1월 100 → 2월 150일 때 증감률은?",
+          "choices": [
+            "50%",
+            "150%",
+            "-33%",
+            "1.5%"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d69_summary_q2",
+          "question_md": "`pct_change()` 결과의 첫 값은?",
+          "choices": [
+            "0",
+            "NaN",
+            "100",
+            "첫 값 그대로"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d69_fill_1",
+      "kind": "fill_blank",
+      "title": "월별 매출",
+      "prompt_md": "월·매출 열이 있는 데이터에서 월 순서대로의 매출 합계 리스트를 반환하세요.",
+      "concepts": [
+        "pandas_groupby"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef monthly_totals(data):\n    df = pd.DataFrame(data)\n    return df.groupby(\"____\")[\"매출\"].____().tolist()\n",
+      "entry": {
+        "mode": "function",
+        "name": "monthly_totals"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "월": [
+                  1,
+                  1,
+                  2,
+                  2,
+                  2,
+                  3,
+                  3
+                ],
+                "상품": [
+                  "펜",
+                  "노트",
+                  "펜",
+                  "노트",
+                  "가방",
+                  "펜",
+                  "가방"
+                ],
+                "매출": [
+                  3000,
+                  6000,
+                  4000,
+                  3000,
+                  20000,
+                  5000,
+                  15000
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              9000,
+              27000,
+              20000
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "월": [
+                  2,
+                  1
+                ],
+                "매출": [
+                  5,
+                  7
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              7,
+              5
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "묶을 기준 열입니다.",
+        "합계를 구하는 메서드입니다."
+      ],
+      "solution": "import pandas as pd\n\n\ndef monthly_totals(data):\n    df = pd.DataFrame(data)\n    return df.groupby(\"월\")[\"매출\"].sum().tolist()\n",
+      "time_limit_sec": 20
+    },
+    {
+      "id": "d69_code_1",
+      "kind": "coding",
+      "title": "판매 분석 보고",
+      "prompt_md": "월·상품·매출 데이터를 분석해 딕셔너리를 반환하세요.\n\n- `monthly`: 월 순서대로 매출 합계(정수 리스트)\n- `best`: 매출 합계가 가장 큰 상품\n- `growth`: 두 번째 달부터 전월 대비 증감률(%) 리스트(소수 첫째 자리 반올림)\n\n선택: 월별 매출 막대 그래프도 그려 보세요(채점에는 영향 없음).",
+      "concepts": [
+        "eda",
+        "pandas_groupby",
+        "pandas_transform"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef analyze_sales(data):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "analyze_sales"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "월": [
+                  1,
+                  1,
+                  2,
+                  2,
+                  2,
+                  3,
+                  3
+                ],
+                "상품": [
+                  "펜",
+                  "노트",
+                  "펜",
+                  "노트",
+                  "가방",
+                  "펜",
+                  "가방"
+                ],
+                "매출": [
+                  3000,
+                  6000,
+                  4000,
+                  3000,
+                  20000,
+                  5000,
+                  15000
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "monthly": [
+                9000,
+                27000,
+                20000
+              ],
+              "best": "가방",
+              "growth": [
+                200.0,
+                -25.9
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "월": [
+                  1,
+                  2,
+                  3
+                ],
+                "상품": [
+                  "a",
+                  "b",
+                  "a"
+                ],
+                "매출": [
+                  100,
+                  50,
+                  100
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "monthly": [
+                100,
+                50,
+                100
+              ],
+              "best": "a",
+              "growth": [
+                -50.0,
+                100.0
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "월별 합계는 `groupby(\"월\")`, 상품별 합계는 `groupby(\"상품\")` 후 정렬하거나 `idxmax()`.",
+        "증감률은 월별 합계에 `pct_change() * 100`을 하고 `dropna()`로 첫 NaN을 빼세요.",
+        "숫자들은 `int()`, `round(float(x), 1)`로 정리합니다."
+      ],
+      "solution": "import pandas as pd\n\n\ndef analyze_sales(data):\n    df = pd.DataFrame(data)\n    monthly = df.groupby(\"월\")[\"매출\"].sum()\n    best = df.groupby(\"상품\")[\"매출\"].sum().idxmax()\n    growth = (monthly.pct_change() * 100).dropna()\n    return {\"monthly\": [int(v) for v in monthly], \"best\": best,\n            \"growth\": [round(float(g), 1) for g in growth]}\n",
+      "time_limit_sec": 20
+    }
+  ]
+}

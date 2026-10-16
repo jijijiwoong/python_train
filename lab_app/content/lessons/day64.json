@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "day": 64,
+  "title": "matplotlib 기초",
+  "stage": "advanced_data",
+  "week": 10,
+  "is_review": false,
+  "objectives": [
+    "matplotlib으로 선 그래프를 그리고 제목·축 이름·범례를 붙일 수 있다.",
+    "Figure와 Axes의 관계를 이해한다."
+  ],
+  "concepts": [
+    "matplotlib",
+    "module"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "지난주 돌아보기",
+      "content_md": "9주차에는 pandas로 표를 다루고 요약했습니다. 숫자 표만 봐서는 흐름을 놓치기 쉽습니다. 이번 주는 **그래프**로 데이터를 보고(시각화), 데이터를 탐색하는 방법(EDA)을 배웁니다.",
+      "quiz": [
+        {
+          "id": "d64_review_q1",
+          "question_md": "반별 평균을 구하는 pandas 코드는?",
+          "choices": [
+            "`df.mean(\"반\")`",
+            "`df.groupby(\"반\")[\"점수\"].mean()`",
+            "`df[\"반\"].mean()`",
+            "`df.pivot()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "첫 그래프 그리기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "관례적으로 `import matplotlib.pyplot as plt`로 불러옵니다. `fig, ax = plt.subplots()`는 그림판(**Figure**)과 그 안의 그래프 영역(**Axes**)을 만듭니다. 이후 `ax.메서드()`로 그리고 꾸밉니다."
+        },
+        {
+          "kind": "code",
+          "code": "import matplotlib.pyplot as plt\n\nmonths = [1, 2, 3, 4]\nsales = [120, 150, 90, 180]\nfig, ax = plt.subplots()\nax.plot(months, sales, marker=\"o\", label=\"판매량\")\nax.set_title(\"월별 판매량\")\nax.set_xlabel(\"월\")\nax.set_ylabel(\"개수\")\nax.legend()\nprint(ax.get_title(), len(ax.lines))\n",
+          "runnable": true,
+          "expected_output": "월별 판매량 1\n",
+          "time_limit_sec": 20
+        },
+        {
+          "kind": "text",
+          "md": "`plot`을 여러 번 부르면 같은 Axes에 선이 겹쳐 그려집니다. `label`을 주고 `legend()`를 부르면 범례가 생깁니다."
+        },
+        {
+          "kind": "code",
+          "code": "import matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.linspace(0, 2 * np.pi, 50)\nfig, ax = plt.subplots()\nax.plot(x, np.sin(x), label=\"sin\")\nax.plot(x, np.cos(x), label=\"cos\", linestyle=\"--\")\nax.legend()\nax.grid(True)\nprint([line.get_label() for line in ax.lines])\n",
+          "runnable": true,
+          "expected_output": "['sin', 'cos']\n",
+          "time_limit_sec": 20
+        },
+        {
+          "kind": "tip",
+          "md": "이 앱에서는 코드 실행이 끝날 때 열려 있는 그래프가 **이미지로 실행 결과 아래에 표시**됩니다. `plt.show()`는 쓰지 않아도 됩니다(써도 괜찮아요). 한글 글꼴은 앱이 자동으로 설정합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "제목이 있는 선 그래프를 그리세요. `check`는 채점용으로, 그린 그래프의 정보를 꺼냅니다.",
+      "exercise_ids": [
+        "d64_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "두 과목 점수를 선 두 개로 그리고 범례를 붙이세요.",
+      "exercise_ids": [
+        "d64_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`fig, ax = plt.subplots()`: 그림판과 그래프 영역.",
+        "`ax.plot(x, y, label=..., marker=...)`: 선 그래프.",
+        "`set_title`, `set_xlabel`, `set_ylabel`, `legend`, `grid`.",
+        "같은 Axes에 여러 번 그리면 겹쳐진다."
+      ],
+      "quiz": [
+        {
+          "id": "d64_summary_q1",
+          "question_md": "범례를 표시하려면 `plot`에 무엇을 주고 무엇을 호출해야 하나?",
+          "choices": [
+            "`title`과 `show()`",
+            "`label`과 `legend()`",
+            "`marker`와 `grid()`",
+            "`color`와 `bar()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d64_summary_q2",
+          "question_md": "`plt.subplots()`가 돌려주는 두 값은?",
+          "choices": [
+            "(x, y)",
+            "(Figure, Axes)",
+            "(Axes, legend)",
+            "(title, label)"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d64_fill_1",
+      "kind": "fill_blank",
+      "title": "제목 있는 선 그래프",
+      "prompt_md": "`draw(ax, xs, ys, title)`가 주어진 Axes에 선 그래프를 그리고 제목을 붙이도록 완성하세요.",
+      "concepts": [
+        "matplotlib"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import matplotlib.pyplot as plt\n\n\ndef draw(ax, xs, ys, title):\n    ax.____(xs, ys)\n    ax.set_title(____)\n\n\ndef check(xs, ys, title):\n    fig, ax = plt.subplots()\n    draw(ax, xs, ys, title)\n    return [ax.get_title(), len(ax.lines), ax.lines[0].get_ydata().tolist()]\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                5,
+                3,
+                4
+              ],
+              "점수"
+            ]
+          },
+          "expect": {
+            "return": [
+              "점수",
+              1,
+              [
+                5,
+                3,
+                4
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0
+              ],
+              [
+                0
+              ],
+              ""
+            ]
+          },
+          "expect": {
+            "return": [
+              "",
+              1,
+              [
+                0
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "선 그래프를 그리는 Axes 메서드입니다.",
+        "제목으로 쓸 매개변수 이름입니다."
+      ],
+      "solution": "import matplotlib.pyplot as plt\n\n\ndef draw(ax, xs, ys, title):\n    ax.plot(xs, ys)\n    ax.set_title(title)\n\n\ndef check(xs, ys, title):\n    fig, ax = plt.subplots()\n    draw(ax, xs, ys, title)\n    return [ax.get_title(), len(ax.lines), ax.lines[0].get_ydata().tolist()]\n",
+      "time_limit_sec": 20
+    },
+    {
+      "id": "d64_code_1",
+      "kind": "coding",
+      "title": "두 과목 비교 그래프",
+      "prompt_md": "`plot_scores(ax, names, kor, math)`를 작성하세요. 같은 Axes에 국어 점수(`label=\"국어\"`)와 수학 점수(`label=\"수학\"`)를 이름을 x축으로 하는 선 두 개로 그리고, 제목 `\"과목별 점수\"`, 범례를 붙입니다. `check`는 채점용입니다.",
+      "concepts": [
+        "matplotlib"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import matplotlib.pyplot as plt\n\n\ndef plot_scores(ax, names, kor, math):\n    # 여기에 코드를 작성하세요\n    pass\n\n\ndef check(names, kor, math):\n    fig, ax = plt.subplots()\n    plot_scores(ax, names, kor, math)\n    legend = ax.get_legend()\n    labels = [t.get_text() for t in legend.get_texts()] if legend else []\n    return [ax.get_title(), labels, [line.get_ydata().tolist() for line in ax.lines]]\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "두 명",
+          "call": {
+            "args": [
+              [
+                "민준",
+                "서연"
+              ],
+              [
+                85,
+                92
+              ],
+              [
+                70,
+                88
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "과목별 점수",
+              [
+                "국어",
+                "수학"
+              ],
+              [
+                [
+                  85,
+                  92
+                ],
+                [
+                  70,
+                  88
+                ]
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "a"
+              ],
+              [
+                1
+              ],
+              [
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "과목별 점수",
+              [
+                "국어",
+                "수학"
+              ],
+              [
+                [
+                  1
+                ],
+                [
+                  2
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`ax.plot(names, kor, label=\"국어\")`처럼 선마다 `label`을 줍니다.",
+        "마지막에 `ax.set_title(...)`과 `ax.legend()`를 호출하세요."
+      ],
+      "solution": "import matplotlib.pyplot as plt\n\n\ndef plot_scores(ax, names, kor, math):\n    ax.plot(names, kor, marker=\"o\", label=\"국어\")\n    ax.plot(names, math, marker=\"s\", label=\"수학\")\n    ax.set_title(\"과목별 점수\")\n    ax.legend()\n\n\ndef check(names, kor, math):\n    fig, ax = plt.subplots()\n    plot_scores(ax, names, kor, math)\n    legend = ax.get_legend()\n    labels = [t.get_text() for t in legend.get_texts()] if legend else []\n    return [ax.get_title(), labels, [line.get_ydata().tolist() for line in ax.lines]]\n",
+      "time_limit_sec": 20
+    }
+  ]
+}

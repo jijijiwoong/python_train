@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "day": 107,
+  "title": "군집 수 정하기",
+  "stage": "ml",
+  "week": 16,
+  "is_review": false,
+  "objectives": [
+    "엘보 방법(inertia 곡선)으로 적당한 k를 살펴볼 수 있다.",
+    "실루엣 점수로 군집의 품질을 비교해 k를 고를 수 있다."
+  ],
+  "concepts": [
+    "cluster_eval",
+    "kmeans"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 k-평균으로 군집을 만들었습니다. 그런데 k는 어떻게 정할까요?",
+      "quiz": [
+        {
+          "id": "d107_review_q1",
+          "question_md": "k를 늘리면 inertia는 보통?",
+          "choices": [
+            "커진다",
+            "작아진다",
+            "변함없다",
+            "0이 된다"
+          ],
+          "answer_index": 1,
+          "explanation_md": "그래서 inertia만으로는 k를 정할 수 없습니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "몇 개로 묶을까",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "- **엘보 방법**: k를 늘리며 inertia를 그리면 어느 지점부터 감소가 완만해집니다(팔꿈치). 그 근처가 적당한 k입니다.\n- **실루엣 점수**(−1~1): 각 점이 자기 군집과는 가깝고 다른 군집과는 먼 정도의 평균. 클수록 좋습니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.cluster import KMeans\nfrom sklearn.datasets import make_blobs\nfrom sklearn.metrics import silhouette_score\n\nX, _ = make_blobs(n_samples=300, centers=4, cluster_std=1.2, random_state=1)\nfor k in [2, 3, 4, 5, 6]:\n    model = KMeans(n_clusters=k, n_init=10, random_state=0).fit(X)\n    print(k, round(model.inertia_, 1), round(silhouette_score(X, model.labels_), 3))\n",
+          "runnable": true,
+          "expected_output": "2 2451.3 0.686\n3 1358.1 0.539\n4 795.9 0.574\n5 701.2 0.51\n6 630.5 0.471\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "실제 데이터는 경계가 애매해 \"정답 k\"가 없는 경우가 많습니다. 지표와 함께 **군집을 해석할 수 있는지**(예: 고객 그룹에 이름을 붙일 수 있는지)도 기준이 됩니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "실루엣 점수를 계산하세요.",
+      "exercise_ids": [
+        "d107_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "실루엣 점수로 가장 좋은 k를 고르세요.",
+      "exercise_ids": [
+        "d107_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "inertia는 k가 클수록 무조건 작아진다.",
+        "엘보: 감소가 꺾이는 지점.",
+        "`silhouette_score(X, labels)`: −1~1, 클수록 좋음.",
+        "지표 + 해석 가능성으로 k를 정한다."
+      ],
+      "quiz": [
+        {
+          "id": "d107_summary_q1",
+          "question_md": "실루엣 점수가 0에 가까우면?",
+          "choices": [
+            "군집이 명확",
+            "군집 경계가 애매",
+            "완벽",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d107_summary_q2",
+          "question_md": "실루엣 점수 계산에 필요한 것은?",
+          "choices": [
+            "정답 레이블",
+            "데이터와 군집 레이블",
+            "inertia",
+            "중심 개수만"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d107_fill_1",
+      "kind": "fill_blank",
+      "title": "실루엣 점수",
+      "prompt_md": "`make_blobs(n_samples=200, centers=3, random_state=0)`를 k개로 묶은 결과의 실루엣 점수(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "cluster_eval"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.cluster import KMeans\nfrom sklearn.datasets import make_blobs\nfrom sklearn.metrics import ____\n\n\ndef silhouette_of(k):\n    X, _ = make_blobs(n_samples=200, centers=3, random_state=0)\n    labels = KMeans(n_clusters=k, n_init=10, random_state=0).fit_predict(X)\n    return round(float(silhouette_score(X, ____)), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "silhouette_of"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "k=3",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": 0.4997
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": 0.3714
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "실루엣 점수 함수 이름입니다.",
+        "두 번째 인자는 군집 레이블입니다."
+      ],
+      "solution": "from sklearn.cluster import KMeans\nfrom sklearn.datasets import make_blobs\nfrom sklearn.metrics import silhouette_score\n\n\ndef silhouette_of(k):\n    X, _ = make_blobs(n_samples=200, centers=3, random_state=0)\n    labels = KMeans(n_clusters=k, n_init=10, random_state=0).fit_predict(X)\n    return round(float(silhouette_score(X, labels)), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d107_code_1",
+      "kind": "coding",
+      "title": "최적의 k",
+      "prompt_md": "`make_blobs(n_samples=300, centers=4, cluster_std=1.2, random_state=seed)`의 X에 대해 후보 `ks`마다 실루엣 점수(소수 넷째 자리)를 구해 `[가장 좋은 k, 점수 리스트]`를 반환하세요(동점이면 앞 후보).",
+      "concepts": [
+        "cluster_eval",
+        "kmeans"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.cluster import KMeans\nfrom sklearn.datasets import make_blobs\nfrom sklearn.metrics import silhouette_score\n\n\ndef choose_k(ks, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "choose_k"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2~6",
+          "call": {
+            "args": [
+              [
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              2,
+              [
+                0.6862,
+                0.5394,
+                0.5744,
+                0.5103,
+                0.4709
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                3,
+                8
+              ],
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              [
+                0.6984,
+                0.3434
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "k마다 `fit_predict`로 레이블을 얻고 실루엣 점수를 계산하세요.",
+        "가장 좋은 위치는 `np.argmax(scores)`."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.cluster import KMeans\nfrom sklearn.datasets import make_blobs\nfrom sklearn.metrics import silhouette_score\n\n\ndef choose_k(ks, seed):\n    X, _ = make_blobs(n_samples=300, centers=4, cluster_std=1.2, random_state=seed)\n    scores = []\n    for k in ks:\n        labels = KMeans(n_clusters=k, n_init=10, random_state=0).fit_predict(X)\n        scores.append(round(float(silhouette_score(X, labels)), 4))\n    return [ks[int(np.argmax(scores))], scores]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

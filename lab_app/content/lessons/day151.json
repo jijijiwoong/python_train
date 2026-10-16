@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "day": 151,
+  "title": "LSTM",
+  "stage": "dl",
+  "week": 22,
+  "is_review": false,
+  "objectives": [
+    "LSTM이 긴 시퀀스에서 RNN보다 유리한 이유를 설명할 수 있다.",
+    "nn.LSTM의 반환값 (out, (h, c))를 다룰 수 있다."
+  ],
+  "concepts": [
+    "lstm",
+    "rnn"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 RNN으로 사인파를 예측했습니다. 시퀀스가 길어지면 RNN은 앞쪽 정보를 잘 잊어버립니다.",
+      "quiz": [
+        {
+          "id": "d151_review_q1",
+          "question_md": "RNN이 매 시점 갱신하는 값은?",
+          "choices": [
+            "학습률",
+            "은닉 상태",
+            "손실",
+            "가중치"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "오래 기억하는 셀",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "RNN은 기울기가 시점을 거슬러 갈수록 작아져(**기울기 소실**) 먼 과거를 학습하기 어렵습니다. **LSTM**은 은닉 상태 h 외에 **셀 상태** c를 두고, 세 개의 **게이트**(입력·망각·출력)가 무엇을 기억하고 잊을지 정합니다.\n\n`nn.LSTM`은 `nn.RNN`과 사용법이 같지만 `out, (h_n, c_n)`을 돌려주고, 게이트 때문에 매개변수가 RNN의 4배입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nrnn = nn.RNN(1, 8, batch_first=True)\nlstm = nn.LSTM(1, 8, batch_first=True)\ncount = lambda m: sum(p.numel() for p in m.parameters())\nprint(count(rnn), count(lstm))\nout, (h_n, c_n) = lstm(torch.zeros(2, 5, 1))\nprint(out.shape, h_n.shape, c_n.shape)\n",
+          "runnable": true,
+          "expected_output": "88 352\ntorch.Size([2, 5, 8]) torch.Size([1, 2, 8]) torch.Size([1, 2, 8])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "GRU(`nn.GRU`)는 게이트를 둘로 줄인 LSTM의 가벼운 버전으로, 반환값은 RNN과 같습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "LSTM의 반환값을 받으세요.",
+      "exercise_ids": [
+        "d151_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "RNN과 LSTM을 비교하세요.",
+      "exercise_ids": [
+        "d151_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "RNN은 긴 시퀀스에서 기울기 소실.",
+        "LSTM = 은닉 상태 + 셀 상태 + 게이트 3개.",
+        "반환값: `out, (h_n, c_n)`.",
+        "매개변수는 RNN의 4배."
+      ],
+      "quiz": [
+        {
+          "id": "d151_summary_q1",
+          "question_md": "LSTM이 RNN에 추가로 가진 상태는?",
+          "choices": [
+            "셀 상태",
+            "학습률",
+            "드롭아웃",
+            "패딩"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d151_summary_q2",
+          "question_md": "같은 크기에서 LSTM 매개변수는 RNN의 몇 배?",
+          "choices": [
+            "2배",
+            "3배",
+            "4배",
+            "같다"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d151_fill_1",
+      "kind": "fill_blank",
+      "title": "LSTM 반환값",
+      "prompt_md": "`nn.LSTM(1, hidden, batch_first=True)`에 `torch.zeros(n, length, 1)`을 넣고 `[out 모양, h_n 모양, c_n 모양]`을 반환하세요.",
+      "concepts": [
+        "lstm"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef lstm_shapes(n, length, hidden):\n    lstm = nn.____1, hidden, batch_first=True)\n    out, ____ = lstm(torch.zeros(n, length, 1))\n    return [list(out.shape), list(h_n.shape), list(c_n.shape)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "lstm_shapes"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              2,
+              5,
+              8
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                2,
+                5,
+                8
+              ],
+              [
+                1,
+                2,
+                8
+              ],
+              [
+                1,
+                2,
+                8
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              3,
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                3,
+                4
+              ],
+              [
+                1,
+                1,
+                4
+              ],
+              [
+                1,
+                1,
+                4
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "LSTM 층 클래스 이름입니다.",
+        "두 번째 반환값은 (은닉 상태, 셀 상태) 튜플입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef lstm_shapes(n, length, hidden):\n    lstm = nn.LSTM(1, hidden, batch_first=True)\n    out, (h_n, c_n) = lstm(torch.zeros(n, length, 1))\n    return [list(out.shape), list(h_n.shape), list(c_n.shape)]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d151_code_1",
+      "kind": "coding",
+      "title": "RNN 대 LSTM",
+      "prompt_md": "주어진 `train_seq(cell, epochs)`로 `\"rnn\"`과 `\"lstm\"`을 각각 `epochs`번 학습해 `{\"rnn\": [학습 손실, 테스트 손실], \"lstm\": [...], \"better\": 테스트 손실이 더 작은 쪽 이름}`을 반환하세요.",
+      "concepts": [
+        "lstm",
+        "rnn"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\n\n\ndef sine_windows(n_points, window):\n    t = torch.linspace(0, 8 * torch.pi, n_points)\n    series = torch.sin(t)\n    X = torch.stack([series[i:i + window] for i in range(n_points - window)]).unsqueeze(-1)\n    y = series[window:].unsqueeze(-1)\n    return X, y\n\n\nclass SeqModel(nn.Module):\n    def __init__(self, cell=\"rnn\", hidden=16):\n        super().__init__()\n        layer = nn.LSTM if cell == \"lstm\" else nn.RNN\n        self.rnn = layer(1, hidden, batch_first=True)\n        self.head = nn.Linear(hidden, 1)\n\n    def forward(self, x):\n        out, _ = self.rnn(x)\n        return self.head(out[:, -1])\n\n\ndef train_seq(cell, epochs):\n    X, y = sine_windows(200, 10)\n    X_train, y_train, X_test, y_test = X[:150], y[:150], X[150:], y[150:]\n    torch.manual_seed(0)\n    model = SeqModel(cell)\n    optimizer = optim.Adam(model.parameters(), lr=0.01)\n    for _ in range(epochs):\n        loss = nn.MSELoss()(model(X_train), y_train)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    with torch.no_grad():\n        test_loss = nn.MSELoss()(model(X_test), y_test)\n    return [round(loss.item(), 4), round(test_loss.item(), 4)]\n\n\ndef compare_cells(epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "compare_cells"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              100
+            ]
+          },
+          "expect": {
+            "return": {
+              "rnn": [
+                0.0004,
+                0.0004
+              ],
+              "lstm": [
+                0.0001,
+                0.0001
+              ],
+              "better": "lstm"
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              40
+            ]
+          },
+          "expect": {
+            "return": {
+              "rnn": [
+                0.0025,
+                0.0016
+              ],
+              "lstm": [
+                0.0066,
+                0.0036
+              ],
+              "better": "rnn"
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        }
+      ],
+      "hints": [
+        "딕셔너리 컴프리헨션으로 두 셀을 한 번에 학습시킬 수 있습니다.",
+        "테스트 손실은 각 결과의 두 번째 값입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\n\n\ndef sine_windows(n_points, window):\n    t = torch.linspace(0, 8 * torch.pi, n_points)\n    series = torch.sin(t)\n    X = torch.stack([series[i:i + window] for i in range(n_points - window)]).unsqueeze(-1)\n    y = series[window:].unsqueeze(-1)\n    return X, y\n\n\nclass SeqModel(nn.Module):\n    def __init__(self, cell=\"rnn\", hidden=16):\n        super().__init__()\n        layer = nn.LSTM if cell == \"lstm\" else nn.RNN\n        self.rnn = layer(1, hidden, batch_first=True)\n        self.head = nn.Linear(hidden, 1)\n\n    def forward(self, x):\n        out, _ = self.rnn(x)\n        return self.head(out[:, -1])\n\n\ndef train_seq(cell, epochs):\n    X, y = sine_windows(200, 10)\n    X_train, y_train, X_test, y_test = X[:150], y[:150], X[150:], y[150:]\n    torch.manual_seed(0)\n    model = SeqModel(cell)\n    optimizer = optim.Adam(model.parameters(), lr=0.01)\n    for _ in range(epochs):\n        loss = nn.MSELoss()(model(X_train), y_train)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    with torch.no_grad():\n        test_loss = nn.MSELoss()(model(X_test), y_test)\n    return [round(loss.item(), 4), round(test_loss.item(), 4)]\n\n\ndef compare_cells(epochs):\n    results = {cell: train_seq(cell, epochs) for cell in [\"rnn\", \"lstm\"]}\n    results[\"better\"] = min([\"rnn\", \"lstm\"], key=lambda cell: results[cell][1])\n    return results\n",
+      "time_limit_sec": 120
+    }
+  ]
+}

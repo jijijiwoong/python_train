@@ -184,8 +184,9 @@ def _parse_exercise(c: _Collector, e: dict, where: str, day: int) -> Exercise:
         c.error(where, "테스트 id가 중복됩니다")
     if not any(not t.hidden for t in tests):
         c.error(where, "공개 테스트가 1개 이상 필요합니다")
-    # Hidden tests only add value when inputs vary; a fixed-output program has nothing to hide.
-    if not any(t.hidden for t in tests) and (mode == "function" or any(t.stdin for t in tests)):
+    # Hidden tests only add value when inputs vary; a fixed-output program or an argument-less
+    # function has nothing to hide.
+    if not any(t.hidden for t in tests) and any(t.stdin or t.args or t.kwargs for t in tests):
         c.warn(where, "숨김 테스트가 없습니다 (권장: 1개 이상)")
 
     hints = c.require(e, "hints", list, where) or []
@@ -303,7 +304,7 @@ def parse_lesson(raw: dict[str, Any], source: str, curriculum: Curriculum) -> tu
             if kind == "code" and b.get("runnable") and not isinstance(b.get("expected_output"), str):
                 c.error(f"{w}.blocks[{j}]", "runnable 코드 블록에는 expected_output이 필요합니다")
             blocks.append(Block(kind=kind, md=b.get("md", ""), code=b.get("code", ""), runnable=bool(b.get("runnable")),
-                                expected_output=b.get("expected_output")))
+                                expected_output=b.get("expected_output"), time_limit_sec=b.get("time_limit_sec")))
         ex_ids = s.get("exercise_ids", [])
         for ex_id in ex_ids:
             if ex_id not in by_id:

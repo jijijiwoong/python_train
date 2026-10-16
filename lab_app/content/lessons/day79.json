@@ -1,0 +1,312 @@
+{
+  "schema_version": 1,
+  "day": 79,
+  "title": "scikit-learn 선형 회귀",
+  "stage": "ml",
+  "week": 12,
+  "is_review": false,
+  "objectives": [
+    "LinearRegression으로 회귀 모델을 학습하고 coef_, intercept_를 해석할 수 있다.",
+    "회귀 모델의 score(R²)를 구할 수 있다."
+  ],
+  "concepts": [
+    "linear_regression",
+    "sklearn_api",
+    "train_test"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 최소제곱법으로 직선을 직접 맞췄습니다.",
+      "quiz": [
+        {
+          "id": "d79_review_q1",
+          "question_md": "최소제곱법이 최소로 만드는 것은?",
+          "choices": [
+            "잔차의 합",
+            "잔차 제곱의 합",
+            "기울기",
+            "데이터 수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "같은 일을 scikit-learn으로",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`LinearRegression`도 분류 모델과 똑같이 `fit` → `predict` → `score`입니다. 학습된 기울기는 `coef_`(특성마다 하나), 절편은 `intercept_`에 저장됩니다. X는 항상 **2차원**이어야 합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.linear_model import LinearRegression\n\nx = np.array([1, 2, 3, 4, 5]).reshape(-1, 1)\ny = np.array([2.1, 3.9, 6.2, 7.8, 10.1])\nmodel = LinearRegression().fit(x, y)\nprint(model.coef_.round(3), round(model.intercept_, 3))\nprint(model.predict([[6]]).round(2))\n",
+          "runnable": true,
+          "expected_output": "[1.99] 0.05\n[11.99]\n",
+          "time_limit_sec": 30
+        },
+        {
+          "kind": "text",
+          "md": "당뇨병(diabetes) 데이터는 환자 442명의 특성 10개로 1년 뒤 병 진행 정도(숫자)를 예측하는 회귀 데이터입니다. 특성 하나(BMI, 2번 열)만 써 볼게요."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.model_selection import train_test_split\n\nX, y = load_diabetes(return_X_y=True)\nX_bmi = X[:, [2]]\nX_train, X_test, y_train, y_test = train_test_split(X_bmi, y, test_size=0.2, random_state=0)\nmodel = LinearRegression().fit(X_train, y_train)\nprint(round(model.coef_[0], 1), round(model.score(X_test, y_test), 3))\n",
+          "runnable": true,
+          "expected_output": "981.7 0.191\n",
+          "time_limit_sec": 30
+        },
+        {
+          "kind": "tip",
+          "md": "회귀 모델의 `score`는 정확도가 아니라 **R²**(결정계수)입니다. 1이면 완벽, 0이면 \"평균만 찍는 것\"과 같은 수준입니다(Day 80)."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "LinearRegression으로 기울기와 절편을 구하세요.",
+      "exercise_ids": [
+        "d79_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "당뇨병 데이터의 BMI 특성 하나로 회귀 모델을 만드세요.",
+      "exercise_ids": [
+        "d79_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`LinearRegression().fit(X, y)` (X는 2차원).",
+        "`coef_` 기울기(특성별), `intercept_` 절편.",
+        "회귀의 `score` = R².",
+        "`X[:, [2]]`처럼 대괄호 두 번이면 열 하나를 2차원으로 고른다."
+      ],
+      "quiz": [
+        {
+          "id": "d79_summary_q1",
+          "question_md": "특성이 3개인 선형 회귀의 `coef_` 길이는?",
+          "choices": [
+            "1",
+            "3",
+            "4",
+            "알 수 없음"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d79_summary_q2",
+          "question_md": "`X[:, 2]`와 `X[:, [2]]`의 모양 차이는?",
+          "choices": [
+            "같다",
+            "(n,)과 (n, 1)",
+            "(1, n)과 (n,)",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d79_fill_1",
+      "kind": "fill_blank",
+      "title": "기울기와 절편",
+      "prompt_md": "`LinearRegression`으로 xs, ys에 직선을 맞춰 `[기울기, 절편]`(소수 넷째 자리)을 반환하세요.",
+      "concepts": [
+        "linear_regression",
+        "sklearn_api"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.linear_model import LinearRegression\n\n\ndef sk_line(xs, ys):\n    X = np.array(xs).reshape(-1, 1)\n    model = LinearRegression().fit(X, ys)\n    return [round(float(model.____[0]), 4), round(float(model.____), 4)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "sk_line"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "y = 2x + 1",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                3,
+                5,
+                7,
+                9
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              2.0,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                1,
+                1,
+                4
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              1.5,
+              0.5
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                10,
+                20,
+                30,
+                40
+              ],
+              [
+                5,
+                4,
+                2,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              -0.14,
+              6.5
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "학습된 기울기가 저장된 속성입니다(coef…).",
+        "학습된 절편이 저장된 속성입니다(intercept…)."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.linear_model import LinearRegression\n\n\ndef sk_line(xs, ys):\n    X = np.array(xs).reshape(-1, 1)\n    model = LinearRegression().fit(X, ys)\n    return [round(float(model.coef_[0]), 4), round(float(model.intercept_), 4)]\n",
+      "time_limit_sec": 30
+    },
+    {
+      "id": "d79_code_1",
+      "kind": "coding",
+      "title": "BMI로 예측하기",
+      "prompt_md": "당뇨병 데이터에서 BMI(2번 열)만 특성으로 써서 `test_size=0.2, random_state=seed`로 나누고 선형 회귀를 학습하세요. `[기울기(소수 둘째 자리), 절편(소수 둘째 자리), 테스트 R²(소수 넷째 자리)]`를 반환하세요.",
+      "concepts": [
+        "linear_regression",
+        "train_test"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.model_selection import train_test_split\n\n\ndef bmi_model(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "bmi_model"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              981.66,
+              152.29,
+              0.1906
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              42
+            ]
+          },
+          "expect": {
+            "return": [
+              998.58,
+              152.0,
+              0.2334
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`X[:, [2]]`로 BMI 열을 2차원으로 고르세요.",
+        "학습 후 `coef_[0]`, `intercept_`, `score(X_test, y_test)`."
+      ],
+      "solution": "from sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.model_selection import train_test_split\n\n\ndef bmi_model(seed):\n    X, y = load_diabetes(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X[:, [2]], y, test_size=0.2, random_state=seed\n    )\n    model = LinearRegression().fit(X_train, y_train)\n    return [\n        round(float(model.coef_[0]), 2),\n        round(float(model.intercept_), 2),\n        round(model.score(X_test, y_test), 4),\n    ]\n",
+      "time_limit_sec": 30
+    }
+  ]
+}

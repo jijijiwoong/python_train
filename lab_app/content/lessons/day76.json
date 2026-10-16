@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "day": 76,
+  "title": "scikit-learn의 공통 패턴",
+  "stage": "ml",
+  "week": 11,
+  "is_review": false,
+  "objectives": [
+    "scikit-learn의 추정기(estimator) 공통 인터페이스를 설명할 수 있다.",
+    "아무것도 배우지 않는 기준 모델(baseline)과 비교할 수 있다."
+  ],
+  "concepts": [
+    "sklearn_api",
+    "train_test"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 검증 데이터로 k를 골랐습니다.",
+      "quiz": [
+        {
+          "id": "d76_review_q1",
+          "question_md": "검증 데이터의 역할은?",
+          "choices": [
+            "최종 성능 보고",
+            "하이퍼파라미터 고르기",
+            "학습",
+            "결측치 채우기"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "모든 모델은 같은 모양",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "scikit-learn의 모델(추정기)은 종류와 상관없이 `fit`, `predict`, `score`를 가집니다. 그래서 모델만 바꿔 끼우며 비교하기 쉽습니다. 학습이 끝나면 배운 값은 이름 끝에 `_`가 붙은 속성(`classes_` 등)에 저장됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_wine\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\nX, y = load_wine(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.25, random_state=0, stratify=y\n)\nfor model in [DummyClassifier(strategy=\"most_frequent\"), KNeighborsClassifier()]:\n    model.fit(X_train, y_train)\n    print(type(model).__name__, round(model.score(X_test, y_test), 3), model.classes_)\n",
+          "runnable": true,
+          "expected_output": "DummyClassifier 0.4 [0 1 2]\nKNeighborsClassifier 0.667 [0 1 2]\n",
+          "time_limit_sec": 30
+        },
+        {
+          "kind": "tip",
+          "md": "**기준 모델**(가장 흔한 클래스만 찍는 모델)보다 나은지 꼭 확인하세요. 90%가 정상인 데이터에서 \"항상 정상\"만 찍어도 정확도 90%입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "기준 모델의 정확도를 구하세요.",
+      "exercise_ids": [
+        "d76_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "기준 모델과 KNN을 같은 방식으로 비교하세요.",
+      "exercise_ids": [
+        "d76_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "모든 추정기: `fit` / `predict` / `score`.",
+        "학습된 값은 `_`로 끝나는 속성(`classes_`, `coef_` 등).",
+        "`DummyClassifier`로 기준 성능 확인.",
+        "모델은 바꿔 끼우며 같은 코드로 비교한다."
+      ],
+      "quiz": [
+        {
+          "id": "d76_summary_q1",
+          "question_md": "70%가 A인 데이터에서 \"항상 A\" 모델의 정확도는?",
+          "choices": [
+            "30%",
+            "50%",
+            "70%",
+            "100%"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d76_summary_q2",
+          "question_md": "학습 후 생기는 속성의 이름 특징은?",
+          "choices": [
+            "대문자",
+            "끝에 `_`",
+            "앞에 `__`",
+            "숫자 포함"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d76_fill_1",
+      "kind": "fill_blank",
+      "title": "기준 모델",
+      "prompt_md": "와인 데이터를 `test_size=0.25, random_state=0, stratify=y`로 나누고 가장 흔한 클래스만 예측하는 모델의 테스트 정확도(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "sklearn_api"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_wine\nfrom sklearn.dummy import ____\nfrom sklearn.model_selection import train_test_split\n\n\ndef baseline():\n    X, y = load_wine(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.25, random_state=0, stratify=y\n    )\n    model = DummyClassifier(strategy=\"____\").fit(X_train, y_train)\n    return round(model.score(X_test, y_test), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "baseline"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "most_frequent",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "return": 0.4
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "기준 분류 모델의 클래스 이름입니다.",
+        "가장 흔한 클래스를 고르는 전략 이름입니다(most_…)."
+      ],
+      "solution": "from sklearn.datasets import load_wine\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.model_selection import train_test_split\n\n\ndef baseline():\n    X, y = load_wine(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.25, random_state=0, stratify=y\n    )\n    model = DummyClassifier(strategy=\"most_frequent\").fit(X_train, y_train)\n    return round(model.score(X_test, y_test), 4)\n",
+      "time_limit_sec": 30
+    },
+    {
+      "id": "d76_code_1",
+      "kind": "coding",
+      "title": "기준 모델 vs KNN",
+      "prompt_md": "와인 데이터를 `test_size=0.25, random_state=seed, stratify=y`로 나누고, `DummyClassifier(strategy=\"most_frequent\")`와 `KNeighborsClassifier(n_neighbors=5)`의 테스트 정확도를 `[기준, KNN]`(소수 넷째 자리)으로 반환하세요. 두 모델을 리스트에 담아 반복문 하나로 처리해 보세요.",
+      "concepts": [
+        "sklearn_api",
+        "knn"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_wine\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef compare(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "compare"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              0.4,
+              0.6667
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              0.4,
+              0.6444
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              0.4,
+              0.7556
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "모델 두 개를 리스트로 만들고 `for model in models:`로 돌며 `fit` → `score`.",
+        "결과를 같은 순서로 리스트에 담아 반환합니다."
+      ],
+      "solution": "from sklearn.datasets import load_wine\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef compare(seed):\n    X, y = load_wine(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.25, random_state=seed, stratify=y\n    )\n    models = [DummyClassifier(strategy=\"most_frequent\"), KNeighborsClassifier(n_neighbors=5)]\n    scores = []\n    for model in models:\n        model.fit(X_train, y_train)\n        scores.append(round(model.score(X_test, y_test), 4))\n    return scores\n",
+      "checks": {
+        "required_syntax": [
+          "for"
+        ]
+      },
+      "time_limit_sec": 30
+    }
+  ]
+}

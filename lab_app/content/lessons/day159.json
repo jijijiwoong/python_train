@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "day": 159,
+  "title": "데이터 증강",
+  "stage": "dl",
+  "week": 23,
+  "is_review": false,
+  "objectives": [
+    "이동·잡음 같은 증강으로 학습 데이터를 늘릴 수 있다.",
+    "과제에 맞지 않는 증강(예: 숫자 좌우 반전)을 구분할 수 있다."
+  ],
+  "concepts": [
+    "augmentation",
+    "overfitting"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 미세 조정을 했습니다. 데이터가 적을 때 쓸 수 있는 또 다른 방법은 데이터를 **조금씩 바꿔서 늘리는 것**입니다.",
+      "quiz": [
+        {
+          "id": "d159_review_q1",
+          "question_md": "미세 조정할 때 사전 학습된 층의 학습률은?",
+          "choices": [
+            "크게",
+            "작게",
+            "0",
+            "분류부와 같게"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "조금씩 바꿔 보여 주기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**데이터 증강**은 학습할 때마다 이미지를 무작위로 살짝 바꿔(이동, 회전, 잡음, 밝기 등) 모델이 사소한 차이에 흔들리지 않게 합니다. 테스트 데이터는 바꾸지 않습니다.\n\n- `torch.roll(x, shifts, dims)`: 텐서를 밀기(끝은 반대쪽으로 넘어옴)\n- `x + 0.05 * torch.randn(...)`: 약한 잡음\n- `torch.flip(x, dims=(3,))`: 좌우 반전\n\n증강은 정답이 바뀌지 않는 범위에서만 써야 합니다. 고양이 사진은 좌우 반전해도 고양이지만, 숫자 \"2\"를 뒤집으면 더 이상 2가 아닙니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\n\nx = torch.arange(9, dtype=torch.float32).reshape(1, 1, 3, 3)\nprint(torch.roll(x, shifts=(0, 1), dims=(2, 3))[0, 0])\nprint(torch.flip(x, dims=(3,))[0, 0])\ng = torch.Generator().manual_seed(0)\nprint(torch.randint(-1, 2, (2,), generator=g).tolist())\n",
+          "runnable": true,
+          "expected_output": "tensor([[2., 0., 1.],\n        [5., 3., 4.],\n        [8., 6., 7.]])\ntensor([[2., 1., 0.],\n        [5., 4., 3.],\n        [8., 7., 6.]])\n[1, -1]\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "증강은 **테스트에서 만날 변화**에 대비하는 것입니다. 오늘 실습에서 원래 테스트 정확도는 비슷하지만, 이미지가 1칸만 어긋나도 증강 없이 학습한 모델은 크게 무너집니다. 실무에서는 `torchvision.transforms`의 RandomCrop, RandomRotation 등을 씁니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "이미지를 밀어 보세요.",
+      "exercise_ids": [
+        "d159_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "증강 유무를 비교하세요.",
+      "exercise_ids": [
+        "d159_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "증강 = 정답이 그대로인 범위의 무작위 변형.",
+        "학습 때만 적용, 테스트는 그대로. 효과는 변화된 입력에 대한 견고함.",
+        "`torch.roll`, 잡음, `torch.flip`.",
+        "과제에 맞지 않는 증강은 오히려 해롭다."
+      ],
+      "quiz": [
+        {
+          "id": "d159_summary_q1",
+          "question_md": "데이터 증강을 적용하는 데이터는?",
+          "choices": [
+            "학습 데이터",
+            "테스트 데이터",
+            "둘 다",
+            "검증 데이터만"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d159_summary_q2",
+          "question_md": "손글씨 숫자에 부적절한 증강은?",
+          "choices": [
+            "1칸 이동",
+            "약한 잡음",
+            "좌우 반전",
+            "약간의 밝기 변화"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d159_fill_1",
+      "kind": "fill_blank",
+      "title": "이미지 밀기",
+      "prompt_md": "2차원 목록 이미지를 (1, 1, H, W)로 바꾸고 `torch.roll`로 아래로 `dy`, 오른쪽으로 `dx`만큼 민 2차원 결과를 반환하세요.",
+      "concepts": [
+        "augmentation"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef shift(image, dy, dx):\n    x = torch.tensor(image, dtype=torch.float32).reshape(1, 1, len(image), -1)\n    return torch.____(x, shifts=(dy, dx), ____)[0, 0]\n",
+      "entry": {
+        "mode": "function",
+        "name": "shift"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8,
+                  9
+                ]
+              ],
+              0,
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                3.0,
+                1.0,
+                2.0
+              ],
+              [
+                6.0,
+                4.0,
+                5.0
+              ],
+              [
+                9.0,
+                7.0,
+                8.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              1,
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                3.0,
+                4.0
+              ],
+              [
+                1.0,
+                2.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              -1,
+              -1
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                5.0,
+                6.0,
+                4.0
+              ],
+              [
+                2.0,
+                3.0,
+                1.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "텐서를 미는 함수 이름입니다.",
+        "높이·너비는 (N, C, H, W)의 2, 3번 차원입니다."
+      ],
+      "solution": "import torch\n\n\ndef shift(image, dy, dx):\n    x = torch.tensor(image, dtype=torch.float32).reshape(1, 1, len(image), -1)\n    return torch.roll(x, shifts=(dy, dx), dims=(2, 3))[0, 0]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d159_code_1",
+      "kind": "coding",
+      "title": "증강 효과",
+      "prompt_md": "주어진 `augment(x, g)`(이미지마다 -1~1칸 무작위 이동 + 약한 잡음)를 사용하세요. `few_shot(seed, 10)` 데이터로 처음부터 `Net(5)`를 두 번 학습합니다(각각 `torch.manual_seed(1)` 후 모델 생성, `optim.Adam(lr=0.01)`, `g = torch.Generator().manual_seed(0)`, 전체 배치 100번). 증강 버전은 매 스텝 `augment(X_train, g)`를 입력으로 씁니다. 평가는 원래 테스트 이미지와, 모두 아래·오른쪽으로 1칸 민 이미지(`torch.roll(X_test, shifts=(1, 1), dims=(2, 3))`) 두 가지로 합니다. `{\"plain\": [원래 정확도, 이동 정확도], \"augmented\": [...]}`(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "augmentation",
+        "training_loop"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\nfrom torch import nn, optim\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef all_digits():\n    digits = load_digits()\n    X = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\n    return X, torch.tensor(digits.target)\n\n\ndef fit(model, X, y, epochs, lr=0.01):\n    params = [p for p in model.parameters() if p.requires_grad]\n    optimizer = optim.Adam(params, lr=lr)\n    for _ in range(epochs):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return loss.item()\n\n\ndef accuracy(model, X, y):\n    model.eval()\n    with torch.no_grad():\n        acc = (model(X).argmax(dim=1) == y).float().mean().item()\n    model.train()\n    return acc\n\n\ndef pretrained():\n    X, y = all_digits()\n    keep = y < 5\n    torch.manual_seed(0)\n    model = Net(5)\n    fit(model, X[keep], y[keep], 60)\n    return model\n\n\ndef few_shot(seed, per_class):\n    X, y = all_digits()\n    g = torch.Generator().manual_seed(seed)\n    train_idx, test_idx = [], []\n    for digit in range(5, 10):\n        idx = torch.nonzero(y == digit).flatten()\n        idx = idx[torch.randperm(len(idx), generator=g)]\n        train_idx += idx[:per_class].tolist()\n        test_idx += idx[per_class:].tolist()\n    return X[train_idx], y[train_idx] - 5, X[test_idx], y[test_idx] - 5\n\n\ndef augment(x, g):\n    shifts = torch.randint(-1, 2, (len(x), 2), generator=g).tolist()\n    moved = torch.stack([torch.roll(img, shifts=s, dims=(1, 2)) for img, s in zip(x, shifts)])\n    return moved + 0.05 * torch.randn(moved.shape, generator=g)\n\n\ndef compare_augment(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "compare_augment"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": {
+              "plain": [
+                0.9504,
+                0.3085
+              ],
+              "augmented": [
+                0.9208,
+                0.8794
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": {
+              "plain": [
+                0.9539,
+                0.3333
+              ],
+              "augmented": [
+                0.9456,
+                0.8723
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "두 버전은 학습 입력만 다르고 나머지는 같습니다.",
+        "정확도는 원래 테스트와 이동한 테스트에 각각 `accuracy`를 부르면 됩니다."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\nfrom torch import nn, optim\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef all_digits():\n    digits = load_digits()\n    X = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\n    return X, torch.tensor(digits.target)\n\n\ndef fit(model, X, y, epochs, lr=0.01):\n    params = [p for p in model.parameters() if p.requires_grad]\n    optimizer = optim.Adam(params, lr=lr)\n    for _ in range(epochs):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return loss.item()\n\n\ndef accuracy(model, X, y):\n    model.eval()\n    with torch.no_grad():\n        acc = (model(X).argmax(dim=1) == y).float().mean().item()\n    model.train()\n    return acc\n\n\ndef pretrained():\n    X, y = all_digits()\n    keep = y < 5\n    torch.manual_seed(0)\n    model = Net(5)\n    fit(model, X[keep], y[keep], 60)\n    return model\n\n\ndef few_shot(seed, per_class):\n    X, y = all_digits()\n    g = torch.Generator().manual_seed(seed)\n    train_idx, test_idx = [], []\n    for digit in range(5, 10):\n        idx = torch.nonzero(y == digit).flatten()\n        idx = idx[torch.randperm(len(idx), generator=g)]\n        train_idx += idx[:per_class].tolist()\n        test_idx += idx[per_class:].tolist()\n    return X[train_idx], y[train_idx] - 5, X[test_idx], y[test_idx] - 5\n\n\ndef augment(x, g):\n    shifts = torch.randint(-1, 2, (len(x), 2), generator=g).tolist()\n    moved = torch.stack([torch.roll(img, shifts=s, dims=(1, 2)) for img, s in zip(x, shifts)])\n    return moved + 0.05 * torch.randn(moved.shape, generator=g)\n\n\ndef compare_augment(seed):\n    X_train, y_train, X_test, y_test = few_shot(seed, 10)\n    X_moved = torch.roll(X_test, shifts=(1, 1), dims=(2, 3))\n    results = {}\n    for name in [\"plain\", \"augmented\"]:\n        torch.manual_seed(1)\n        model = Net(5)\n        optimizer = optim.Adam(model.parameters(), lr=0.01)\n        g = torch.Generator().manual_seed(0)\n        for _ in range(100):\n            inputs = augment(X_train, g) if name == \"augmented\" else X_train\n            loss = nn.CrossEntropyLoss()(model(inputs), y_train)\n            optimizer.zero_grad()\n            loss.backward()\n            optimizer.step()\n        results[name] = [\n            round(accuracy(model, X_test, y_test), 4),\n            round(accuracy(model, X_moved, y_test), 4),\n        ]\n    return results\n",
+      "time_limit_sec": 120
+    }
+  ]
+}

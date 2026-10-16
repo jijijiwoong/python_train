@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "day": 155,
+  "title": "state_dict와 모델 저장",
+  "stage": "dl",
+  "week": 23,
+  "is_review": false,
+  "objectives": [
+    "state_dict로 모델의 가중치를 꺼내고 저장·불러오기를 할 수 있다."
+  ],
+  "concepts": [
+    "state_dict",
+    "nn_module"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "23주차 시작",
+      "content_md": "이번 주는 **전이 학습**을 배웁니다. 이미 학습된 모델의 지식을 새 문제에 재사용하는 방법입니다. 그 첫걸음은 학습한 가중치를 저장하고 불러오는 것입니다.",
+      "quiz": [
+        {
+          "id": "d155_review_q1",
+          "question_md": "BatchNorm이 평가 모드에서 쓰는 통계는?",
+          "choices": [
+            "현재 배치",
+            "이동 평균",
+            "0",
+            "테스트 전체"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "가중치 꺼내고 넣기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`model.state_dict()`는 \"층 이름 → 가중치 텐서\" 딕셔너리입니다.\n\n- 저장: `torch.save(model.state_dict(), \"model.pt\")`\n- 불러오기: 같은 구조의 모델을 만든 뒤 `model.load_state_dict(torch.load(\"model.pt\"))`\n\n모델 객체 전체가 아니라 state_dict를 저장하는 것이 권장 방법입니다. 아래 예제는 파일 대신 메모리(`io.BytesIO`)에 저장합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import io\nimport torch\nfrom torch import nn\n\ntorch.manual_seed(0)\nmodel = nn.Sequential(nn.Linear(2, 3), nn.ReLU(), nn.Linear(3, 1))\nprint({k: list(v.shape) for k, v in model.state_dict().items()})\n\nbuffer = io.BytesIO()\ntorch.save(model.state_dict(), buffer)\nbuffer.seek(0)\ncopy = nn.Sequential(nn.Linear(2, 3), nn.ReLU(), nn.Linear(3, 1))\ncopy.load_state_dict(torch.load(buffer))\nx = torch.ones(1, 2)\nprint(torch.equal(model(x), copy(x)))\n",
+          "runnable": true,
+          "expected_output": "{'0.weight': [3, 2], '0.bias': [3], '2.weight': [1, 3], '2.bias': [1]}\nTrue\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "Sequential 안의 층은 번호로 이름이 붙습니다(`0.weight`, `2.bias`). ReLU처럼 가중치 없는 층은 state_dict에 나타나지 않습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "가중치를 복사하세요.",
+      "exercise_ids": [
+        "d155_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "저장 전후를 비교하세요.",
+      "exercise_ids": [
+        "d155_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`state_dict()` = 이름 → 가중치 딕셔너리.",
+        "`torch.save` / `torch.load`로 저장·불러오기.",
+        "불러올 땐 같은 구조의 모델에 `load_state_dict`.",
+        "가중치 없는 층은 state_dict에 없다."
+      ],
+      "quiz": [
+        {
+          "id": "d155_summary_q1",
+          "question_md": "state_dict를 모델에 넣는 메서드는?",
+          "choices": [
+            "`load_state_dict`",
+            "`set_weights`",
+            "`torch.load`",
+            "`copy`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d155_summary_q2",
+          "question_md": "`nn.Sequential(nn.Linear(2, 3), nn.ReLU(), nn.Linear(3, 1))`의 state_dict 키 개수는?",
+          "choices": [
+            "2",
+            "3",
+            "4",
+            "6"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d155_fill_1",
+      "kind": "fill_blank",
+      "title": "가중치 복사",
+      "prompt_md": "시드가 다른 두 모델을 만들고, 두 번째 모델에 첫 번째 모델의 가중치를 넣은 뒤 `[state_dict 키 목록, 복사 후 출력이 같은지]`를 반환하세요.",
+      "concepts": [
+        "state_dict"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef copy_weights(seed):\n    torch.manual_seed(seed)\n    a = nn.Linear(3, 2)\n    b = nn.Linear(3, 2)\n    b.____(a.____)\n    x = torch.ones(1, 3)\n    return [list(a.state_dict().keys()), torch.equal(a(x), b(x))]\n",
+      "entry": {
+        "mode": "function",
+        "name": "copy_weights"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "weight",
+                "bias"
+              ],
+              true
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "weight",
+                "bias"
+              ],
+              true
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "가중치를 넣는 메서드 이름입니다.",
+        "가중치 딕셔너리를 꺼내는 메서드입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef copy_weights(seed):\n    torch.manual_seed(seed)\n    a = nn.Linear(3, 2)\n    b = nn.Linear(3, 2)\n    b.load_state_dict(a.state_dict())\n    x = torch.ones(1, 3)\n    return [list(a.state_dict().keys()), torch.equal(a(x), b(x))]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d155_code_1",
+      "kind": "coding",
+      "title": "저장과 불러오기",
+      "prompt_md": "`torch.manual_seed(seed)` 후 `nn.Sequential(nn.Linear(2, 4), nn.ReLU(), nn.Linear(4, 1))`을 만들어 `io.BytesIO`에 state_dict를 저장하세요. `torch.manual_seed(seed + 1)` 후 같은 구조의 새 모델을 만들고, `x = torch.ones(1, 2)`에 대해 `[불러오기 전 출력이 같은지, 불러온 뒤 출력이 같은지, 저장된 텐서 원소 수 합계]`를 반환하세요.",
+      "concepts": [
+        "state_dict"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import io\nimport torch\nfrom torch import nn\n\n\ndef save_and_load(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "save_and_load"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              false,
+              true,
+              17
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              false,
+              true,
+              17
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "저장 뒤 읽기 전에 `buffer.seek(0)`으로 처음으로 되돌려야 합니다.",
+        "원소 수는 불러온 딕셔너리의 값마다 `numel()`을 더합니다."
+      ],
+      "solution": "import io\nimport torch\nfrom torch import nn\n\n\ndef save_and_load(seed):\n    make = lambda: nn.Sequential(nn.Linear(2, 4), nn.ReLU(), nn.Linear(4, 1))\n    torch.manual_seed(seed)\n    model = make()\n    buffer = io.BytesIO()\n    torch.save(model.state_dict(), buffer)\n    torch.manual_seed(seed + 1)\n    other = make()\n    x = torch.ones(1, 2)\n    before = torch.equal(model(x), other(x))\n    buffer.seek(0)\n    state = torch.load(buffer)\n    other.load_state_dict(state)\n    after = torch.equal(model(x), other(x))\n    return [before, after, sum(v.numel() for v in state.values())]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

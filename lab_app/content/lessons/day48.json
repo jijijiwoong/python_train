@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "day": 48,
+  "title": "데코레이터",
+  "stage": "advanced_data",
+  "week": 7,
+  "is_review": false,
+  "objectives": [
+    "함수를 감싸 기능을 덧붙이는 데코레이터를 만들 수 있다.",
+    "@ 문법과 functools.wraps를 이해한다."
+  ],
+  "concepts": [
+    "decorator",
+    "closure",
+    "variadic_args"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 함수를 값으로 다루고, 클로저로 상태를 기억하게 했습니다.",
+      "quiz": [
+        {
+          "id": "d48_review_q1",
+          "question_md": "`def outer(): def inner(): ... return inner`에서 `outer()`가 돌려주는 것은?",
+          "choices": [
+            "`None`",
+            "`inner` 함수",
+            "`inner()`의 결과",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "함수에 기능 덧붙이기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**데코레이터**는 함수를 받아 기능을 덧붙인 새 함수를 돌려주는 함수입니다. `@데코레이터`를 함수 정의 위에 쓰면 `함수 = 데코레이터(함수)`와 같습니다. 6주차의 `@property`, `@dataclass`도 데코레이터예요."
+        },
+        {
+          "kind": "code",
+          "code": "def announce(func):\n    def wrapper(*args, **kwargs):\n        print(f\"{func.__name__} 호출\")\n        result = func(*args, **kwargs)\n        print(f\"결과: {result}\")\n        return result\n    return wrapper\n\n@announce\ndef add(a, b):\n    return a + b\n\nadd(2, 3)\n",
+          "runnable": true,
+          "expected_output": "add 호출\n결과: 5\n"
+        },
+        {
+          "kind": "text",
+          "md": "`*args, **kwargs`(Day 23)로 받으면 어떤 인자를 가진 함수도 감쌀 수 있습니다. `functools.wraps`를 쓰면 감싼 뒤에도 원래 함수 이름이 유지됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "from functools import wraps\n\ndef count_calls(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        wrapper.calls += 1\n        return func(*args, **kwargs)\n    wrapper.calls = 0\n    return wrapper\n\n@count_calls\ndef hello():\n    return \"hi\"\n\nhello()\nhello()\nprint(hello.calls, hello.__name__)\n",
+          "runnable": true,
+          "expected_output": "2 hello\n"
+        },
+        {
+          "kind": "tip",
+          "md": "데코레이터 안의 `wrapper`가 원래 함수의 결과를 `return` 하지 않으면, 감싼 함수는 항상 `None`을 돌려주게 됩니다. 흔한 실수예요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "결과를 대문자로 바꾸는 데코레이터를 완성하세요.",
+      "exercise_ids": [
+        "d48_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "인자를 검사하는 데코레이터를 만드세요.",
+      "exercise_ids": [
+        "d48_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "데코레이터 = 함수를 받아 감싼 함수를 돌려주는 함수.",
+        "`@deco` ↔ `f = deco(f)`.",
+        "`wrapper(*args, **kwargs)`로 어떤 함수든 감싼다.",
+        "`return func(...)`을 잊지 말고, `@wraps(func)`로 이름 유지."
+      ],
+      "quiz": [
+        {
+          "id": "d48_summary_q1",
+          "question_md": "`@d` 아래 `def f(): ...`는 무엇과 같은가?",
+          "choices": [
+            "`d = f(d)`",
+            "`f = d(f)`",
+            "`f = d`",
+            "`d(f())`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d48_summary_q2",
+          "question_md": "wrapper가 `func(*args)`만 부르고 return하지 않으면 감싼 함수의 반환값은?",
+          "choices": [
+            "원래 결과",
+            "`None`",
+            "`wrapper`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d48_fill_1",
+      "kind": "fill_blank",
+      "title": "대문자 데코레이터",
+      "prompt_md": "감싼 함수의 문자열 결과를 대문자로 바꾸는 데코레이터 `shout`을 완성하세요.",
+      "concepts": [
+        "decorator"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def shout(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs).upper()\n    return ____\n\n\n____shout\ndef greet(name):\n    return f\"hello, {name}\"\n\n\ndef check(name):\n    return greet(name)\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              "kim"
+            ]
+          },
+          "expect": {
+            "return": "HELLO, KIM"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              ""
+            ]
+          },
+          "expect": {
+            "return": "HELLO, "
+          }
+        }
+      ],
+      "hints": [
+        "데코레이터는 안쪽 함수 자체를 돌려줍니다.",
+        "데코레이터를 적용하는 기호입니다."
+      ],
+      "solution": "def shout(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs).upper()\n    return wrapper\n\n\n@shout\ndef greet(name):\n    return f\"hello, {name}\"\n\n\ndef check(name):\n    return greet(name)\n"
+    },
+    {
+      "id": "d48_code_1",
+      "kind": "coding",
+      "title": "양수 검사 데코레이터",
+      "prompt_md": "데코레이터 `positive_only`를 작성하세요. 감싼 함수에 넘어온 **위치 인자 중 하나라도 음수**이면 `ValueError`를 발생시키고, 아니면 원래 함수의 결과를 반환합니다.\n\n`total`과 `check`는 채점용입니다. 예: `check([1, 2, 3])` → `6`",
+      "concepts": [
+        "decorator",
+        "variadic_args",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "# 여기에 positive_only 데코레이터를 작성하세요\n\n\n@positive_only\ndef total(*numbers):\n    return sum(numbers)\n\n\ndef check(values):\n    return total(*values)\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "양수",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "expect": {
+            "return": 6
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "0",
+          "call": {
+            "args": [
+              [
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "음수",
+          "call": {
+            "args": [
+              [
+                -1
+              ]
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                2,
+                -1
+              ]
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        }
+      ],
+      "hints": [
+        "데코레이터 함수 안에, 어떤 인자든 받을 수 있는(`*args`, `**kwargs`) 안쪽 함수를 정의하세요.",
+        "`args`를 돌며 음수가 있으면 예외를 발생시키고, 마지막에는 받은 인자 그대로 원래 함수를 호출한 결과를 돌려줍니다.",
+        "바깥 함수는 `wrapper`를 반환합니다."
+      ],
+      "solution": "def positive_only(func):\n    def wrapper(*args, **kwargs):\n        for a in args:\n            if a < 0:\n                raise ValueError(\"음수는 허용되지 않습니다\")\n        return func(*args, **kwargs)\n    return wrapper\n\n\n@positive_only\ndef total(*numbers):\n    return sum(numbers)\n\n\ndef check(values):\n    return total(*values)\n",
+      "checks": {
+        "required_syntax": [
+          "def"
+        ]
+      }
+    }
+  ]
+}

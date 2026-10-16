@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "day": 164,
+  "title": "프로젝트: 평가 함수",
+  "stage": "dl",
+  "week": 24,
+  "is_review": false,
+  "objectives": [
+    "혼동 행렬과 클래스별 재현율로 모델의 약점을 찾을 수 있다."
+  ],
+  "concepts": [
+    "dl_project",
+    "confusion_matrix",
+    "precision_recall"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 학습 함수와 에폭 기록을 만들었습니다. 정확도 하나로는 **어떤 숫자를 헷갈리는지** 알 수 없습니다.",
+      "quiz": [
+        {
+          "id": "d164_review_q1",
+          "question_md": "에폭마다 기록한 검증 정확도로 알 수 있는 것은?",
+          "choices": [
+            "언제 성능이 멈추는지",
+            "테스트 점수",
+            "가중치 수",
+            "학습률"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "약점 찾기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "Day 92의 **혼동 행렬**을 PyTorch로 만들어 봅니다. 행은 정답, 열은 예측입니다. 정답 y와 예측 p를 `y * 10 + p`라는 번호 하나로 바꿔 `torch.bincount`로 세면 100칸짜리 개수가 나오고, 이것을 (10, 10)으로 바꾸면 혼동 행렬입니다.\n\n대각선이 맞힌 개수이므로 **클래스별 재현율** = 대각선 ÷ 행의 합입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\n\ny = torch.tensor([0, 0, 1, 1, 2, 2])\npred = torch.tensor([0, 1, 1, 1, 2, 0])\ncm = torch.bincount(y * 3 + pred, minlength=9).reshape(3, 3)\nprint(cm)\nprint(cm.diag() / cm.sum(dim=1))\n",
+          "runnable": true,
+          "expected_output": "tensor([[1, 1, 0],\n        [0, 2, 0],\n        [1, 0, 1]])\ntensor([0.5000, 1.0000, 0.5000])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "sklearn의 `confusion_matrix`와 같은 결과지만, 텐서만으로 계산하면 학습 코드 안에서 바로 쓸 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "혼동 행렬을 계산하세요.",
+      "exercise_ids": [
+        "d164_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "가장 약한 숫자를 찾으세요.",
+      "exercise_ids": [
+        "d164_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "혼동 행렬: 행 = 정답, 열 = 예측.",
+        "`bincount(y * k + p)`로 한 번에 세기.",
+        "클래스별 재현율 = 대각선 / 행 합.",
+        "약한 클래스를 알면 개선 방향이 보인다."
+      ],
+      "quiz": [
+        {
+          "id": "d164_summary_q1",
+          "question_md": "혼동 행렬의 대각선 값의 의미는?",
+          "choices": [
+            "맞힌 개수",
+            "틀린 개수",
+            "확률",
+            "손실"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d164_summary_q2",
+          "question_md": "클래스 4개일 때 정답 2, 예측 3의 번호(`y * 4 + p`)는?",
+          "choices": [
+            "5",
+            "11",
+            "14",
+            "9"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d164_fill_1",
+      "kind": "fill_blank",
+      "title": "혼동 행렬",
+      "prompt_md": "정답·예측 목록과 클래스 수 k로 혼동 행렬을 만들어 반환하세요.",
+      "concepts": [
+        "confusion_matrix"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef confusion(y_true, y_pred, k):\n    y, p = torch.tensor(y_true), torch.tensor(y_pred)\n    return torch.____(y * k + p, minlength=k * k).____\n",
+      "entry": {
+        "mode": "function",
+        "name": "confusion"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                0,
+                0,
+                1,
+                1,
+                2,
+                2
+              ],
+              [
+                0,
+                1,
+                1,
+                1,
+                2,
+                0
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                1,
+                0,
+                1
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1,
+                0,
+                1
+              ],
+              [
+                1,
+                1,
+                1
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "정수 값의 개수를 세는 함수입니다.",
+        "개수 목록을 k×k로 바꿉니다."
+      ],
+      "solution": "import torch\n\n\ndef confusion(y_true, y_pred, k):\n    y, p = torch.tensor(y_true), torch.tensor(y_pred)\n    return torch.bincount(y * k + p, minlength=k * k).reshape(k, k)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d164_code_1",
+      "kind": "coding",
+      "title": "약점 분석",
+      "prompt_md": "주어진 함수로 `split_data(seed)`, `torch.manual_seed(0)` 후 `fit(CNN(), 학습 DataLoader(섞기), epochs)`를 하고, `report(model, 검증 데이터)`를 완성해 사용하세요. `{\"accuracy\": 검증 정확도, \"worst\": 재현율이 가장 낮은 숫자, \"worst_recall\": 그 재현율, \"confused_with\": 그 숫자를 가장 많이 잘못 예측한 숫자}`를 반환합니다(실수는 소수 넷째 자리). `confused_with`는 혼동 행렬의 그 행에서 대각선을 0으로 바꾼 뒤 argmax로 구합니다.",
+      "concepts": [
+        "dl_project",
+        "confusion_matrix",
+        "precision_recall"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef report(model, data):\n    # (혼동 행렬, 클래스별 재현율)을 반환하세요\n    pass\n\n\ndef weakness(seed, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "weakness"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              4
+            ]
+          },
+          "expect": {
+            "return": {
+              "accuracy": 0.925,
+              "worst": 8,
+              "worst_recall": 0.7429,
+              "confused_with": 1
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              3
+            ]
+          },
+          "expect": {
+            "return": {
+              "accuracy": 0.9139,
+              "worst": 2,
+              "worst_recall": 0.8,
+              "confused_with": 1
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "혼동 행렬은 오늘 개념 예제처럼 `bincount`로 만듭니다.",
+        "행을 복사(`clone`)한 뒤 대각선 칸만 0으로 바꾸세요."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef report(model, data):\n    X, y = data\n    model.eval()\n    with torch.no_grad():\n        pred = model(X).argmax(dim=1)\n    cm = torch.bincount(y * 10 + pred, minlength=100).reshape(10, 10)\n    recall = cm.diag() / cm.sum(dim=1)\n    return cm, recall\n\n\ndef weakness(seed, epochs):\n    train, val, _ = split_data(seed)\n    torch.manual_seed(0)\n    model = fit(CNN(), make_loader(train, shuffle=True), epochs)\n    cm, recall = report(model, val)\n    worst = recall.argmin().item()\n    row = cm[worst].clone()\n    row[worst] = 0\n    return {\n        \"accuracy\": round(evaluate(model, make_loader(val)), 4),\n        \"worst\": worst,\n        \"worst_recall\": round(recall[worst].item(), 4),\n        \"confused_with\": row.argmax().item(),\n    }\n",
+      "time_limit_sec": 90
+    }
+  ]
+}

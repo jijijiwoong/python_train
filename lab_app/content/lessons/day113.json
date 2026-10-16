@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "day": 113,
+  "title": "특성 스케일링",
+  "stage": "ml",
+  "week": 17,
+  "is_review": false,
+  "objectives": [
+    "StandardScaler, MinMaxScaler로 특성 크기를 맞출 수 있다.",
+    "스케일러를 학습 데이터에만 fit해야 하는 이유를 설명할 수 있다."
+  ],
+  "concepts": [
+    "scaling",
+    "knn"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "지난주 돌아보기",
+      "content_md": "지금까지 여러 번 \"학습 데이터의 평균·표준편차로 표준화\"를 직접 계산했습니다. 이번 주는 이런 **전처리**를 scikit-learn 도구로 정리하고, 모델과 하나로 묶는 **파이프라인**으로 3단계를 마무리합니다.",
+      "quiz": [
+        {
+          "id": "d113_review_q1",
+          "question_md": "거리 기반이라 특성 크기에 민감한 모델은?",
+          "choices": [
+            "결정 트리",
+            "KNN",
+            "랜덤 포레스트",
+            "나이브 베이즈"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "단위 맞추기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "- **StandardScaler**: 평균 0, 표준편차 1로(z-점수)\n- **MinMaxScaler**: 최솟값 0, 최댓값 1로\n\n스케일러도 추정기라 `fit`(평균 등을 배움) → `transform`(변환)입니다. **학습 데이터로만 fit**하고 테스트에는 transform만 하세요."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_wine\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.preprocessing import MinMaxScaler, StandardScaler\n\nX, y = load_wine(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)\nprint(\"원본\", round(KNeighborsClassifier().fit(X_train, y_train).score(X_test, y_test), 4))\nfor scaler in [StandardScaler(), MinMaxScaler()]:\n    scaler.fit(X_train)\n    knn = KNeighborsClassifier().fit(scaler.transform(X_train), y_train)\n    print(type(scaler).__name__, round(knn.score(scaler.transform(X_test), y_test), 4))\n",
+          "runnable": true,
+          "expected_output": "원본 0.7222\nStandardScaler 0.963\nMinMaxScaler 0.963\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "Day 75에서 와인 데이터 KNN 정확도가 낮았던 이유가 바로 스케일이었습니다. 트리 계열은 스케일링이 필요 없지만, 해도 해가 되지는 않습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "StandardScaler로 변환하세요.",
+      "exercise_ids": [
+        "d113_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "스케일링 전후의 KNN 정확도를 비교하세요.",
+      "exercise_ids": [
+        "d113_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "StandardScaler(평균 0·표준편차 1), MinMaxScaler(0~1).",
+        "`fit(X_train)` → `transform(X_train)`, `transform(X_test)`.",
+        "테스트로 fit하면 데이터 누수.",
+        "거리·경사하강 기반 모델에 특히 중요."
+      ],
+      "quiz": [
+        {
+          "id": "d113_summary_q1",
+          "question_md": "MinMaxScaler 변환 후 학습 데이터의 최댓값은?",
+          "choices": [
+            "0",
+            "1",
+            "평균",
+            "표준편차"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d113_summary_q2",
+          "question_md": "스케일러를 fit해야 하는 데이터는?",
+          "choices": [
+            "테스트",
+            "학습",
+            "전체",
+            "검증+테스트"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d113_fill_1",
+      "kind": "fill_blank",
+      "title": "표준화 도구",
+      "prompt_md": "StandardScaler를 학습 데이터로 학습해 테스트 데이터를 변환한 결과(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "scaling"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.preprocessing import ____\n\n\ndef scale(train, test):\n    scaler = StandardScaler().____(train)\n    return np.round(scaler.transform(test), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "scale"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  0
+                ],
+                [
+                  2
+                ],
+                [
+                  4
+                ]
+              ],
+              [
+                [
+                  2
+                ],
+                [
+                  6
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.0
+              ],
+              [
+                2.4495
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  10
+                ],
+                [
+                  3,
+                  30
+                ]
+              ],
+              [
+                [
+                  1,
+                  20
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -1.0,
+                0.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "평균 0, 표준편차 1로 바꾸는 스케일러 클래스 이름입니다.",
+        "학습시키는 메서드입니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef scale(train, test):\n    scaler = StandardScaler().fit(train)\n    return np.round(scaler.transform(test), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d113_code_1",
+      "kind": "coding",
+      "title": "스케일링 효과",
+      "prompt_md": "와인 데이터를 `test_size=0.3, random_state=seed, stratify=y`로 나누고, KNN(기본 설정)의 테스트 정확도를 **원본**과 **StandardScaler 적용** 두 경우로 구해 `[원본, 스케일링]`(소수 넷째 자리)을 반환하세요.",
+      "concepts": [
+        "scaling",
+        "knn"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_wine\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef scaling_effect(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "scaling_effect"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              0.7222,
+              0.963
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              0.7037,
+              0.9259
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "원본으로 한 번 학습·평가하세요.",
+        "스케일러를 학습 데이터로만 `fit`한 뒤 두 데이터를 `transform`해서 다시 학습·평가합니다."
+      ],
+      "solution": "from sklearn.datasets import load_wine\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef scaling_effect(seed):\n    X, y = load_wine(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=seed,\n        stratify=y,\n    )\n    raw = KNeighborsClassifier().fit(X_train, y_train).score(X_test, y_test)\n    scaler = StandardScaler().fit(X_train)\n    knn = KNeighborsClassifier().fit(scaler.transform(X_train), y_train)\n    scaled = knn.score(scaler.transform(X_test), y_test)\n    return [round(raw, 4), round(scaled, 4)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

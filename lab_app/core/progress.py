@@ -228,9 +228,11 @@ class LearningService:
         with self._tx() as conn:
             repo.save_draft(conn, exercise_id, ex.day, code, self.clock())
 
-    def run(self, code: str, stdin: str = "", exercise_id: str | None = None) -> RunResult:
+    def run(self, code: str, stdin: str = "", exercise_id: str | None = None, timeout: float | None = None) -> RunResult:
         """Free run: not graded, not a submission. Saves the draft when tied to an exercise."""
-        result = run_program(code, stdin)
+        if timeout is None and exercise_id is not None:
+            timeout = self.content.exercise(exercise_id).time_limit_sec
+        result = run_program(code, stdin, timeout=timeout)
         now = self.clock()
         with self._tx() as conn:
             day = None

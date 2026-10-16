@@ -7,4 +7,7 @@ requires-python = ">=3.12"
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["lab_app/tests"]
-addopts = "-q"
+addopts = "-q -m 'not heavy'"
+markers = [
+    "heavy: slow content self-checks for ML/DL days (sklearn, torch); run with -m heavy",
+]

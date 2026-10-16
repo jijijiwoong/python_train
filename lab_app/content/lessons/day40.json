@@ -1,0 +1,323 @@
+{
+  "schema_version": 1,
+  "day": 40,
+  "title": "캡슐화와 프로퍼티",
+  "stage": "advanced_data",
+  "week": 6,
+  "is_review": false,
+  "objectives": [
+    "밑줄(_) 관례로 내부 속성을 표시할 수 있다.",
+    "@property와 setter로 읽기 전용 속성과 값 검증을 구현할 수 있다."
+  ],
+  "concepts": [
+    "property",
+    "class",
+    "exception"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 상속과 `super()`로 클래스를 확장했습니다.",
+      "quiz": [
+        {
+          "id": "d40_review_q1",
+          "question_md": "자식 클래스가 부모 메서드를 같은 이름으로 다시 정의하는 것은?",
+          "choices": [
+            "상속",
+            "오버라이딩",
+            "캡슐화",
+            "인스턴스화"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "속성을 안전하게 지키기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "외부에서 마음대로 바꾸면 안 되는 속성은 이름 앞에 `_`를 붙여 \"내부용\"임을 표시합니다(강제는 아닌 약속). `@property`를 붙인 메서드는 **괄호 없이 속성처럼** 읽히고, `@이름.setter`로 값을 넣을 때 검사할 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "class Temperature:\n    def __init__(self, celsius):\n        self._celsius = celsius\n\n    @property\n    def celsius(self):\n        return self._celsius\n\n    @celsius.setter\n    def celsius(self, value):\n        if value < -273.15:\n            raise ValueError(\"절대영도보다 낮을 수 없습니다\")\n        self._celsius = value\n\n    @property\n    def fahrenheit(self):\n        return self._celsius * 9 / 5 + 32\n\nt = Temperature(25)\nprint(t.fahrenheit)\nt.celsius = 30\nprint(t.celsius, t.fahrenheit)\ntry:\n    t.celsius = -300\nexcept ValueError as e:\n    print(e)\n",
+          "runnable": true,
+          "expected_output": "77.0\n30 86.0\n절대영도보다 낮을 수 없습니다\n"
+        },
+        {
+          "kind": "tip",
+          "md": "setter가 없는 property에 값을 넣으면 `AttributeError`가 납니다. 잔액처럼 **메서드를 통해서만 바뀌어야 하는 값**을 읽기 전용으로 만들 때 유용합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "이름을 합쳐 주는 읽기 전용 속성을 만드세요.",
+      "exercise_ids": [
+        "d40_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "잔액을 읽기 전용으로 보호하는 계좌 클래스를 만드세요. `simulate`는 채점용입니다.",
+      "exercise_ids": [
+        "d40_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`_속성`은 \"내부용\" 약속.",
+        "`@property`: 메서드를 괄호 없는 속성처럼 읽기.",
+        "`@이름.setter`: 값을 넣을 때 검증.",
+        "setter가 없으면 읽기 전용(쓰면 `AttributeError`)."
+      ],
+      "quiz": [
+        {
+          "id": "d40_summary_q1",
+          "question_md": "`@property def area(self): ...`를 올바르게 사용하는 코드는?",
+          "choices": [
+            "`obj.area()`",
+            "`obj.area`",
+            "`area(obj)`",
+            "`obj.get_area()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "property는 괄호 없이 읽습니다."
+        },
+        {
+          "id": "d40_summary_q2",
+          "question_md": "setter 없는 property에 `obj.x = 1`을 하면?",
+          "choices": [
+            "값이 바뀐다",
+            "`AttributeError`",
+            "`None`",
+            "무시된다"
+          ],
+          "answer_index": 1,
+          "explanation_md": "읽기 전용입니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d40_fill_1",
+      "kind": "fill_blank",
+      "title": "성과 이름 합치기",
+      "prompt_md": "`full_name`을 괄호 없이 읽을 수 있는 속성으로 만드세요.\n\n예: `check(\"민준\", \"김\")` → `\"김민준\"`",
+      "concepts": [
+        "property"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "class Person:\n    def __init__(self, first, last):\n        self.first = first\n        self.last = last\n\n    @____\n    def full_name(self):\n        return f\"{self.last}{self.first}\"\n\n\ndef check(first, last):\n    return Person(first, last).____\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              "민준",
+              "김"
+            ]
+          },
+          "expect": {
+            "return": "김민준"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "",
+              "이"
+            ]
+          },
+          "expect": {
+            "return": "이"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "Ada",
+              "Lovelace "
+            ]
+          },
+          "expect": {
+            "return": "Lovelace Ada"
+          }
+        }
+      ],
+      "hints": [
+        "메서드를 속성처럼 만드는 데코레이터 이름입니다.",
+        "property는 괄호 없이 이름만으로 읽습니다."
+      ],
+      "solution": "class Person:\n    def __init__(self, first, last):\n        self.first = first\n        self.last = last\n\n    @property\n    def full_name(self):\n        return f\"{self.last}{self.first}\"\n\n\ndef check(first, last):\n    return Person(first, last).full_name\n"
+    },
+    {
+      "id": "d40_code_1",
+      "kind": "coding",
+      "title": "보호된 잔액",
+      "prompt_md": "`Account` 클래스를 작성하세요.\n\n- 잔액은 내부 속성 `_balance`에 저장하고, `balance`는 **읽기 전용 property**로 제공합니다.\n- `deposit(amount)`, `withdraw(amount)`: 금액이 0 이하이거나 잔액보다 많이 출금하면 `ValueError`.\n- 성공한 거래는 `history` 리스트에 `(종류, 금액)`으로 기록합니다.\n\n`simulate`는 채점용입니다(마지막 값은 잔액을 직접 바꿀 수 있는지 여부).",
+      "concepts": [
+        "property",
+        "class",
+        "method",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "# 여기에 Account 클래스를 작성하세요\n\n\ndef simulate(ops):\n    acc = Account()\n    for kind, amount in ops:\n        if kind == \"in\":\n            acc.deposit(amount)\n        else:\n            acc.withdraw(amount)\n    try:\n        acc.balance = 0\n        can_set = True\n    except AttributeError:\n        can_set = False\n    return [acc.balance, len(acc.history), can_set]\n",
+      "entry": {
+        "mode": "function",
+        "name": "simulate"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "입출금",
+          "call": {
+            "args": [
+              [
+                [
+                  "in",
+                  1000
+                ],
+                [
+                  "out",
+                  300
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              700,
+              2,
+              false
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "거래 없음",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              0,
+              false
+            ]
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "잔액 부족",
+          "call": {
+            "args": [
+              [
+                [
+                  "out",
+                  1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  "in",
+                  0
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  "in",
+                  1
+                ],
+                [
+                  "in",
+                  2
+                ],
+                [
+                  "out",
+                  3
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              3,
+              false
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`__init__`에서 `self._balance = 0`, `self.history = []`로 시작하세요.",
+        "`@property def balance(self): return self._balance`만 있고 setter가 없으면 읽기 전용이 됩니다.",
+        "`deposit`/`withdraw`는 검사 → `_balance` 변경 → `history.append(...)` 순서입니다."
+      ],
+      "solution": "class Account:\n    def __init__(self):\n        self._balance = 0\n        self.history = []\n\n    @property\n    def balance(self):\n        return self._balance\n\n    def deposit(self, amount):\n        if amount <= 0:\n            raise ValueError(\"금액은 양수여야 합니다\")\n        self._balance += amount\n        self.history.append((\"in\", amount))\n\n    def withdraw(self, amount):\n        if amount <= 0 or amount > self._balance:\n            raise ValueError(\"출금할 수 없는 금액입니다\")\n        self._balance -= amount\n        self.history.append((\"out\", amount))\n\n\ndef simulate(ops):\n    acc = Account()\n    for kind, amount in ops:\n        if kind == \"in\":\n            acc.deposit(amount)\n        else:\n            acc.withdraw(amount)\n    try:\n        acc.balance = 0\n        can_set = True\n    except AttributeError:\n        can_set = False\n    return [acc.balance, len(acc.history), can_set]\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "day": 166,
+  "title": "프로젝트: 하이퍼파라미터 조정",
+  "stage": "dl",
+  "week": 24,
+  "is_review": false,
+  "objectives": [
+    "검증 데이터로 하이퍼파라미터를 고르고 테스트로 최종 성능을 확인할 수 있다."
+  ],
+  "concepts": [
+    "dl_project",
+    "hyperparameter"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 MLP와 CNN을 비교했습니다. 이제 CNN의 설정(채널 수, 학습률)을 고릅니다.",
+      "quiz": [
+        {
+          "id": "d166_review_q1",
+          "question_md": "모델을 공정하게 비교하려면?",
+          "choices": [
+            "나머지 조건을 같게",
+            "에폭을 다르게",
+            "데이터를 다르게",
+            "시드를 다르게"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "검증으로 고르고 테스트로 확인",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "Day 97의 그리드 탐색을 직접 반복문으로 합니다.\n\n1. 후보 조합마다 학습 → **검증** 정확도 기록\n2. 검증 정확도가 가장 높은 조합 선택\n3. 그 조합의 모델로 **테스트** 정확도를 딱 한 번 확인\n\n딥러닝은 학습이 오래 걸려서 교차 검증 대신 검증 데이터 하나를 쓰는 경우가 많습니다."
+        },
+        {
+          "kind": "code",
+          "code": "from itertools import product\n\nchannels, lrs = [4, 8], [0.003, 0.01]\nfor c, lr in product(channels, lrs):\n    print(c, lr)\n",
+          "runnable": true,
+          "expected_output": "4 0.003\n4 0.01\n8 0.003\n8 0.01\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "후보가 많으면 시간이 오래 걸립니다. 넓은 범위에서 몇 개를 먼저 시험하고 좋은 근처를 더 촘촘히 보는 것이 효율적입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "가장 좋은 조합을 고르세요.",
+      "exercise_ids": [
+        "d166_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "작은 그리드 탐색을 하세요.",
+      "exercise_ids": [
+        "d166_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "후보마다 학습 → 검증 점수.",
+        "검증 최고 조합 선택.",
+        "테스트는 마지막 한 번.",
+        "`itertools.product`로 조합 만들기."
+      ],
+      "quiz": [
+        {
+          "id": "d166_summary_q1",
+          "question_md": "하이퍼파라미터를 고를 때 보는 점수는?",
+          "choices": [
+            "학습 점수",
+            "검증 점수",
+            "테스트 점수",
+            "손실 합"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d166_summary_q2",
+          "question_md": "`product([1, 2], [\"a\", \"b\"])`의 조합 수는?",
+          "choices": [
+            "2",
+            "3",
+            "4",
+            "6"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d166_fill_1",
+      "kind": "fill_blank",
+      "title": "최고 조합",
+      "prompt_md": "`{(c, lr): 검증 정확도}` 대신 `[[c, lr, 정확도], ...]` 목록을 받아, 정확도가 가장 높은 `[c, lr]`을 반환하세요(같으면 앞쪽).",
+      "concepts": [
+        "hyperparameter"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def best_config(results):\n    best = ____(results, key=lambda r: ____)\n    return best[:2]\n",
+      "entry": {
+        "mode": "function",
+        "name": "best_config"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  4,
+                  0.003,
+                  0.9
+                ],
+                [
+                  4,
+                  0.01,
+                  0.95
+                ],
+                [
+                  8,
+                  0.003,
+                  0.93
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              4,
+              0.01
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  8,
+                  0.01,
+                  0.8
+                ],
+                [
+                  4,
+                  0.01,
+                  0.8
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              8,
+              0.01
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "가장 큰 항목을 고르는 내장 함수입니다.",
+        "정확도는 각 항목의 세 번째 값입니다."
+      ],
+      "solution": "def best_config(results):\n    best = max(results, key=lambda r: r[2])\n    return best[:2]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d166_code_1",
+      "kind": "coding",
+      "title": "그리드 탐색",
+      "prompt_md": "`split_data(seed)`로 데이터를 준비하고, 채널 `[4, 8]` × 학습률 `[0.003, 0.01]`의 4가지 조합(`itertools.product` 순서)마다 `torch.manual_seed(0)` 후 `fit(CNN(c), 학습 DataLoader(섞기), epochs, lr)`로 학습해 검증 정확도를 구하세요. 검증 정확도가 가장 높은 조합(같으면 먼저 나온 것)의 테스트 정확도까지 구해 `{\"val\": [[c, lr, 검증 정확도], ...], \"best\": [c, lr], \"test\": 테스트 정확도}`를 반환하세요.",
+      "concepts": [
+        "dl_project",
+        "hyperparameter"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "from itertools import product\nimport torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef grid_search(seed, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "grid_search"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              3
+            ]
+          },
+          "expect": {
+            "return": {
+              "val": [
+                [
+                  4,
+                  0.003,
+                  0.4944
+                ],
+                [
+                  4,
+                  0.01,
+                  0.7667
+                ],
+                [
+                  8,
+                  0.003,
+                  0.8611
+                ],
+                [
+                  8,
+                  0.01,
+                  0.9111
+                ]
+              ],
+              "best": [
+                8,
+                0.01
+              ],
+              "test": 0.9111
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              2
+            ]
+          },
+          "expect": {
+            "return": {
+              "val": [
+                [
+                  4,
+                  0.003,
+                  0.4111
+                ],
+                [
+                  4,
+                  0.01,
+                  0.7056
+                ],
+                [
+                  8,
+                  0.003,
+                  0.7639
+                ],
+                [
+                  8,
+                  0.01,
+                  0.8333
+                ]
+              ],
+              "best": [
+                8,
+                0.01
+              ],
+              "test": 0.8333
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "조합마다 학습한 모델을 리스트에 함께 저장해 두면 나중에 최고 모델을 다시 학습하지 않아도 됩니다.",
+        "가장 높은 위치는 `max(range(len(records)), key=...)`로 찾을 수 있습니다."
+      ],
+      "solution": "from itertools import product\nimport torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef grid_search(seed, epochs):\n    train, val, test = split_data(seed)\n    records, models = [], []\n    for c, lr in product([4, 8], [0.003, 0.01]):\n        torch.manual_seed(0)\n        model = fit(CNN(c), make_loader(train, shuffle=True), epochs, lr)\n        records.append([c, lr, round(evaluate(model, make_loader(val)), 4)])\n        models.append(model)\n    i = max(range(len(records)), key=lambda k: records[k][2])\n    return {\n        \"val\": records,\n        \"best\": records[i][:2],\n        \"test\": round(evaluate(models[i], make_loader(test)), 4),\n    }\n",
+      "time_limit_sec": 150
+    }
+  ]
+}

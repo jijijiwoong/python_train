@@ -1,0 +1,358 @@
+{
+  "schema_version": 1,
+  "day": 133,
+  "title": "19주차 누적 복습",
+  "stage": "dl",
+  "week": 19,
+  "is_review": true,
+  "objectives": [
+    "모델 정의 → 손실 → 옵티마이저 → 학습 루프 → 평가의 전 과정을 작성할 수 있다."
+  ],
+  "concepts": [
+    "nn_module",
+    "training_loop",
+    "loss_fn",
+    "activation",
+    "nn_linear"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "19주차 돌아보기",
+      "content_md": "| 날 | 주제 | 핵심 |\n|---|---|---|\n| 127 | 선형 층 | `nn.Linear`, weight·bias 모양 |\n| 128 | 활성화 | ReLU, 시그모이드, `nn.Sequential` |\n| 129 | 손실 | MSELoss, CrossEntropyLoss(로짓, long) |\n| 130 | 학습 루프 | zero_grad → backward → step |\n| 131 | nn.Module | `__init__`에 층, `forward`에 계산 |\n| 132 | 분류 | argmax, 정확도 |",
+      "quiz": [
+        {
+          "id": "d133_review_q1",
+          "question_md": "학습 루프의 올바른 순서는?",
+          "choices": [
+            "step → backward → zero_grad",
+            "zero_grad → backward → step",
+            "backward → zero_grad → step",
+            "step → zero_grad → backward"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d133_review_q2",
+          "question_md": "선형 층 사이에 활성화 함수가 필요한 이유는?",
+          "choices": [
+            "속도",
+            "비선형 표현",
+            "메모리 절약",
+            "기울기 제거"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "XOR: 신경망이 필요한 이유",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "XOR은 두 입력이 다를 때만 1인 문제입니다. 네 점을 직선 하나로 나눌 수 없어서 로지스틱 회귀는 풀지 못하지만, 은닉층이 있는 신경망은 풀 수 있습니다.\n\n도전 문제에서는 `nn.Linear` 대신 `nn.Parameter`로 직접 매개변수를 만듭니다. `nn.Parameter(텐서)`로 감싸 `self`에 두면 `parameters()`에 자동 등록됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nclass Scale(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.k = nn.Parameter(torch.tensor(2.0))\n\n    def forward(self, x):\n        return self.k * x\n\nmodel = Scale()\nprint([p.item() for p in model.parameters()])\nprint(model(torch.tensor([1.0, 3.0])))\n",
+          "runnable": true,
+          "expected_output": "[2.0]\ntensor([2., 6.], grad_fn=<MulBackward0>)\n",
+          "time_limit_sec": 60
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "Sequential 모델의 층 수를 세세요.",
+      "exercise_ids": [
+        "d133_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d133_code_1",
+        "d133_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "마무리",
+      "points": [
+        "신경망 = 선형 층 + 활성화의 반복.",
+        "분류는 CrossEntropyLoss + argmax.",
+        "학습 루프는 항상 같은 4단계.",
+        "다음 주: 데이터를 미니배치로 나누어 학습."
+      ],
+      "quiz": [
+        {
+          "id": "d133_summary_q1",
+          "question_md": "`nn.Parameter`로 만든 값의 특징은?",
+          "choices": [
+            "학습 대상으로 자동 등록",
+            "상수",
+            "기울기가 없다",
+            "GPU 전용"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d133_summary_q2",
+          "question_md": "XOR을 로지스틱 회귀로 못 푸는 이유는?",
+          "choices": [
+            "데이터가 적어서",
+            "직선으로 나눌 수 없어서",
+            "레이블이 문자라서",
+            "학습률 때문"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d133_fill_1",
+      "kind": "fill_blank",
+      "title": "선형 층 세기",
+      "prompt_md": "주어진 Sequential 모델에서 `nn.Linear` 층의 개수를 반환하세요.",
+      "concepts": [
+        "nn_linear"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from torch import nn\n\n\ndef count_linear(hidden):\n    model = nn.Sequential(nn.Linear(2, hidden), nn.ReLU(), nn.Linear(hidden, hidden), nn.ReLU(), nn.Linear(hidden, 1))\n    return sum(____(layer, nn.Linear) for layer in ____\n",
+      "entry": {
+        "mode": "function",
+        "name": "count_linear"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              4
+            ]
+          },
+          "expect": {
+            "return": 3
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              8
+            ]
+          },
+          "expect": {
+            "return": 3
+          }
+        }
+      ],
+      "hints": [
+        "객체가 어떤 클래스인지 확인하는 내장 함수입니다.",
+        "Sequential은 반복문으로 층을 하나씩 꺼낼 수 있습니다."
+      ],
+      "solution": "from torch import nn\n\n\ndef count_linear(hidden):\n    model = nn.Sequential(\n        nn.Linear(2, hidden),\n        nn.ReLU(),\n        nn.Linear(hidden, hidden),\n        nn.ReLU(),\n        nn.Linear(hidden, 1),\n    )\n    return sum(isinstance(layer, nn.Linear) for layer in model)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d133_code_1",
+      "kind": "coding",
+      "title": "XOR 풀기",
+      "prompt_md": "XOR 데이터 `X = [[0,0],[0,1],[1,0],[1,1]]`, `y = [0,1,1,0]`을 만들고 `torch.manual_seed(seed)` 후 `nn.Sequential(nn.Linear(2, 8), nn.Tanh(), nn.Linear(8, 2))`, `optim.Adam(lr=0.05)`, CrossEntropyLoss로 300번 학습하세요. `[예측 클래스 리스트, 마지막 손실이 0.05보다 작은지]`를 반환합니다.",
+      "concepts": [
+        "training_loop",
+        "activation",
+        "multiclass"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\n\n\ndef solve_xor(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "solve_xor"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0,
+                1,
+                1,
+                0
+              ],
+              true
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0,
+                1,
+                1,
+                0
+              ],
+              true
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0,
+                1,
+                1,
+                0
+              ],
+              true
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "입력은 float32, 정답은 정수 텐서로 만드세요.",
+        "학습 루프 뒤 `model(X).argmax(dim=1)`이 예측입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\n\n\ndef solve_xor(seed):\n    X = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float32)\n    y = torch.tensor([0, 1, 1, 0])\n    torch.manual_seed(seed)\n    model = nn.Sequential(nn.Linear(2, 8), nn.Tanh(), nn.Linear(8, 2))\n    optimizer = optim.Adam(model.parameters(), lr=0.05)\n    for _ in range(300):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return [model(X).argmax(dim=1).tolist(), loss.item() < 0.05]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d133_code_2",
+      "kind": "coding",
+      "title": "Parameter로 만든 층(도전)",
+      "prompt_md": "`MyLinear`를 완성하세요. `__init__`에서 `self.w = nn.Parameter(torch.tensor(0.0))`, `self.b = nn.Parameter(torch.tensor(0.0))`를 만들고 `forward`는 `self.w * x + self.b`를 반환합니다. 학습 함수는 이미 작성되어 있습니다.",
+      "concepts": [
+        "nn_module"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import torch\nfrom torch import nn, optim\n\n\nclass MyLinear(nn.Module):\n    def __init__(self):\n        super().__init__()\n        # self.w, self.b를 nn.Parameter로 만드세요\n        pass\n\n    def forward(self, x):\n        # w * x + b를 반환하세요\n        pass\n\n\ndef fit_my_linear(xs, ys, epochs):\n    model = MyLinear()\n    x, y = torch.tensor(xs, dtype=torch.float32), torch.tensor(ys, dtype=torch.float32)\n    optimizer = optim.SGD(model.parameters(), lr=0.05)\n    for _ in range(epochs):\n        loss = ((model(x) - y) ** 2).mean()\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return [round(model.w.item(), 3), round(model.b.item(), 3)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "fit_my_linear"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                3,
+                5,
+                7,
+                9
+              ],
+              1000
+            ]
+          },
+          "expect": {
+            "return": [
+              2.0,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              800
+            ]
+          },
+          "expect": {
+            "return": [
+              -1.0,
+              2.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        }
+      ],
+      "hints": [
+        "`nn.Parameter(torch.tensor(0.0))`처럼 감싸야 옵티마이저가 찾을 수 있습니다.",
+        "forward는 한 줄이면 충분합니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\n\n\nclass MyLinear(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.w = nn.Parameter(torch.tensor(0.0))\n        self.b = nn.Parameter(torch.tensor(0.0))\n\n    def forward(self, x):\n        return self.w * x + self.b\n\n\ndef fit_my_linear(xs, ys, epochs):\n    model = MyLinear()\n    x, y = torch.tensor(xs, dtype=torch.float32), torch.tensor(ys, dtype=torch.float32)\n    optimizer = optim.SGD(model.parameters(), lr=0.05)\n    for _ in range(epochs):\n        loss = ((model(x) - y) ** 2).mean()\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return [round(model.w.item(), 3), round(model.b.item(), 3)]\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      },
+      "time_limit_sec": 60
+    }
+  ]
+}

@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "day": 37,
+  "title": "메서드",
+  "stage": "advanced_data",
+  "week": 6,
+  "is_review": false,
+  "objectives": [
+    "객체의 데이터를 다루는 메서드를 정의하고 호출할 수 있다.",
+    "메서드 안에서 self로 속성과 다른 메서드를 사용할 수 있다."
+  ],
+  "concepts": [
+    "method",
+    "class"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `class`와 `__init__`으로 속성을 가진 객체를 만들었습니다.",
+      "quiz": [
+        {
+          "id": "d37_review_q1",
+          "question_md": "`class A:` 안에서 `def __init__(self, v): self.v = v`일 때 `A(5).v`는?",
+          "choices": [
+            "`None`",
+            "5",
+            "`v`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": "생성할 때 넘긴 5가 속성 `v`에 저장됩니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "객체가 할 수 있는 일",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "클래스 안에 정의한 함수를 **메서드**라고 합니다. 첫 매개변수는 항상 `self`이고, 호출할 때는 `객체.메서드(인자)`처럼 `self`를 빼고 부릅니다."
+        },
+        {
+          "kind": "code",
+          "code": "class Counter:\n    def __init__(self):\n        self.count = 0\n\n    def increment(self, step=1):\n        self.count += step\n\n    def reset(self):\n        self.count = 0\n\nc = Counter()\nc.increment()\nc.increment(5)\nprint(c.count)\nc.reset()\nprint(c.count)\n",
+          "runnable": true,
+          "expected_output": "6\n0\n"
+        },
+        {
+          "kind": "text",
+          "md": "메서드는 값을 돌려줄 수도 있고, `self.다른메서드()`로 같은 객체의 다른 메서드를 부를 수도 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "class Circle:\n    def __init__(self, r):\n        self.r = r\n\n    def area(self):\n        return 3.14 * self.r ** 2\n\n    def describe(self):\n        return f\"반지름 {self.r}, 넓이 {self.area():.1f}\"\n\nprint(Circle(2).describe())\n",
+          "runnable": true,
+          "expected_output": "반지름 2, 넓이 12.6\n"
+        },
+        {
+          "kind": "tip",
+          "md": "메서드 정의에 `self`를 빠뜨리면 호출할 때 `TypeError: ... takes 0 positional arguments but 1 was given` 오류가 납니다. 파이썬이 객체를 첫 인자로 자동으로 넘기기 때문이에요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "입금·출금 메서드를 완성하세요.",
+      "exercise_ids": [
+        "d37_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "장바구니 클래스를 메서드로 설계하세요. `simulate` 함수는 채점용입니다.",
+      "exercise_ids": [
+        "d37_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "메서드 = 클래스 안의 함수, 첫 매개변수는 `self`.",
+        "호출: `객체.메서드(인자)` (self는 자동 전달).",
+        "메서드 안에서 `self.속성`으로 상태를 읽고 바꾼다.",
+        "`self.다른메서드()`로 메서드끼리 협력한다."
+      ],
+      "quiz": [
+        {
+          "id": "d37_summary_q1",
+          "question_md": "`def add(self, x):`로 정의한 메서드를 올바르게 호출한 것은?",
+          "choices": [
+            "`obj.add(obj, 3)`",
+            "`obj.add(3)`",
+            "`add(3)`",
+            "`obj.add(self, 3)`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`self`는 파이썬이 자동으로 넘깁니다."
+        },
+        {
+          "id": "d37_summary_q2",
+          "question_md": "메서드가 객체의 상태를 바꾸려면?",
+          "choices": [
+            "지역 변수에 저장",
+            "`self.속성`에 저장",
+            "`return`만 한다",
+            "전역 변수 사용"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`self`에 저장해야 객체에 남습니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d37_fill_1",
+      "kind": "fill_blank",
+      "title": "은행 계좌",
+      "prompt_md": "`BankAccount`의 입금 메서드와 `run` 함수의 빈칸을 채우세요. `ops`는 `[\"in\" 또는 \"out\", 금액]` 목록입니다.",
+      "concepts": [
+        "method"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "class BankAccount:\n    def __init__(self, balance=0):\n        self.balance = balance\n\n    def deposit(self, amount):\n        self.balance ____ amount\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            raise ValueError(\"잔액 부족\")\n        self.balance -= amount\n\n\ndef run(ops):\n    acc = BankAccount()\n    for kind, amount in ops:\n        if kind == \"in\":\n            acc.____(amount)\n        else:\n            acc.withdraw(amount)\n    return acc.balance\n",
+      "entry": {
+        "mode": "function",
+        "name": "run"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "입금 후 출금",
+          "call": {
+            "args": [
+              [
+                [
+                  "in",
+                  100
+                ],
+                [
+                  "out",
+                  30
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": 70
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "잔액 부족",
+          "call": {
+            "args": [
+              [
+                [
+                  "out",
+                  1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  "in",
+                  5
+                ],
+                [
+                  "in",
+                  7
+                ],
+                [
+                  "out",
+                  12
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        }
+      ],
+      "hints": [
+        "잔액에 금액을 더해 다시 저장하는 복합 대입 연산자입니다.",
+        "입금을 담당하는 메서드 이름을 쓰세요."
+      ],
+      "solution": "class BankAccount:\n    def __init__(self, balance=0):\n        self.balance = balance\n\n    def deposit(self, amount):\n        self.balance += amount\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            raise ValueError(\"잔액 부족\")\n        self.balance -= amount\n\n\ndef run(ops):\n    acc = BankAccount()\n    for kind, amount in ops:\n        if kind == \"in\":\n            acc.deposit(amount)\n        else:\n            acc.withdraw(amount)\n    return acc.balance\n"
+    },
+    {
+      "id": "d37_code_1",
+      "kind": "coding",
+      "title": "장바구니",
+      "prompt_md": "`ShoppingCart` 클래스를 작성하세요.\n\n- `add(name, price, qty=1)`: 상품 추가. 이미 있으면 수량만 더합니다.\n- `remove(name)`: 상품 삭제. 없으면 `KeyError`.\n- `total()`: 가격 × 수량의 합계, `count()`: 전체 수량.\n\n`simulate` 함수는 채점용이니 그대로 두세요.",
+      "concepts": [
+        "method",
+        "class",
+        "dict"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "class ShoppingCart:\n    def __init__(self):\n        self.items = {}  # 이름 → [가격, 수량]\n\n    # 여기에 메서드를 작성하세요\n\n\ndef simulate(commands):\n    cart = ShoppingCart()\n    for c in commands:\n        if c[0] == \"add\":\n            cart.add(c[1], c[2], c[3])\n        else:\n            cart.remove(c[1])\n    return [cart.total(), cart.count()]\n",
+      "entry": {
+        "mode": "function",
+        "name": "simulate"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "같은 상품 추가",
+          "call": {
+            "args": [
+              [
+                [
+                  "add",
+                  "사과",
+                  1000,
+                  2
+                ],
+                [
+                  "add",
+                  "우유",
+                  2500,
+                  1
+                ],
+                [
+                  "add",
+                  "사과",
+                  1000,
+                  1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              5500,
+              4
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "삭제",
+          "call": {
+            "args": [
+              [
+                [
+                  "add",
+                  "빵",
+                  3000,
+                  1
+                ],
+                [
+                  "remove",
+                  "빵"
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "없는 상품",
+          "call": {
+            "args": [
+              [
+                [
+                  "remove",
+                  "없음"
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "raises": "KeyError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  "add",
+                  "a",
+                  100,
+                  5
+                ],
+                [
+                  "add",
+                  "b",
+                  50,
+                  2
+                ],
+                [
+                  "remove",
+                  "a"
+                ],
+                [
+                  "add",
+                  "c",
+                  10,
+                  1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              110,
+              3
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`self.items`에 이름이 있으면 수량에 더하고, 없으면 `[price, qty]`를 새로 넣습니다.",
+        "`remove`는 `in`으로 확인한 뒤 `del self.items[name]`.",
+        "`total`과 `count`는 `self.items.values()`를 돌며 합계를 구합니다."
+      ],
+      "solution": "class ShoppingCart:\n    def __init__(self):\n        self.items = {}  # 이름 → [가격, 수량]\n\n    def add(self, name, price, qty=1):\n        if name in self.items:\n            self.items[name][1] += qty\n        else:\n            self.items[name] = [price, qty]\n\n    def remove(self, name):\n        if name not in self.items:\n            raise KeyError(name)\n        del self.items[name]\n\n    def total(self):\n        result = 0\n        for price, qty in self.items.values():\n            result += price * qty\n        return result\n\n    def count(self):\n        result = 0\n        for _, qty in self.items.values():\n            result += qty\n        return result\n\n\ndef simulate(commands):\n    cart = ShoppingCart()\n    for c in commands:\n        if c[0] == \"add\":\n            cart.add(c[1], c[2], c[3])\n        else:\n            cart.remove(c[1])\n    return [cart.total(), cart.count()]\n",
+      "checks": {
+        "required_syntax": [
+          "class",
+          "def"
+        ]
+      }
+    }
+  ]
+}

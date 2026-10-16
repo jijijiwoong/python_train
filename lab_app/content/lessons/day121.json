@@ -1,0 +1,335 @@
+{
+  "schema_version": 1,
+  "day": 121,
+  "title": "텐서 연산과 브로드캐스팅",
+  "stage": "dl",
+  "week": 18,
+  "is_review": false,
+  "objectives": [
+    "원소별 연산과 행렬 곱(@)을 구분할 수 있다.",
+    "브로드캐스팅과 dim 방향 집계를 사용할 수 있다."
+  ],
+  "concepts": [
+    "tensor_ops",
+    "tensor"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 텐서를 만들고 정보를 확인했습니다.",
+      "quiz": [
+        {
+          "id": "d121_review_q1",
+          "question_md": "`torch.arange(0, 6, 2)`의 값은?",
+          "choices": [
+            "[0, 2, 4]",
+            "[0, 2, 4, 6]",
+            "[2, 4, 6]",
+            "[0, 1, 2]"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "계산하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`+ - * /`는 같은 위치끼리 계산하는 **원소별 연산**, `@`는 **행렬 곱**입니다. 신경망의 한 층은 결국 `X @ W + b`입니다.\n\n모양이 다르면 NumPy처럼 **브로드캐스팅**이 적용됩니다. `sum(dim=0)`은 행 방향으로 접어 열마다, `sum(dim=1)`은 행마다 계산합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\n\nX = torch.tensor([[1.0, 2.0], [3.0, 4.0]])\nW = torch.tensor([[1.0], [0.5]])\nprint(X * 2)\nprint(X @ W)\nprint(X + torch.tensor([10.0, 20.0]))\nprint(X.sum(dim=0), X.mean(dim=1))\n",
+          "runnable": true,
+          "expected_output": "tensor([[2., 4.],\n        [6., 8.]])\ntensor([[2.],\n        [5.]])\ntensor([[11., 22.],\n        [13., 24.]])\ntensor([4., 6.]) tensor([1.5000, 3.5000])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "행렬 곱은 앞 텐서의 열 수와 뒤 텐서의 행 수가 같아야 합니다. `(2, 3) @ (3, 4)` → `(2, 4)`."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "선형 변환을 계산하세요.",
+      "exercise_ids": [
+        "d121_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "열마다 표준화하세요.",
+      "exercise_ids": [
+        "d121_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`*`는 원소별 곱, `@`는 행렬 곱.",
+        "신경망 층 = `X @ W + b`.",
+        "모양이 다르면 브로드캐스팅.",
+        "`dim=0`은 열마다, `dim=1`은 행마다 집계."
+      ],
+      "quiz": [
+        {
+          "id": "d121_summary_q1",
+          "question_md": "`(4, 3) @ (3, 2)`의 결과 모양은?",
+          "choices": [
+            "(4, 2)",
+            "(3, 3)",
+            "(4, 3)",
+            "오류"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d121_summary_q2",
+          "question_md": "2차원 텐서에서 열마다 평균을 구하려면?",
+          "choices": [
+            "`mean(dim=0)`",
+            "`mean(dim=1)`",
+            "`mean()`",
+            "`mean(dim=2)`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d121_fill_1",
+      "kind": "fill_blank",
+      "title": "선형 변환",
+      "prompt_md": "입력 `x`, 가중치 `w`, 편향 `b`로 `x @ w + b`를 계산해 반환하세요.",
+      "concepts": [
+        "tensor_ops"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef linear(x, w, b):\n    X = torch.tensor(x, dtype=torch.float32)\n    W = torch.tensor(w, dtype=torch.float32)\n    return X ____ W + torch.tensor(b, dtype=torch.float32)\n",
+      "entry": {
+        "mode": "function",
+        "name": "linear"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2
+                ]
+              ],
+              [
+                [
+                  1
+                ],
+                [
+                  1
+                ]
+              ],
+              [
+                0.5
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                3.5
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  1
+                ]
+              ],
+              [
+                [
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5
+                ]
+              ],
+              [
+                1,
+                -1
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                3.0,
+                2.0
+              ],
+              [
+                5.0,
+                4.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "행렬 곱 연산자는 기호 하나입니다.",
+        "이메일 주소에 들어가는 기호와 같습니다."
+      ],
+      "solution": "import torch\n\n\ndef linear(x, w, b):\n    X = torch.tensor(x, dtype=torch.float32)\n    W = torch.tensor(w, dtype=torch.float32)\n    return X @ W + torch.tensor(b, dtype=torch.float32)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d121_code_1",
+      "kind": "coding",
+      "title": "열 표준화",
+      "prompt_md": "2차원 목록을 `float32` 텐서로 만들어 열마다 `(x - 평균) / 표준편차`로 바꾼 텐서를 반환하세요. 표준편차는 `std(dim=0, correction=0)`으로 구합니다.",
+      "concepts": [
+        "tensor_ops"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef standardize(rows):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "standardize"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  10
+                ],
+                [
+                  3,
+                  30
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -1.0,
+                -1.0
+              ],
+              [
+                1.0,
+                1.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  0,
+                  6
+                ],
+                [
+                  7,
+                  8,
+                  0
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -1.2247447967529297,
+                -0.3922322392463684,
+                0.0
+              ],
+              [
+                0.0,
+                -0.9805806279182434,
+                1.2247447967529297
+              ],
+              [
+                1.2247447967529297,
+                1.3728129863739014,
+                -1.2247447967529297
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "평균과 표준편차를 `dim=0`으로 구하면 열마다 값이 하나씩 나옵니다.",
+        "브로드캐스팅 덕분에 `(n, m) - (m,)`이 그대로 계산됩니다."
+      ],
+      "solution": "import torch\n\n\ndef standardize(rows):\n    X = torch.tensor(rows, dtype=torch.float32)\n    return (X - X.mean(dim=0)) / X.std(dim=0, correction=0)\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

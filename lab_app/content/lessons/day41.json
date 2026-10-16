@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "day": 41,
+  "title": "클래스 변수와 dataclass",
+  "stage": "advanced_data",
+  "week": 6,
+  "is_review": false,
+  "objectives": [
+    "클래스 변수와 인스턴스 변수를 구분할 수 있다.",
+    "@classmethod, @staticmethod, @dataclass를 쓸 수 있다."
+  ],
+  "concepts": [
+    "classmethod",
+    "class"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `@property`로 속성을 보호했습니다.",
+      "quiz": [
+        {
+          "id": "d41_review_q1",
+          "question_md": "`_balance`처럼 이름 앞의 밑줄 하나가 뜻하는 것은?",
+          "choices": [
+            "비공개 강제",
+            "내부용이라는 약속",
+            "상수",
+            "클래스 변수"
+          ],
+          "answer_index": 1,
+          "explanation_md": "파이썬은 강제하지 않고, 개발자 사이의 약속입니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "클래스 전체가 공유하는 것들",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "클래스 바로 아래에 쓴 변수는 모든 객체가 공유하는 **클래스 변수**입니다. `@classmethod`는 객체 대신 클래스(`cls`)를 받아 **다른 방식의 생성자**를 만들 때, `@staticmethod`는 `self`가 필요 없는 도우미 함수를 클래스 안에 둘 때 씁니다."
+        },
+        {
+          "kind": "code",
+          "code": "class Student:\n    school = \"파이썬고\"\n    count = 0\n\n    def __init__(self, name):\n        self.name = name\n        Student.count += 1\n\n    @classmethod\n    def from_string(cls, text):\n        name = text.split(\":\")[1]\n        return cls(name)\n\n    @staticmethod\n    def is_valid_name(name):\n        return len(name) >= 2\n\na = Student(\"민준\")\nb = Student.from_string(\"이름:서연\")\nprint(b.name, Student.count, a.school)\nprint(Student.is_valid_name(\"A\"))\n",
+          "runnable": true,
+          "expected_output": "서연 2 파이썬고\nFalse\n"
+        },
+        {
+          "kind": "text",
+          "md": "데이터를 담는 것이 주 목적인 클래스는 `@dataclass`가 `__init__`, `__repr__`, `__eq__`를 자동으로 만들어 줍니다. 필드는 `이름: 자료형` 형식으로 적습니다."
+        },
+        {
+          "kind": "code",
+          "code": "from dataclasses import dataclass\n\n@dataclass\nclass Item:\n    name: str\n    price: int\n    qty: int = 1\n\n    def total(self):\n        return self.price * self.qty\n\na = Item(\"펜\", 1000, 3)\nprint(a)\nprint(a.total())\nprint(a == Item(\"펜\", 1000, 3))\n",
+          "runnable": true,
+          "expected_output": "Item(name='펜', price=1000, qty=3)\n3000\nTrue\n"
+        },
+        {
+          "kind": "tip",
+          "md": "클래스 변수를 `self.count += 1`로 바꾸면 그 객체에만 새 인스턴스 변수가 생깁니다. 공유 값을 바꿀 때는 `클래스이름.변수`로 쓰세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "dataclass로 좌표를 정의하세요.",
+      "exercise_ids": [
+        "d41_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "dataclass와 classmethod, staticmethod를 함께 씁니다. `run`은 채점용입니다.",
+      "exercise_ids": [
+        "d41_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "클래스 변수: 모든 객체가 공유, `클래스.변수`로 수정.",
+        "`@classmethod def f(cls, ...)`: 대체 생성자 등.",
+        "`@staticmethod`: self가 필요 없는 도우미.",
+        "`@dataclass`: `__init__`·`__repr__`·`__eq__` 자동 생성."
+      ],
+      "quiz": [
+        {
+          "id": "d41_summary_q1",
+          "question_md": "`@classmethod`의 첫 매개변수 관례 이름은?",
+          "choices": [
+            "`self`",
+            "`cls`",
+            "`klass`",
+            "없음"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d41_summary_q2",
+          "question_md": "`@dataclass`가 자동으로 만들어 주지 **않는** 것은?",
+          "choices": [
+            "`__init__`",
+            "`__repr__`",
+            "`__eq__`",
+            "속성 검증 로직"
+          ],
+          "answer_index": 3,
+          "explanation_md": "검증은 직접 작성해야 합니다(`__post_init__` 등)."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d41_fill_1",
+      "kind": "fill_blank",
+      "title": "dataclass 좌표",
+      "prompt_md": "`y`의 기본값이 0인 dataclass `Point`를 완성하세요.",
+      "concepts": [
+        "classmethod"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from dataclasses import ____\n\n\n@dataclass\nclass Point:\n    x: int\n    y: int = ____\n\n\ndef check(x):\n    p = Point(x)\n    return [p.x, p.y, p == Point(x, 0)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본값",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              0,
+              true
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              -1
+            ]
+          },
+          "expect": {
+            "return": [
+              -1,
+              0,
+              true
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "데코레이터 이름과 같은 이름을 모듈에서 가져옵니다.",
+        "기본값은 숫자 0입니다."
+      ],
+      "solution": "from dataclasses import dataclass\n\n\n@dataclass\nclass Point:\n    x: int\n    y: int = 0\n\n\ndef check(x):\n    p = Point(x)\n    return [p.x, p.y, p == Point(x, 0)]\n"
+    },
+    {
+      "id": "d41_code_1",
+      "kind": "coding",
+      "title": "상품 목록",
+      "prompt_md": "dataclass `Product(name, price, category=\"기타\")`를 만들고 다음을 추가하세요.\n\n- `@classmethod from_csv(cls, line)`: `\"이름,가격,분류\"` 또는 `\"이름,가격\"`을 해석해 객체를 만듭니다(가격은 정수).\n- `@staticmethod discounted(price, rate)`: `int(price * (1 - rate))`를 반환합니다.\n\n`run`은 채점용입니다. 예: `run([\"펜,1000,문구\", \"노트,3000\"], 0.1)` → `[[[\"펜\", 1000, \"문구\"], [\"노트\", 3000, \"기타\"]], 3600]`",
+      "concepts": [
+        "classmethod",
+        "class",
+        "string_parsing"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from dataclasses import dataclass\n\n# 여기에 Product 클래스를 작성하세요\n\n\ndef run(lines, rate):\n    products = [Product.from_csv(line) for line in lines]\n    rows = [[p.name, p.price, p.category] for p in products]\n    total = sum(Product.discounted(p.price, rate) for p in products)\n    return [rows, total]\n",
+      "entry": {
+        "mode": "function",
+        "name": "run"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "분류 생략",
+          "call": {
+            "args": [
+              [
+                "펜,1000,문구",
+                "노트,3000",
+                "물,800,식품"
+              ],
+              0.1
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                [
+                  "펜",
+                  1000,
+                  "문구"
+                ],
+                [
+                  "노트",
+                  3000,
+                  "기타"
+                ],
+                [
+                  "물",
+                  800,
+                  "식품"
+                ]
+              ],
+              4320
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [],
+              0.5
+            ]
+          },
+          "expect": {
+            "return": [
+              [],
+              0
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "책,15000,도서"
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                [
+                  "책",
+                  15000,
+                  "도서"
+                ]
+              ],
+              15000
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "필드 세 개를 선언하고 `category`에 기본값을 줍니다.",
+        "`from_csv`에서 `line.split(\",\")` 결과의 길이에 따라 `cls(이름, int(가격))` 또는 `cls(이름, int(가격), 분류)`를 반환합니다.",
+        "`discounted`는 `self`도 `cls`도 받지 않습니다."
+      ],
+      "solution": "from dataclasses import dataclass\n\n\n@dataclass\nclass Product:\n    name: str\n    price: int\n    category: str = \"기타\"\n\n    @classmethod\n    def from_csv(cls, line):\n        parts = line.split(\",\")\n        if len(parts) >= 3 and parts[2]:\n            return cls(parts[0], int(parts[1]), parts[2])\n        return cls(parts[0], int(parts[1]))\n\n    @staticmethod\n    def discounted(price, rate):\n        return int(price * (1 - rate))\n\n\ndef run(lines, rate):\n    products = [Product.from_csv(line) for line in lines]\n    rows = [[p.name, p.price, p.category] for p in products]\n    total = sum(Product.discounted(p.price, rate) for p in products)\n    return [rows, total]\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "day": 145,
+  "title": "CNN 학습과 평가",
+  "stage": "dl",
+  "week": 21,
+  "is_review": false,
+  "objectives": [
+    "손글씨 숫자를 CNN으로 학습시키고 테스트 정확도를 구할 수 있다."
+  ],
+  "concepts": [
+    "cnn",
+    "training_loop",
+    "dataloader"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 CNN 클래스를 만들었습니다. 오늘은 실제로 학습시킵니다. 학습 루프는 지난주와 **똑같습니다**.",
+      "quiz": [
+        {
+          "id": "d145_review_q1",
+          "question_md": "SmallCNN의 마지막 선형 층 입력 수는?",
+          "choices": [
+            "16",
+            "64",
+            "10",
+            "128"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "손글씨 숫자 학습",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "데이터를 학습 70%, 테스트 30%로 나누고 DataLoader로 감싼 뒤, Adam과 CrossEntropyLoss로 몇 에폭 학습합니다. 평가는 `model.eval()`과 `torch.no_grad()` 안에서 맞힌 개수를 세면 됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\ndigits = load_digits()\nX = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\ny = torch.tensor(digits.target)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)\nloader = DataLoader(TensorDataset(X_train, y_train), batch_size=64, shuffle=True,\n                    generator=torch.Generator().manual_seed(0))\ntorch.manual_seed(0)\nmodel = nn.Sequential(\n    nn.Conv2d(1, 8, 3, padding=1),\n    nn.ReLU(),\n    nn.MaxPool2d(2),\n    nn.Flatten(),\n    nn.Linear(8 * 4 * 4, 10),\n)\noptimizer = optim.Adam(model.parameters(), lr=0.01)\nfor epoch in range(5):\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    model.eval()\n    with torch.no_grad():\n        acc = (model(X_test).argmax(dim=1) == y_test).float().mean().item()\n    model.train()\n    print(epoch, round(acc, 3))\n",
+          "runnable": true,
+          "expected_output": "0 0.844\n1 0.911\n2 0.926\n3 0.943\n4 0.946\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "5 에폭 만에 약 95%를 맞힙니다. 에폭마다 테스트 정확도를 찍어 보면 언제 성능이 멈추는지 알 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "평가 함수를 완성하세요.",
+      "exercise_ids": [
+        "d145_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "SmallCNN을 학습시키세요.",
+      "exercise_ids": [
+        "d145_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "학습 루프는 모델 종류와 상관없이 같다.",
+        "평가: eval + no_grad + argmax.",
+        "에폭마다 정확도를 보면 학습 진행을 알 수 있다.",
+        "작은 CNN으로도 손글씨 숫자 약 95%."
+      ],
+      "quiz": [
+        {
+          "id": "d145_summary_q1",
+          "question_md": "평가할 때 `torch.no_grad()`를 쓰는 이유는?",
+          "choices": [
+            "기울기 계산이 필요 없어 빠르고 메모리 절약",
+            "정확도가 올라간다",
+            "드롭아웃을 끈다",
+            "학습률을 줄인다"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d145_summary_q2",
+          "question_md": "맞힌 개수를 세는 식은?",
+          "choices": [
+            "`(pred == y).sum()`",
+            "`pred.sum()`",
+            "`y.mean()`",
+            "`len(pred)`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d145_fill_1",
+      "kind": "fill_blank",
+      "title": "평가 함수",
+      "prompt_md": "모델과 DataLoader를 받아 정확도를 반환하는 `evaluate`를 완성하세요. 확인용으로 무작위 모델의 정확도를 계산합니다.",
+      "concepts": [
+        "cnn",
+        "dataloader"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.____():\n        for xb, yb in loader:\n            correct += (model(xb).____ == yb).sum().item()\n    model.train()\n    return correct / len(loader.dataset)\n\n\ndef random_model_accuracy(seed):\n    torch.manual_seed(seed)\n    X, y = torch.randn(40, 4), torch.randint(0, 3, (40,))\n    model = nn.Linear(4, 3)\n    return evaluate(model, DataLoader(TensorDataset(X, y), batch_size=16))\n",
+      "entry": {
+        "mode": "function",
+        "name": "random_model_accuracy"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": 0.35
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": 0.3
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "기울기 기록을 끄는 구역입니다.",
+        "가장 큰 로짓의 위치가 예측 클래스입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    model.train()\n    return correct / len(loader.dataset)\n\n\ndef random_model_accuracy(seed):\n    torch.manual_seed(seed)\n    X, y = torch.randn(40, 4), torch.randint(0, 3, (40,))\n    model = nn.Linear(4, 3)\n    return evaluate(model, DataLoader(TensorDataset(X, y), batch_size=16))\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d145_code_1",
+      "kind": "coding",
+      "title": "숫자 인식 CNN",
+      "prompt_md": "주어진 `digit_loaders(seed)`, `SmallCNN`, `evaluate`를 사용하세요. `torch.manual_seed(0)` 후 SmallCNN과 `optim.Adam(lr=0.01)`을 만들고 CrossEntropyLoss로 `epochs` 에폭 학습한 뒤 `[학습 정확도, 테스트 정확도]`(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "cnn",
+        "training_loop"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef digit_loaders(seed):\n    digits = load_digits()\n    X_train, X_test, y_train, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.3, random_state=seed, stratify=digits.target)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    train = TensorDataset(to_x(X_train), torch.tensor(y_train))\n    test = TensorDataset(to_x(X_test), torch.tensor(y_test))\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(train, batch_size=64, shuffle=True, generator=g), DataLoader(\n        test,\n        batch_size=256,\n    )\n\n\nclass SmallCNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.conv1 = nn.Conv2d(1, 8, 3, padding=1)\n        self.conv2 = nn.Conv2d(8, 16, 3, padding=1)\n        self.pool = nn.MaxPool2d(2)\n        self.fc = nn.Linear(16 * 2 * 2, 10)\n\n    def forward(self, x):\n        x = self.pool(torch.relu(self.conv1(x)))\n        x = self.pool(torch.relu(self.conv2(x)))\n        return self.fc(x.flatten(1))\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    model.train()\n    return correct / len(loader.dataset)\n\n\ndef train_digits(seed, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "train_digits"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              6
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9769,
+              0.9556
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9411,
+              0.9148
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "학습 루프는 지난주와 같습니다.",
+        "정확도는 주어진 `evaluate`를 두 DataLoader에 각각 부르면 됩니다."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef digit_loaders(seed):\n    digits = load_digits()\n    X_train, X_test, y_train, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.3, random_state=seed, stratify=digits.target)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    train = TensorDataset(to_x(X_train), torch.tensor(y_train))\n    test = TensorDataset(to_x(X_test), torch.tensor(y_test))\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(train, batch_size=64, shuffle=True, generator=g), DataLoader(\n        test,\n        batch_size=256,\n    )\n\n\nclass SmallCNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.conv1 = nn.Conv2d(1, 8, 3, padding=1)\n        self.conv2 = nn.Conv2d(8, 16, 3, padding=1)\n        self.pool = nn.MaxPool2d(2)\n        self.fc = nn.Linear(16 * 2 * 2, 10)\n\n    def forward(self, x):\n        x = self.pool(torch.relu(self.conv1(x)))\n        x = self.pool(torch.relu(self.conv2(x)))\n        return self.fc(x.flatten(1))\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    model.train()\n    return correct / len(loader.dataset)\n\n\ndef train_digits(seed, epochs):\n    train_loader, test_loader = digit_loaders(seed)\n    torch.manual_seed(0)\n    model = SmallCNN()\n    optimizer = optim.Adam(model.parameters(), lr=0.01)\n    for _ in range(epochs):\n        for xb, yb in train_loader:\n            loss = nn.CrossEntropyLoss()(model(xb), yb)\n            optimizer.zero_grad()\n            loss.backward()\n            optimizer.step()\n    return [round(evaluate(model, train_loader), 4), round(evaluate(model, test_loader), 4)]\n",
+      "time_limit_sec": 90
+    }
+  ]
+}

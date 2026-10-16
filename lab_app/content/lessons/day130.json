@@ -1,0 +1,311 @@
+{
+  "schema_version": 1,
+  "day": 130,
+  "title": "옵티마이저와 학습 루프",
+  "stage": "dl",
+  "week": 19,
+  "is_review": false,
+  "objectives": [
+    "optimizer.zero_grad, loss.backward, optimizer.step의 순서를 쓸 수 있다.",
+    "nn.Linear를 학습 루프로 학습시킬 수 있다."
+  ],
+  "concepts": [
+    "training_loop",
+    "loss_fn",
+    "nn_linear"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 손실 함수를 배웠습니다. Day 125에서 손으로 썼던 갱신 과정을 이제 **옵티마이저**가 맡습니다.",
+      "quiz": [
+        {
+          "id": "d130_review_q1",
+          "question_md": "회귀 문제에 쓰는 손실 함수는?",
+          "choices": [
+            "CrossEntropyLoss",
+            "MSELoss",
+            "BCEWithLogitsLoss",
+            "softmax"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "학습 루프의 표준 형태",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`optim.SGD(model.parameters(), lr=0.1)`은 모델의 모든 매개변수를 경사하강법으로 갱신합니다. 학습 루프는 항상 같은 모양입니다.\n\n1. `pred = model(X)`, `loss = loss_fn(pred, y)`\n2. `optimizer.zero_grad()` (기울기 지우기)\n3. `loss.backward()`\n4. `optimizer.step()` (갱신)"
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn, optim\n\ntorch.manual_seed(0)\nX = torch.tensor([[1.0], [2.0], [3.0], [4.0]])\ny = 3 * X - 1\nmodel = nn.Linear(1, 1)\nloss_fn = nn.MSELoss()\noptimizer = optim.SGD(model.parameters(), lr=0.05)\nfor epoch in range(1000):\n    loss = loss_fn(model(X), y)\n    optimizer.zero_grad()\n    loss.backward()\n    optimizer.step()\nprint(round(model.weight.item(), 3), round(model.bias.item(), 3))\n",
+          "runnable": true,
+          "expected_output": "3.0 -1.0\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "`zero_grad()`는 `backward()` 전이면 어디에 두어도 됩니다. 루프 맨 앞에 두는 사람도 많아요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "학습 루프를 완성하세요.",
+      "exercise_ids": [
+        "d130_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "선형 모델을 학습시키세요.",
+      "exercise_ids": [
+        "d130_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "옵티마이저 = 매개변수 갱신 담당.",
+        "zero_grad → backward → step.",
+        "`optim.SGD(model.parameters(), lr=...)`.",
+        "같은 모양의 루프가 모든 신경망 학습에 쓰인다."
+      ],
+      "quiz": [
+        {
+          "id": "d130_summary_q1",
+          "question_md": "기울기로 매개변수를 실제로 바꾸는 호출은?",
+          "choices": [
+            "`loss.backward()`",
+            "`optimizer.step()`",
+            "`optimizer.zero_grad()`",
+            "`model(X)`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d130_summary_q2",
+          "question_md": "옵티마이저를 만들 때 넘기는 것은?",
+          "choices": [
+            "손실 함수",
+            "`model.parameters()`",
+            "입력 데이터",
+            "에폭 수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d130_fill_1",
+      "kind": "fill_blank",
+      "title": "루프 완성",
+      "prompt_md": "`torch.manual_seed(0)` 후 `nn.Linear(1, 1)`을 y = 2x 데이터로 `steps`번 학습(SGD, lr 0.1)하고 마지막 손실(소수 넷째 자리)을 반환하세요.",
+      "concepts": [
+        "training_loop"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\n\n\ndef final_loss(____s):\n    torch.manual_seed(0)\n    X = torch.tensor([[0.0], [1.0], [2.0]])\n    y = 2 * X\n    model = nn.Linear(1, 1)\n    optimizer = optim.SGD(model.parameters(), lr=0.1)\n    for _ in range(steps):\n        loss = nn.MSELoss()(model(X), y)\n        optimizer.____()\n        loss.backward()\n        optimizer.step()\n    return round(loss.item(), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "final_loss"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": 4.8506
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              20
+            ]
+          },
+          "expect": {
+            "return": 0.0814
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              200
+            ]
+          },
+          "expect": {
+            "return": 0.0
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        }
+      ],
+      "hints": [
+        "기울기를 지우는 옵티마이저 메서드입니다.",
+        "기울기로 매개변수를 갱신하는 메서드입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\n\n\ndef final_loss(steps):\n    torch.manual_seed(0)\n    X = torch.tensor([[0.0], [1.0], [2.0]])\n    y = 2 * X\n    model = nn.Linear(1, 1)\n    optimizer = optim.SGD(model.parameters(), lr=0.1)\n    for _ in range(steps):\n        loss = nn.MSELoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return round(loss.item(), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d130_code_1",
+      "kind": "coding",
+      "title": "선형 모델 학습",
+      "prompt_md": "`torch.manual_seed(0)` 후 `nn.Linear(1, 1)`, `nn.MSELoss()`, `optim.SGD(lr=lr)`로 `epochs`번 학습하세요. 입력 `xs`는 1차원 목록이니 (n, 1) 모양으로 바꿉니다. `[가중치, 편향]`을 소수 셋째 자리로 반환하세요.",
+      "concepts": [
+        "training_loop",
+        "nn_linear"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\n\n\ndef train_linear(xs, ys, lr, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "train_linear"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                2,
+                5,
+                8,
+                11
+              ],
+              0.05,
+              1000
+            ]
+          },
+          "expect": {
+            "return": [
+              3.0,
+              -1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                1,
+                1.5,
+                2
+              ],
+              0.1,
+              500
+            ]
+          },
+          "expect": {
+            "return": [
+              0.5,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1,
+                2
+              ],
+              [
+                0,
+                0
+              ],
+              0.1,
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              -0.224,
+              0.379
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        }
+      ],
+      "hints": [
+        "`reshape(-1, 1)`로 입력과 정답을 열 하나짜리로 만드세요.",
+        "개념 예제의 루프와 같은 순서로 작성합니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\n\n\ndef train_linear(xs, ys, lr, epochs):\n    torch.manual_seed(0)\n    X = torch.tensor(xs, dtype=torch.float32).reshape(-1, 1)\n    y = torch.tensor(ys, dtype=torch.float32).reshape(-1, 1)\n    model = nn.Linear(1, 1)\n    loss_fn = nn.MSELoss()\n    optimizer = optim.SGD(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        loss = loss_fn(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return [round(model.weight.item(), 3), round(model.bias.item(), 3)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

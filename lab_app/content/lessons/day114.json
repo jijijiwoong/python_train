@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "day": 114,
+  "title": "범주형 인코딩",
+  "stage": "ml",
+  "week": 17,
+  "is_review": false,
+  "objectives": [
+    "원-핫 인코딩으로 범주형 특성을 숫자로 바꿀 수 있다.",
+    "처음 보는 범주(handle_unknown)를 안전하게 처리할 수 있다."
+  ],
+  "concepts": [
+    "encoding",
+    "pandas_transform"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 숫자 특성의 크기를 맞추는 스케일링을 배웠습니다. 문자로 된 특성은 어떻게 할까요?",
+      "quiz": [
+        {
+          "id": "d114_review_q1",
+          "question_md": "모델이 직접 다룰 수 있는 값은?",
+          "choices": [
+            "문자열",
+            "숫자",
+            "둘 다",
+            "날짜만"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "글자 범주를 숫자로",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "\"basic/standard/premium\" 같은 범주를 0, 1, 2로 바꾸면 모델이 \"premium은 basic의 2배\" 같은 없는 순서를 배울 수 있습니다. **원-핫 인코딩**은 범주마다 0/1 열을 하나씩 만듭니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nimport pandas as pd\nfrom sklearn.preprocessing import OneHotEncoder\n\nplans = np.array([\"basic\", \"premium\", \"basic\", \"standard\"]).reshape(-1, 1)\nenc = OneHotEncoder(sparse_output=False, handle_unknown=\"ignore\").fit(plans)\nprint(enc.categories_)\nprint(enc.transform([[\"premium\"], [\"gold\"]]))\nprint(pd.get_dummies(pd.Series([\"A\", \"B\", \"A\"]), dtype=int))\n",
+          "runnable": true,
+          "expected_output": "[array(['basic', 'premium', 'standard'], dtype='<U8')]\n[[0. 1. 0.]\n [0. 0. 0.]]\n   A  B\n0  1  0\n1  0  1\n2  1  0\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "`handle_unknown=\"ignore\"`를 주면 학습 때 없던 범주(\"gold\")가 들어와도 오류 없이 모두 0인 행이 됩니다. pandas의 `get_dummies`는 빠르게 볼 때 편하지만, 학습·테스트 열을 맞춰야 하니 모델용으로는 OneHotEncoder가 안전합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "원-핫 인코더를 만드세요.",
+      "exercise_ids": [
+        "d114_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "범주 목록과 변환 결과를 확인하세요.",
+      "exercise_ids": [
+        "d114_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "범주형 → 원-핫(범주마다 0/1 열).",
+        "`OneHotEncoder(handle_unknown=\"ignore\")`로 새 범주 대비.",
+        "`categories_`로 배운 범주 확인.",
+        "순서 없는 범주를 0, 1, 2로 바꾸면 없는 순서가 생긴다."
+      ],
+      "quiz": [
+        {
+          "id": "d114_summary_q1",
+          "question_md": "범주 3개를 원-핫 인코딩하면 열 수는?",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "6"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d114_summary_q2",
+          "question_md": "handle_unknown=\"ignore\"에서 새 범주의 변환 결과는?",
+          "choices": [
+            "오류",
+            "모두 0",
+            "모두 1",
+            "첫 범주로"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d114_fill_1",
+      "kind": "fill_blank",
+      "title": "인코더 만들기",
+      "prompt_md": "값 목록으로 원-핫 인코더를 학습해 범주 수를 반환하세요.",
+      "concepts": [
+        "encoding"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.preprocessing import ____\n\n\ndef category_count(values):\n    enc = OneHotEncoder().fit(np.array(values).reshape(-1, ____))\n    return len(enc.categories_[0])\n",
+      "entry": {
+        "mode": "function",
+        "name": "category_count"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                "a",
+                "b",
+                "a",
+                "c"
+              ]
+            ]
+          },
+          "expect": {
+            "return": 3
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "x"
+              ]
+            ]
+          },
+          "expect": {
+            "return": 1
+          }
+        }
+      ],
+      "hints": [
+        "원-핫 인코더 클래스 이름입니다.",
+        "열 하나짜리 2차원으로 바꾸려면 열 수를 1로 줍니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.preprocessing import OneHotEncoder\n\n\ndef category_count(values):\n    enc = OneHotEncoder().fit(np.array(values).reshape(-1, 1))\n    return len(enc.categories_[0])\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d114_code_1",
+      "kind": "coding",
+      "title": "원-핫 변환",
+      "prompt_md": "값 목록으로 `OneHotEncoder(sparse_output=False, handle_unknown=\"ignore\")`를 학습하고, `[\"unknown\"]`과 `[목록의 첫 값]` 두 행을 변환하세요. `[범주 리스트, 변환 결과(정수 리스트의 리스트)]`를 반환합니다.",
+      "concepts": [
+        "encoding"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.preprocessing import OneHotEncoder\n\n\ndef encode(values):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "encode"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "요금제",
+          "call": {
+            "args": [
+              [
+                "basic",
+                "premium",
+                "basic",
+                "standard"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "basic",
+                "premium",
+                "standard"
+              ],
+              [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  0,
+                  0
+                ]
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "서울",
+                "부산"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "부산",
+                "서울"
+              ],
+              [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "값을 `(n, 1)` 모양으로 바꿔 fit 하세요.",
+        "`enc.transform([[\"unknown\"], [values[0]]])`의 결과를 `astype(int)`로."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.preprocessing import OneHotEncoder\n\n\ndef encode(values):\n    enc = OneHotEncoder(sparse_output=False, handle_unknown=\"ignore\")\n    enc.fit(np.array(values).reshape(-1, 1))\n    encoded = enc.transform([[\"unknown\"], [values[0]]]).astype(int)\n    return [enc.categories_[0].tolist(), encoded.tolist()]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

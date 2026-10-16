@@ -1,0 +1,288 @@
+{
+  "schema_version": 1,
+  "day": 141,
+  "title": "이미지 데이터와 텐서",
+  "stage": "dl",
+  "week": 21,
+  "is_review": false,
+  "objectives": [
+    "이미지를 (개수, 채널, 높이, 너비) 텐서로 표현할 수 있다.",
+    "픽셀 값을 0~1로 정규화할 수 있다."
+  ],
+  "concepts": [
+    "image_tensor",
+    "tensor_shape"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "21주차 시작",
+      "content_md": "이번 주는 이미지를 다루는 **합성곱 신경망**(CNN)을 배웁니다. 지난주까지 쓴 학습 루프는 그대로 쓰고 모델만 바뀝니다.",
+      "quiz": [
+        {
+          "id": "d141_review_q1",
+          "question_md": "`unsqueeze(1)`을 (5, 8, 8) 텐서에 적용하면?",
+          "choices": [
+            "(1, 5, 8, 8)",
+            "(5, 1, 8, 8)",
+            "(5, 8, 1, 8)",
+            "(5, 8, 8, 1)"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "이미지는 숫자 격자",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "흑백 이미지는 밝기 숫자의 2차원 격자이고, 컬러 이미지는 빨강·초록·파랑 3장(채널)입니다. PyTorch는 이미지 묶음을 **(N, C, H, W)** 모양으로 다룹니다. N은 개수, C는 채널, H·W는 높이·너비입니다.\n\nscikit-learn의 `load_digits()`는 8×8 손글씨 숫자 1,797장(밝기 0~16)입니다. 인터넷 없이 바로 쓸 수 있어 이번 주 내내 사용합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom sklearn.datasets import load_digits\n\ndigits = load_digits()\nprint(digits.images.shape, digits.target[:10])\nX = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\nprint(X.shape, X.min().item(), X.max().item())\nfor row in digits.images[0]:\n    print(\"\".join(\"#\" if v > 8 else \".\" for v in row))\n",
+          "runnable": true,
+          "expected_output": "(1797, 8, 8) [0 1 2 3 4 5 6 7 8 9]\ntorch.Size([1797, 1, 8, 8]) 0.0 1.0\n...##...\n..####..\n..#..#..\n..#.....\n.....#..\n..#..#..\n..#.##..\n...##...\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "값을 0~1로 나누어 주면(정규화) 학습이 안정적입니다. 일반 사진은 0~255라서 255로 나눕니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "이미지 텐서로 바꾸세요.",
+      "exercise_ids": [
+        "d141_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "숫자별 평균 이미지를 분석하세요.",
+      "exercise_ids": [
+        "d141_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "이미지 묶음 = (N, C, H, W).",
+        "흑백은 C = 1, 컬러는 C = 3.",
+        "픽셀을 0~1로 정규화.",
+        "digits: 8×8 손글씨 숫자, 값 0~16."
+      ],
+      "quiz": [
+        {
+          "id": "d141_summary_q1",
+          "question_md": "컬러 사진 32장(64×64)의 텐서 모양은?",
+          "choices": [
+            "(32, 64, 64, 3)",
+            "(32, 3, 64, 64)",
+            "(3, 32, 64, 64)",
+            "(64, 64, 3, 32)"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d141_summary_q2",
+          "question_md": "digits 픽셀의 최댓값은?",
+          "choices": [
+            "1",
+            "16",
+            "255",
+            "8"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d141_fill_1",
+      "kind": "fill_blank",
+      "title": "이미지 텐서",
+      "prompt_md": "digits 앞 `n`장을 (N, 1, 8, 8) 텐서로 바꾸고 16으로 나누어 `[모양 리스트, 최댓값]`을 반환하세요.",
+      "concepts": [
+        "image_tensor"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\n\n\ndef to_images(n):\n    images = load_digits().images[:n]\n    x = torch.tensor(images, dtype=torch.float32).____ / ____\n    return [list(x.shape), x.max().item()]\n",
+      "entry": {
+        "mode": "function",
+        "name": "to_images"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                5,
+                1,
+                8,
+                8
+              ],
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              100
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                100,
+                1,
+                8,
+                8
+              ],
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "채널 차원을 1번 위치에 추가하는 메서드입니다.",
+        "digits의 최대 밝기로 나눕니다."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\n\n\ndef to_images(n):\n    images = load_digits().images[:n]\n    x = torch.tensor(images, dtype=torch.float32).unsqueeze(1) / 16\n    return [list(x.shape), x.max().item()]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d141_code_1",
+      "kind": "coding",
+      "title": "평균 이미지",
+      "prompt_md": "digits에서 숫자 `digit`인 이미지만 골라 `[장수, 평균 이미지의 전체 평균(소수 넷째 자리), 평균 이미지에서 가장 밝은 칸의 (행, 열)]`을 반환하세요. 픽셀은 원래 값(0~16) 그대로 씁니다.",
+      "concepts": [
+        "image_tensor",
+        "tensor_ops"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\n\n\ndef digit_profile(digit):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "digit_profile"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              178,
+              4.9522,
+              [
+                2,
+                2
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              182,
+              4.8941,
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              7
+            ]
+          },
+          "expect": {
+            "return": [
+              179,
+              4.7389,
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "정답 텐서와 비교한 bool 텐서로 이미지를 고를 수 있습니다.",
+        "`argmax()`는 펼친 위치이므로 `// 8`, `% 8`로 행·열을 구합니다."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\n\n\ndef digit_profile(digit):\n    digits = load_digits()\n    images = torch.tensor(digits.images, dtype=torch.float32)\n    chosen = images[torch.tensor(digits.target) == digit]\n    mean_img = chosen.mean(dim=0)\n    idx = mean_img.argmax().item()\n    return [len(chosen), round(mean_img.mean().item(), 4), [idx // 8, idx % 8]]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

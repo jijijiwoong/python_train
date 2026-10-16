@@ -1,0 +1,323 @@
+{
+  "schema_version": 1,
+  "day": 100,
+  "title": "불순도 계산",
+  "stage": "ml",
+  "week": 15,
+  "is_review": false,
+  "objectives": [
+    "지니 불순도와 엔트로피를 계산할 수 있다.",
+    "트리가 불순도를 가장 많이 줄이는 질문을 고르는 원리를 구현할 수 있다."
+  ],
+  "concepts": [
+    "impurity",
+    "decision_tree"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 결정 트리가 질문을 반복해 데이터를 나누는 것을 봤습니다. 질문은 어떻게 고를까요?",
+      "quiz": [
+        {
+          "id": "d100_review_q1",
+          "question_md": "트리의 끝 칸(예측이 정해지는 곳)을 부르는 이름은?",
+          "choices": [
+            "뿌리",
+            "잎",
+            "가지",
+            "노드 0"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "얼마나 섞여 있나",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**지니 불순도** = 1 − Σ pᵢ² (pᵢ: 클래스 비율). 한 클래스만 있으면 0, 반반 섞이면 0.5입니다. **엔트로피** = −Σ pᵢ log₂ pᵢ 도 비슷한 \"섞임 정도\"입니다. 트리는 나눈 뒤 두 칸의 불순도를 **샘플 수로 가중 평균**한 값이 가장 작아지는 질문을 고릅니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\n\ndef gini(labels):\n    p = np.bincount(labels) / len(labels)\n    return 1 - (p ** 2).sum()\n\nprint(\n    gini(np.array([0, 0, 0, 0])),\n    gini(np.array([0, 0, 1, 1])),\n    round(gini(np.array([0, 1, 2])), 4),\n)\ny = np.array([0, 0, 0, 1, 1, 1])\nx = np.array([1, 2, 3, 4, 5, 6])\nfor th in [2, 3, 4]:\n    left, right = y[x <= th], y[x > th]\n    weighted = (len(left) * gini(left) + len(right) * gini(right)) / len(y)\n    print(th, round(weighted, 4))\n",
+          "runnable": true,
+          "expected_output": "0.0 0.5 0.6667\n2 0.25\n3 0.0\n4 0.25\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "scikit-learn 트리는 기본으로 지니를 쓰고, `criterion=\"entropy\"`로 바꿀 수 있습니다. 둘의 결과는 대부분 비슷합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "지니 불순도를 계산하세요.",
+      "exercise_ids": [
+        "d100_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "한 특성에서 가장 좋은 분할 기준값을 찾으세요.",
+      "exercise_ids": [
+        "d100_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "지니 = 1 − Σp², 순수하면 0.",
+        "엔트로피 = −Σ p log₂ p.",
+        "분할 평가 = 왼쪽·오른쪽 불순도의 샘플 수 가중 평균.",
+        "트리는 이 값을 가장 작게 만드는 질문을 고른다."
+      ],
+      "quiz": [
+        {
+          "id": "d100_summary_q1",
+          "question_md": "레이블 [0, 0, 1, 1]의 지니 불순도는?",
+          "choices": [
+            "0",
+            "0.25",
+            "0.5",
+            "1"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d100_summary_q2",
+          "question_md": "한 클래스만 있는 칸의 엔트로피는?",
+          "choices": [
+            "0",
+            "0.5",
+            "1",
+            "무한대"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d100_fill_1",
+      "kind": "fill_blank",
+      "title": "지니 불순도",
+      "prompt_md": "정수 레이블 목록의 지니 불순도(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "impurity"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef gini(labels):\n    labels = np.array(labels)\n    p = np.____(labels) / len(labels)\n    return round(float(1 - (p ____ 2).sum()), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "gini"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "반반",
+          "call": {
+            "args": [
+              [
+                0,
+                0,
+                1,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.5
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                2,
+                2,
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                1,
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.6667
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "값별 개수를 세는 NumPy 함수입니다(Day 55).",
+        "제곱 연산자입니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef gini(labels):\n    labels = np.array(labels)\n    p = np.bincount(labels) / len(labels)\n    return round(float(1 - (p ** 2).sum()), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d100_code_1",
+      "kind": "coding",
+      "title": "최적 분할 찾기",
+      "prompt_md": "특성 값 `xs`와 레이블 `ys`를 받아, `x <= 기준값`으로 나눌 때 가중 지니가 가장 작은 기준값을 찾으세요. 후보는 서로 다른 x 값 중 **가장 큰 값을 뺀** 값들이고, 동점이면 작은 기준값입니다. `[기준값, 가중 지니(소수 넷째 자리)]`를 반환합니다.",
+      "concepts": [
+        "impurity",
+        "decision_tree",
+        "numpy_indexing"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef best_split(xs, ys):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "best_split"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "깔끔한 경계",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                1,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              3.0,
+              0.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                3,
+                1,
+                2,
+                5,
+                4
+              ],
+              [
+                1,
+                0,
+                0,
+                1,
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              2.0,
+              0.2667
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                0,
+                1,
+                0,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              1.0,
+              0.3333
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "지니 함수를 하나 만들어 두세요(빈 목록이면 0).",
+        "후보는 `sorted(set(xs))[:-1]`. 기준마다 `ys[x <= th]`, `ys[x > th]`로 나눕니다.",
+        "가중 지니가 지금까지의 최솟값보다 **작을 때만** 바꾸면 동점에서 작은 기준값이 남습니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef gini(labels):\n    if len(labels) == 0:\n        return 0.0\n    p = np.bincount(labels) / len(labels)\n    return 1 - (p ** 2).sum()\n\n\ndef best_split(xs, ys):\n    x = np.array(xs, dtype=float)\n    y = np.array(ys)\n    best_th, best_score = None, None\n    for th in sorted(set(x.tolist()))[:-1]:\n        left, right = y[x <= th], y[x > th]\n        score = (len(left) * gini(left) + len(right) * gini(right)) / len(y)\n        if best_score is None or score < best_score:\n            best_th, best_score = th, score\n    return [best_th, round(float(best_score), 4)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

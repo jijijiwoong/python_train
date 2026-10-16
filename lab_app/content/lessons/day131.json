@@ -1,0 +1,271 @@
+{
+  "schema_version": 1,
+  "day": 131,
+  "title": "nn.Module로 모델 만들기",
+  "stage": "dl",
+  "week": 19,
+  "is_review": false,
+  "objectives": [
+    "nn.Module을 상속해 __init__에 층을, forward에 계산을 정의할 수 있다.",
+    "Sequential보다 자유로운 모델 구조를 만들 수 있다."
+  ],
+  "concepts": [
+    "nn_module",
+    "class",
+    "inheritance"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 학습 루프를 완성했습니다. 2단계에서 배운 **클래스와 상속**이 오늘 다시 등장합니다.",
+      "quiz": [
+        {
+          "id": "d131_review_q1",
+          "question_md": "부모 클래스의 `__init__`을 부르는 코드는?",
+          "choices": [
+            "`super().__init__()`",
+            "`self.__init__()`",
+            "`parent()`",
+            "`init()`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "나만의 모델 클래스",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "PyTorch 모델은 `nn.Module`을 상속한 클래스입니다.\n\n- `__init__`: `super().__init__()`를 먼저 부르고, 층을 `self.이름`으로 만들어 둡니다.\n- `forward(self, x)`: 입력이 층을 지나는 계산을 씁니다.\n\n`model(x)`처럼 부르면 PyTorch가 `forward`를 대신 호출합니다. `self`에 넣은 층의 매개변수는 자동으로 `model.parameters()`에 포함됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nclass TwoLayer(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.hidden = nn.Linear(3, 5)\n        self.out = nn.Linear(5, 2)\n\n    def forward(self, x):\n        return self.out(torch.relu(self.hidden(x)))\n\ntorch.manual_seed(0)\nmodel = TwoLayer()\nprint(model(torch.ones(4, 3)).shape)\nprint([name for name, p in model.named_parameters()])\n",
+          "runnable": true,
+          "expected_output": "torch.Size([4, 2])\n['hidden.weight', 'hidden.bias', 'out.weight', 'out.bias']\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "`forward`를 직접 부르지 말고 `model(x)`로 부르세요. 그래야 PyTorch가 필요한 처리를 함께 해 줍니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "모델 클래스를 완성하세요.",
+      "exercise_ids": [
+        "d131_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "은닉층이 있는 모델 클래스를 직접 작성하세요.",
+      "exercise_ids": [
+        "d131_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`class 모델(nn.Module)`.",
+        "`__init__`: super 호출 후 층 만들기.",
+        "`forward`: 계산 순서.",
+        "`model(x)`로 호출 → forward 실행."
+      ],
+      "quiz": [
+        {
+          "id": "d131_summary_q1",
+          "question_md": "`model(x)`를 부르면 실행되는 메서드는?",
+          "choices": [
+            "`__init__`",
+            "`forward`",
+            "`backward`",
+            "`step`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d131_summary_q2",
+          "question_md": "층을 `self`의 속성으로 두면 좋은 점은?",
+          "choices": [
+            "매개변수가 자동 등록된다",
+            "속도가 빨라진다",
+            "기울기가 필요 없다",
+            "출력 모양이 고정된다"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d131_fill_1",
+      "kind": "fill_blank",
+      "title": "모델 클래스",
+      "prompt_md": "입력 `n_in`개를 출력 1개로 바꾸는 모델 클래스를 완성하고, 만든 모델의 매개변수 수를 반환하세요.",
+      "concepts": [
+        "nn_module"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from torch import nn\n\n\nclass Tiny(nn.Module):\n    def __init__(self, n_in):\n        ____\n        self.layer = nn.Linear(n_in, 1)\n\n    def ____(self, x):\n        return self.layer(x)\n\n\ndef tiny_params(n_in):\n    return sum(p.numel() for p in Tiny(n_in).parameters())\n",
+      "entry": {
+        "mode": "function",
+        "name": "tiny_params"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": 4
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              10
+            ]
+          },
+          "expect": {
+            "return": 11
+          }
+        }
+      ],
+      "hints": [
+        "부모 클래스의 초기화를 부르는 표현입니다.",
+        "순전파를 정의하는 메서드 이름입니다."
+      ],
+      "solution": "from torch import nn\n\n\nclass Tiny(nn.Module):\n    def __init__(self, n_in):\n        super().__init__()\n        self.layer = nn.Linear(n_in, 1)\n\n    def forward(self, x):\n        return self.layer(x)\n\n\ndef tiny_params(n_in):\n    return sum(p.numel() for p in Tiny(n_in).parameters())\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d131_code_1",
+      "kind": "coding",
+      "title": "은닉층 모델",
+      "prompt_md": "`Net` 클래스를 완성하세요. `__init__`에서 `self.hidden = nn.Linear(n_in, n_hidden)`, `self.out = nn.Linear(n_hidden, n_out)`을 **이 순서로** 만들고, `forward`는 hidden → ReLU → out을 계산합니다. `net_output`은 이미 작성되어 있습니다.",
+      "concepts": [
+        "nn_module",
+        "activation"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\nclass Net(nn.Module):\n    def __init__(self, n_in, n_hidden, n_out):\n        super().__init__()\n        # self.hidden, self.out 층을 만드세요\n        pass\n\n    def forward(self, x):\n        # hidden → ReLU → out 순서로 계산하세요\n        pass\n\n\ndef net_output(seed, rows):\n    torch.manual_seed(seed)\n    net = Net(len(rows[0]), 4, 2)\n    with torch.no_grad():\n        out = net(torch.tensor(rows, dtype=torch.float32))\n    return out.round(decimals=4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "net_output"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              [
+                [
+                  1,
+                  2,
+                  3
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -0.25429999828338623,
+                0.00019999999494757503
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5,
+              [
+                [
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  0
+                ],
+                [
+                  2,
+                  2
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.3871999979019165,
+                0.11410000175237656
+              ],
+              [
+                0.5329999923706055,
+                -0.37720000743865967
+              ],
+              [
+                0.6636999845504761,
+                0.0625
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "`__init__` 첫 줄은 부모 초기화 호출입니다.",
+        "forward는 은닉층 결과에 `torch.relu`를 적용한 뒤 출력층에 넣습니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\nclass Net(nn.Module):\n    def __init__(self, n_in, n_hidden, n_out):\n        super().__init__()\n        self.hidden = nn.Linear(n_in, n_hidden)\n        self.out = nn.Linear(n_hidden, n_out)\n\n    def forward(self, x):\n        return self.out(torch.relu(self.hidden(x)))\n\n\ndef net_output(seed, rows):\n    torch.manual_seed(seed)\n    net = Net(len(rows[0]), 4, 2)\n    with torch.no_grad():\n        out = net(torch.tensor(rows, dtype=torch.float32))\n    return out.round(decimals=4)\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      },
+      "time_limit_sec": 60
+    }
+  ]
+}

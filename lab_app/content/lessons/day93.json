@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "day": 93,
+  "title": "정밀도·재현율·F1",
+  "stage": "ml",
+  "week": 14,
+  "is_review": false,
+  "objectives": [
+    "정밀도와 재현율의 뜻과 둘 사이의 균형을 설명할 수 있다.",
+    "F1 점수를 계산하고 상황에 맞는 지표를 고를 수 있다."
+  ],
+  "concepts": [
+    "precision_recall",
+    "confusion_matrix"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 TP, FP, FN, TN과 혼동 행렬을 배웠습니다.",
+      "quiz": [
+        {
+          "id": "d93_review_q1",
+          "question_md": "스팸이 아닌 메일을 스팸으로 잘못 거른 것은?",
+          "choices": [
+            "TP",
+            "FP",
+            "FN",
+            "TN"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "두 가지 질문",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "- **정밀도** = TP / (TP + FP): \"양성이라고 한 것 중 진짜 양성 비율\" → 헛잡음이 비쌀 때(스팸 필터)\n- **재현율** = TP / (TP + FN): \"진짜 양성 중 찾아낸 비율\" → 놓치면 위험할 때(암 검진)\n- **F1** = 2 × 정밀도 × 재현율 / (정밀도 + 재현율): 둘의 조화 평균\n\n임계값을 낮추면 재현율↑ 정밀도↓, 높이면 반대입니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.metrics import f1_score, precision_score, recall_score\n\ny_true = [1, 0, 1, 1, 0, 0, 1, 0]\ny_pred = [1, 0, 0, 1, 1, 0, 1, 0]\nprint(\n    precision_score(y_true, y_pred),\n    recall_score(y_true, y_pred),\n    round(f1_score(y_true, y_pred), 4),\n)\n",
+          "runnable": true,
+          "expected_output": "0.75 0.75 0.75\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "양성 예측이 하나도 없으면 정밀도의 분모가 0이 됩니다. scikit-learn은 경고와 함께 0을 돌려주며, `zero_division=0`으로 경고를 끌 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "정밀도 공식을 완성하세요.",
+      "exercise_ids": [
+        "d93_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "정밀도·재현율·F1을 구하세요.",
+      "exercise_ids": [
+        "d93_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "정밀도 = TP/(TP+FP), 재현율 = TP/(TP+FN).",
+        "F1 = 정밀도와 재현율의 조화 평균.",
+        "놓치면 위험 → 재현율, 헛잡으면 비쌈 → 정밀도.",
+        "임계값으로 둘의 균형을 조절한다."
+      ],
+      "quiz": [
+        {
+          "id": "d93_summary_q1",
+          "question_md": "TP=8, FP=2, FN=4일 때 정밀도는?",
+          "choices": [
+            "0.8",
+            "0.67",
+            "0.5",
+            "0.4"
+          ],
+          "answer_index": 0,
+          "explanation_md": "8/(8+2)"
+        },
+        {
+          "id": "d93_summary_q2",
+          "question_md": "암 검진 모델에서 가장 중요하게 볼 지표는?",
+          "choices": [
+            "정밀도",
+            "재현율",
+            "정확도",
+            "학습 시간"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d93_fill_1",
+      "kind": "fill_blank",
+      "title": "정밀도",
+      "prompt_md": "TP와 FP 개수로 정밀도(소수 넷째 자리)를 반환하세요. 분모가 0이면 0을 반환합니다.",
+      "concepts": [
+        "precision_recall"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def precision(tp, fp):\n    if tp + fp == 0:\n        return 0\n    return round(tp / (tp ____ ____), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "precision"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              8,
+              2
+            ]
+          },
+          "expect": {
+            "return": 0.8
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0,
+              0
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              2
+            ]
+          },
+          "expect": {
+            "return": 0.3333
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "분모는 \"양성이라고 예측한 전체\"입니다.",
+        "TP에 무엇을 더해야 할까요?"
+      ],
+      "solution": "def precision(tp, fp):\n    if tp + fp == 0:\n        return 0\n    return round(tp / (tp + fp), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d93_code_1",
+      "kind": "coding",
+      "title": "세 지표",
+      "prompt_md": "실제값·예측값으로 `{\"precision\", \"recall\", \"f1\"}`(소수 넷째 자리)를 반환하세요. 분모가 0이면 0입니다(`zero_division=0`).",
+      "concepts": [
+        "precision_recall"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.metrics import f1_score, precision_score, recall_score\n\n\ndef prf(y_true, y_pred):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "prf"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                1,
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                1,
+                1,
+                0,
+                1,
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": {
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "완벽",
+          "call": {
+            "args": [
+              [
+                1,
+                0,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "양성 예측 없음",
+          "call": {
+            "args": [
+              [
+                1,
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "세 함수 모두 `(y_true, y_pred, zero_division=0)`로 부를 수 있습니다.",
+        "`round(float(값), 4)`로 정리하세요."
+      ],
+      "solution": "from sklearn.metrics import f1_score, precision_score, recall_score\n\n\ndef prf(y_true, y_pred):\n    return {\"precision\": round(float(precision_score(y_true, y_pred, zero_division=0)), 4),\n            \"recall\": round(float(recall_score(y_true, y_pred, zero_division=0)), 4),\n            \"f1\": round(float(f1_score(y_true, y_pred, zero_division=0)), 4)}\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

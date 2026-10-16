@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "day": 96,
+  "title": "과적합과 과소적합",
+  "stage": "ml",
+  "week": 14,
+  "is_review": false,
+  "objectives": [
+    "학습 점수와 검증 점수의 차이로 과적합·과소적합을 진단할 수 있다.",
+    "모델 복잡도(트리 깊이)에 따른 점수 변화를 관찰할 수 있다."
+  ],
+  "concepts": [
+    "overfitting",
+    "decision_tree"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 교차 검증으로 안정적인 성능 추정을 했습니다.",
+      "quiz": [
+        {
+          "id": "d96_review_q1",
+          "question_md": "교차 검증 점수의 표준편차가 크다면?",
+          "choices": [
+            "매우 안정적",
+            "분할에 따라 결과가 크게 흔들림",
+            "과소적합",
+            "정확도 100%"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "외우기와 일반화 사이",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "- **과소적합**: 모델이 너무 단순해 학습 데이터도 잘 못 맞춤(학습·검증 점수 모두 낮음)\n- **과적합**: 학습 데이터를 외워 학습 점수는 높지만 검증 점수가 낮음(차이가 큼)\n\n결정 트리는 깊이(`max_depth`)를 키울수록 복잡해집니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier\n\nX, y = load_breast_cancer(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)\nfor depth in [1, 3, None]:\n    model = DecisionTreeClassifier(max_depth=depth, random_state=0).fit(X_train, y_train)\n    print(depth, round(model.score(X_train, y_train), 3), round(model.score(X_test, y_test), 3))\n",
+          "runnable": true,
+          "expected_output": "1 0.932 0.889\n3 0.98 0.901\nNone 1.0 0.906\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "과적합을 줄이는 방법: 모델 단순화(깊이 제한), 규제(Day 82), 데이터 늘리기, 앙상블(15주차), 딥러닝에서는 드롭아웃(20주차)."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "학습·테스트 점수 차이를 구하세요.",
+      "exercise_ids": [
+        "d96_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "트리 깊이별 학습·테스트 정확도를 비교하세요.",
+      "exercise_ids": [
+        "d96_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "과소적합: 둘 다 낮음 → 더 복잡한 모델.",
+        "과적합: 학습↑ 검증↓ → 단순화·규제·데이터.",
+        "`max_depth`로 트리 복잡도 조절.",
+        "학습 점수만 보면 과적합을 놓친다."
+      ],
+      "quiz": [
+        {
+          "id": "d96_summary_q1",
+          "question_md": "학습 0.99, 검증 0.70이라면?",
+          "choices": [
+            "과소적합",
+            "과적합",
+            "정상",
+            "데이터 누수 없음"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d96_summary_q2",
+          "question_md": "학습 0.60, 검증 0.58이라면?",
+          "choices": [
+            "과소적합",
+            "과적합",
+            "완벽",
+            "누수"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d96_fill_1",
+      "kind": "fill_blank",
+      "title": "점수 차이",
+      "prompt_md": "학습 점수와 테스트 점수를 받아 `[차이(소수 넷째 자리), 과적합 의심 여부]`를 반환하세요. 차이가 `limit`보다 크면 과적합 의심입니다.",
+      "concepts": [
+        "overfitting"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def gap(train_score, test_score, limit):\n    diff = round(train_score ____ test_score, 4)\n    return [diff, diff ____ limit]\n",
+      "entry": {
+        "mode": "function",
+        "name": "gap"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "과적합",
+          "call": {
+            "args": [
+              0.99,
+              0.8,
+              0.1
+            ]
+          },
+          "expect": {
+            "return": [
+              0.19,
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.9,
+              0.88,
+              0.05
+            ]
+          },
+          "expect": {
+            "return": [
+              0.02,
+              false
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "학습 점수에서 테스트 점수를 빼세요.",
+        "\"보다 크다\" 비교 연산자입니다."
+      ],
+      "solution": "def gap(train_score, test_score, limit):\n    diff = round(train_score - test_score, 4)\n    return [diff, diff > limit]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d96_code_1",
+      "kind": "coding",
+      "title": "깊이별 점수",
+      "prompt_md": "유방암 데이터를 `test_size=0.3, random_state=seed, stratify=y`로 나누고, `depths`의 각 깊이(`None`은 제한 없음)로 `DecisionTreeClassifier(max_depth=깊이, random_state=0)`를 학습해 `[학습 정확도, 테스트 정확도]`(소수 넷째 자리) 리스트를 반환하세요.",
+      "concepts": [
+        "overfitting",
+        "decision_tree"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier\n\n\ndef depth_scores(depths, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "depth_scores"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "1·3·None",
+          "call": {
+            "args": [
+              [
+                1,
+                3,
+                null
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.9322,
+                0.8889
+              ],
+              [
+                0.9799,
+                0.9006
+              ],
+              [
+                1.0,
+                0.9064
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                2,
+                6
+              ],
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.9523,
+                0.9415
+              ],
+              [
+                0.9925,
+                0.9649
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "깊이마다 새 모델을 만들어 학습하세요.",
+        "같은 모델로 `score(X_train, y_train)`, `score(X_test, y_test)`."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier\n\n\ndef depth_scores(depths, seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=seed,\n        stratify=y,\n    )\n    result = []\n    for depth in depths:\n        model = DecisionTreeClassifier(max_depth=depth, random_state=0).fit(X_train, y_train)\n        result.append(\n            [round(model.score(X_train, y_train), 4), round(model.score(X_test, y_test), 4)]\n        )\n    return result\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

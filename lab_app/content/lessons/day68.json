@@ -1,0 +1,310 @@
+{
+  "schema_version": 1,
+  "day": 68,
+  "title": "EDA 2: 상관관계와 이상치",
+  "stage": "advanced_data",
+  "week": 10,
+  "is_review": false,
+  "objectives": [
+    "상관계수로 두 변수의 관계 방향과 세기를 읽을 수 있다.",
+    "IQR 규칙으로 이상치를 찾을 수 있다."
+  ],
+  "concepts": [
+    "eda",
+    "plot_types",
+    "pandas_select"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `describe`, `value_counts`로 데이터를 요약했습니다.",
+      "quiz": [
+        {
+          "id": "d68_review_q1",
+          "question_md": "`describe()`의 `25%`와 `75%`는?",
+          "choices": [
+            "최솟값·최댓값",
+            "1사분위수·3사분위수",
+            "평균±표준편차",
+            "결측치 비율"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "관계와 튀는 값 찾기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**상관계수**(`corr`)는 -1~1 사이 값으로, 1에 가까우면 함께 증가, -1에 가까우면 반대로 움직이고, 0 근처면 직선 관계가 거의 없다는 뜻입니다. 산점도와 함께 보세요."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\"공부시간\": [1, 2, 3, 4, 5], \"점수\": [55, 62, 70, 74, 85], \"결석\": [5, 4, 4, 2, 1]})\nprint(df.corr().round(2))\nprint(round(df[\"공부시간\"].corr(df[\"점수\"]), 3))\n",
+          "runnable": true,
+          "expected_output": "      공부시간    점수    결석\n공부시간  1.00  0.99 -0.96\n점수    0.99  1.00 -0.94\n결석   -0.96 -0.94  1.00\n0.992\n",
+          "time_limit_sec": 20
+        },
+        {
+          "kind": "text",
+          "md": "**IQR 규칙**: 3사분위수 − 1사분위수를 IQR이라 할 때, `Q1 − 1.5×IQR`보다 작거나 `Q3 + 1.5×IQR`보다 큰 값을 이상치로 봅니다(상자 그림의 점들)."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ns = pd.Series([10, 12, 11, 13, 12, 50, 11])\nq1, q3 = s.quantile(0.25), s.quantile(0.75)\niqr = q3 - q1\nprint(q1, q3, iqr)\nprint(s[(s < q1 - 1.5 * iqr) | (s > q3 + 1.5 * iqr)].tolist())\n",
+          "runnable": true,
+          "expected_output": "11.0 12.5 1.5\n[50]\n",
+          "time_limit_sec": 20
+        },
+        {
+          "kind": "tip",
+          "md": "상관관계는 인과관계가 아닙니다. 아이스크림 판매량과 물놀이 사고는 함께 늘지만, 둘 다 \"더위\"라는 공통 원인 때문이에요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "두 열의 상관계수를 구하세요.",
+      "exercise_ids": [
+        "d68_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "IQR 규칙으로 이상치를 찾으세요.",
+      "exercise_ids": [
+        "d68_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`df.corr()`, `s1.corr(s2)`: -1~1, 부호는 방향, 크기는 세기.",
+        "상관관계 ≠ 인과관계.",
+        "IQR = Q3 − Q1, 범위 밖(1.5배)은 이상치.",
+        "이상치는 오류일 수도, 중요한 사건일 수도 있다."
+      ],
+      "quiz": [
+        {
+          "id": "d68_summary_q1",
+          "question_md": "상관계수 -0.9의 의미는?",
+          "choices": [
+            "관계 없음",
+            "강한 양의 관계",
+            "강한 음의 관계",
+            "약한 관계"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d68_summary_q2",
+          "question_md": "Q1=10, Q3=20일 때 이상치 상한은?",
+          "choices": [
+            "25",
+            "30",
+            "35",
+            "40"
+          ],
+          "answer_index": 2,
+          "explanation_md": "IQR=10, 20 + 1.5×10 = 35"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d68_fill_1",
+      "kind": "fill_blank",
+      "title": "상관계수",
+      "prompt_md": "두 열 `x`, `y`의 상관계수를 소수 셋째 자리까지 반올림해 반환하세요.",
+      "concepts": [
+        "eda"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef correlation(data):\n    df = pd.DataFrame(data)\n    return round(df[\"x\"].____(df[\"____\"]), 3)\n",
+      "entry": {
+        "mode": "function",
+        "name": "correlation"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "완전한 양의 관계",
+          "call": {
+            "args": [
+              {
+                "x": [
+                  1,
+                  2,
+                  3
+                ],
+                "y": [
+                  2,
+                  4,
+                  6
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": 1.0
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "x": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "y": [
+                  4,
+                  3,
+                  3,
+                  1
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": -0.923
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "상관계수를 구하는 Series 메서드입니다.",
+        "비교할 다른 열 이름입니다."
+      ],
+      "solution": "import pandas as pd\n\n\ndef correlation(data):\n    df = pd.DataFrame(data)\n    return round(df[\"x\"].corr(df[\"y\"]), 3)\n",
+      "time_limit_sec": 20
+    },
+    {
+      "id": "d68_code_1",
+      "kind": "coding",
+      "title": "이상치 찾기",
+      "prompt_md": "값 목록에서 IQR 규칙(1.5배)으로 판단한 이상치를 **오름차순 리스트**로 반환하세요. 사분위수는 `pd.Series(...).quantile()`의 기본 방식으로 계산합니다.",
+      "concepts": [
+        "eda",
+        "pandas_select"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef outliers(values):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "outliers"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "양쪽 이상치",
+          "call": {
+            "args": [
+              [
+                10,
+                12,
+                11,
+                13,
+                12,
+                50,
+                11,
+                -20
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              -20.0,
+              50.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4
+              ]
+            ]
+          },
+          "expect": {
+            "return": []
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                5,
+                5,
+                5,
+                5,
+                6,
+                100
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              100.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "값을 실수형 Series로 만든 뒤 `quantile(0.25)`, `quantile(0.75)`를 구하세요.",
+        "하한·상한을 계산해 마스크 `(s < 하한) | (s > 상한)`으로 거릅니다.",
+        "`sorted(...tolist())`로 정렬해 반환합니다."
+      ],
+      "solution": "import pandas as pd\n\n\ndef outliers(values):\n    s = pd.Series(values, dtype=float)\n    q1, q3 = s.quantile(0.25), s.quantile(0.75)\n    iqr = q3 - q1\n    low, high = q1 - 1.5 * iqr, q3 + 1.5 * iqr\n    return sorted(s[(s < low) | (s > high)].tolist())\n",
+      "time_limit_sec": 20
+    }
+  ]
+}

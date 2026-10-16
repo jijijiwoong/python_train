@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "day": 101,
+  "title": "랜덤 포레스트",
+  "stage": "ml",
+  "week": 15,
+  "is_review": false,
+  "objectives": [
+    "여러 트리의 투표로 예측하는 랜덤 포레스트의 원리를 설명할 수 있다.",
+    "트리 개수에 따른 성능 변화를 단일 트리와 비교할 수 있다."
+  ],
+  "concepts": [
+    "random_forest",
+    "ensemble"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 트리가 불순도를 줄이는 질문을 고르는 원리를 구현했습니다.",
+      "quiz": [
+        {
+          "id": "d101_review_q1",
+          "question_md": "단일 결정 트리의 약점은?",
+          "choices": [
+            "느리다",
+            "작은 데이터 변화에도 구조가 크게 바뀌고 과적합되기 쉽다",
+            "확률을 못 낸다",
+            "숫자 특성 불가"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "숲은 나무보다 현명하다",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**랜덤 포레스트**는 ① 데이터를 무작위로 다시 뽑고(부트스트랩) ② 각 질문마다 특성도 일부만 무작위로 고려해 서로 조금씩 다른 트리를 많이 만든 뒤, **투표**로 예측합니다. 개별 트리의 실수가 서로 상쇄되어 단일 트리보다 안정적이고 정확합니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier\n\nX, y = load_breast_cancer(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)\nprint(\n    \"tree\",\n    round(DecisionTreeClassifier(random_state=0).fit(X_train, y_train).score(X_test, y_test), 4),\n)\nfor n in [1, 10, 100]:\n    forest = RandomForestClassifier(n_estimators=n, random_state=0).fit(X_train, y_train)\n    print(n, round(forest.score(X_test, y_test), 4))\n",
+          "runnable": true,
+          "expected_output": "tree 0.9064\n1 0.8889\n10 0.9357\n100 0.9532\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "트리 수(`n_estimators`)를 늘리면 대체로 좋아지다가 어느 순간 수렴합니다. 과적합 걱정은 적지만 학습·예측 시간이 늘어납니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "랜덤 포레스트를 학습하세요.",
+      "exercise_ids": [
+        "d101_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "단일 트리와 트리 수별 포레스트를 비교하세요.",
+      "exercise_ids": [
+        "d101_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "랜덤 포레스트 = 무작위로 다양화한 트리들의 투표.",
+        "부트스트랩 샘플 + 질문마다 무작위 특성 일부.",
+        "`RandomForestClassifier(n_estimators, random_state)`.",
+        "단일 트리보다 안정적이고 과적합에 강하다."
+      ],
+      "quiz": [
+        {
+          "id": "d101_summary_q1",
+          "question_md": "랜덤 포레스트가 예측을 합치는 방법(분류)은?",
+          "choices": [
+            "평균",
+            "투표",
+            "최댓값",
+            "곱"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d101_summary_q2",
+          "question_md": "트리를 무작위로 다양하게 만드는 이유는?",
+          "choices": [
+            "속도",
+            "서로 다른 실수를 하게 해 투표로 상쇄하려고",
+            "메모리 절약",
+            "규칙을 읽기 쉽게"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d101_fill_1",
+      "kind": "fill_blank",
+      "title": "포레스트 학습",
+      "prompt_md": "유방암 데이터를 `test_size=0.3, random_state=0, stratify=y`로 나누고, 트리 `n`개의 랜덤 포레스트(`random_state=0`) 테스트 정확도(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "random_forest"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import ____\nfrom sklearn.model_selection import train_test_split\n\n\ndef forest_acc(n):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=0,\n        stratify=y,\n    )\n    model = RandomForestClassifier(n_estimators=____, random_state=0).fit(X_train, y_train)\n    return round(model.score(X_test, y_test), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "forest_acc"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "50그루",
+          "call": {
+            "args": [
+              50
+            ]
+          },
+          "expect": {
+            "return": 0.9474
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": 0.9415
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "랜덤 포레스트 분류기 클래스 이름입니다.",
+        "트리 개수로 쓸 매개변수입니다."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import train_test_split\n\n\ndef forest_acc(n):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=0,\n        stratify=y,\n    )\n    model = RandomForestClassifier(n_estimators=n, random_state=0).fit(X_train, y_train)\n    return round(model.score(X_test, y_test), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d101_code_1",
+      "kind": "coding",
+      "title": "나무 vs 숲",
+      "prompt_md": "유방암 데이터를 `test_size=0.3, random_state=seed, stratify=y`로 나누고 `[단일 트리(random_state=0) 정확도, [트리 수별 포레스트 정확도 리스트]]`(소수 넷째 자리)를 반환하세요. 포레스트는 `random_state=0`.",
+      "concepts": [
+        "random_forest",
+        "decision_tree"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier\n\n\ndef tree_vs_forest(ns, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "tree_vs_forest"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "1·10·100",
+          "call": {
+            "args": [
+              [
+                1,
+                10,
+                100
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9064,
+              [
+                0.8889,
+                0.9357,
+                0.9532
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                3,
+                30
+              ],
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9474,
+              [
+                0.9123,
+                0.9591
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "단일 트리 점수를 먼저 구하세요.",
+        "트리 수마다 새 포레스트를 학습해 점수 목록을 만듭니다."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier\n\n\ndef tree_vs_forest(ns, seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=seed,\n        stratify=y,\n    )\n    tree = DecisionTreeClassifier(random_state=0).fit(X_train, y_train).score(X_test, y_test)\n    forests = []\n    for n in ns:\n        forest = RandomForestClassifier(n_estimators=n, random_state=0).fit(X_train, y_train)\n        forests.append(round(forest.score(X_test, y_test), 4))\n    return [round(tree, 4), forests]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

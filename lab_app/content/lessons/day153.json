@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "day": 153,
+  "title": "텍스트 분류 모델",
+  "stage": "dl",
+  "week": 22,
+  "is_review": false,
+  "objectives": [
+    "임베딩 평균으로 문장 벡터를 만들 수 있다.",
+    "작은 감성 분류 모델을 학습시키고 새 문장을 예측할 수 있다."
+  ],
+  "concepts": [
+    "embedding",
+    "multiclass",
+    "training_loop"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 문장을 번호 텐서로 바꾸고 임베딩에 넣었습니다. 오늘은 영화평이 긍정인지 부정인지 분류합니다.",
+      "quiz": [
+        {
+          "id": "d153_review_q1",
+          "question_md": "`nn.Embedding(..., padding_idx=0)`에서 0번 벡터는?",
+          "choices": [
+            "무작위",
+            "항상 0",
+            "항상 1",
+            "가장 크다"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "임베딩 평균 분류기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "가장 간단한 문장 분류기는 단어 임베딩의 **평균**을 문장 벡터로 쓰고 선형 층으로 분류하는 것입니다. 패딩 위치는 평균에서 빼야 하므로 **마스크**를 씁니다.\n\n`mask = (ids != 0)` → 패딩이 아닌 곳만 1. 문장 벡터 = (임베딩 × 마스크)의 합 ÷ 마스크의 합.\n\n단어 순서를 무시하지만 데이터가 적을 때 잘 동작합니다. 순서가 중요하면 임베딩 뒤에 LSTM을 둡니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nemb = nn.Embedding(5, 2, padding_idx=0)\nwith torch.no_grad():\n    emb.weight[:] = torch.tensor([[0, 0], [1, 1], [2, 0], [0, 4], [3, 3]], dtype=torch.float32)\nids = torch.tensor([[2, 3, 0, 0], [4, 1, 1, 0]])\nmask = (ids != 0).unsqueeze(-1).float()\nprint(mask.squeeze(-1))\nprint((emb(ids) * mask).sum(dim=1) / mask.sum(dim=1))\n",
+          "runnable": true,
+          "expected_output": "tensor([[1., 1., 0., 0.],\n        [1., 1., 1., 0.]])\ntensor([[1.0000, 2.0000],\n        [1.6667, 1.6667]], grad_fn=<DivBackward0>)\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "마스크 없이 평균을 내면 패딩이 많은 짧은 문장일수록 벡터가 0 쪽으로 끌려갑니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "마스크 평균을 완성하세요.",
+      "exercise_ids": [
+        "d153_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "감성 분류기를 학습시키세요.",
+      "exercise_ids": [
+        "d153_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "문장 벡터 = 단어 임베딩의 평균.",
+        "마스크로 패딩 제외.",
+        "평균 벡터 → 선형 층 → 클래스.",
+        "순서가 중요하면 LSTM 추가."
+      ],
+      "quiz": [
+        {
+          "id": "d153_summary_q1",
+          "question_md": "`ids != 0`으로 만든 마스크의 역할은?",
+          "choices": [
+            "패딩 위치 제외",
+            "단어 순서 기록",
+            "정답 표시",
+            "학습률 조절"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d153_summary_q2",
+          "question_md": "임베딩 평균 분류기가 무시하는 정보는?",
+          "choices": [
+            "단어 종류",
+            "단어 순서",
+            "문장 길이 전부",
+            "어휘"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d153_fill_1",
+      "kind": "fill_blank",
+      "title": "마스크 평균",
+      "prompt_md": "MeanEmbedding의 빈칸을 채우고, `torch.manual_seed(seed)` 후 만든 모델에 번호 텐서를 넣은 출력(소수 넷째 자리)을 반환하세요.",
+      "concepts": [
+        "embedding"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\n\n\nclass MeanEmbedding(nn.Module):\n    def __init__(self, vocab_size, dim, n_classes):\n        super().__init__()\n        self.emb = nn.Embedding(vocab_size, dim, padding_idx=0)\n        self.fc = nn.Linear(dim, n_classes)\n\n    def forward(self, ids):\n        mask = (____).unsqueeze(-1).float()\n        pooled = (self.emb(ids) * mask).sum(dim=1) / ____\n        return self.fc(pooled)\n\n\ndef bag_output(seed, ids):\n    torch.manual_seed(seed)\n    model = MeanEmbedding(6, 3, 2)\n    with torch.no_grad():\n        return model(torch.tensor(ids)).round(decimals=4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "bag_output"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              [
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  5,
+                  1,
+                  1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -0.43290001153945923,
+                -0.11230000108480453
+              ],
+              [
+                -0.24539999663829803,
+                -0.16279999911785126
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              [
+                [
+                  4,
+                  0,
+                  0
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.3003999888896942,
+                -0.18870000541210175
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "패딩이 아닌 위치를 고르는 비교 연산입니다.",
+        "단어 수로 나누어야 평균이 됩니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\n\n\nclass MeanEmbedding(nn.Module):\n    def __init__(self, vocab_size, dim, n_classes):\n        super().__init__()\n        self.emb = nn.Embedding(vocab_size, dim, padding_idx=0)\n        self.fc = nn.Linear(dim, n_classes)\n\n    def forward(self, ids):\n        mask = (ids != 0).unsqueeze(-1).float()\n        pooled = (self.emb(ids) * mask).sum(dim=1) / mask.sum(dim=1)\n        return self.fc(pooled)\n\n\ndef bag_output(seed, ids):\n    torch.manual_seed(seed)\n    model = MeanEmbedding(6, 3, 2)\n    with torch.no_grad():\n        return model(torch.tensor(ids)).round(decimals=4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d153_code_1",
+      "kind": "coding",
+      "title": "영화평 분류",
+      "prompt_md": "주어진 POS(정답 1)·NEG(정답 0) 문장과 `build_vocab`, `encode`, `MeanEmbedding`을 사용하세요. 학습 문장은 `POS + NEG`, 길이 6으로 인코딩합니다. `torch.manual_seed(seed)` 후 `MeanEmbedding(사전 크기, 8, 2)`와 `optim.Adam(lr=0.05)`로 전체 배치를 100번 학습하고, `tests` 문장의 예측 클래스 리스트와 학습 정확도를 `[예측, 학습 정확도]`로 반환하세요.",
+      "concepts": [
+        "embedding",
+        "training_loop"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\n\n\nPOS = [\"정말 재미있는 영화\", \"배우 연기가 최고\", \"다시 보고 싶은 영화\", \"음악이 정말 좋다\",\n       \"최고의 영화 추천\", \"재미있고 감동적인 이야기\", \"연기가 훌륭하다\", \"감동적인 음악과 연기\"]\nNEG = [\"정말 지루한 영화\", \"연기가 너무 어색하다\", \"다시는 보고 싶지 않다\", \"음악이 시끄럽고 별로\",\n       \"최악의 영화\", \"지루하고 뻔한 이야기\", \"시간이 아까운 영화\", \"어색한 연기와 지루한 전개\"]\n\n\ndef build_vocab(sentences):\n    words = sorted({w for s in sentences for w in s.split()})\n    return {\"<pad>\": 0, \"<unk>\": 1, **{w: i + 2 for i, w in enumerate(words)}}\n\n\ndef encode(sentences, vocab, max_len):\n    rows = []\n    for s in sentences:\n        ids = [vocab.get(w, 1) for w in s.split()][:max_len]\n        rows.append(ids + [0] * (max_len - len(ids)))\n    return torch.tensor(rows)\n\n\nclass MeanEmbedding(nn.Module):\n    def __init__(self, vocab_size, dim, n_classes):\n        super().__init__()\n        self.emb = nn.Embedding(vocab_size, dim, padding_idx=0)\n        self.fc = nn.Linear(dim, n_classes)\n\n    def forward(self, ids):\n        mask = (ids != 0).unsqueeze(-1).float()\n        pooled = (self.emb(ids) * mask).sum(dim=1) / mask.sum(dim=1)\n        return self.fc(pooled)\n\n\ndef sentiment(seed, tests):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "sentiment"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              [
+                "정말 재미있는 이야기",
+                "지루한 연기"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                0
+              ],
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              [
+                "최고의 음악",
+                "어색하고 지루한 영화",
+                "처음 보는 단어"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                0,
+                0
+              ],
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        }
+      ],
+      "hints": [
+        "정답은 POS 개수만큼 1, NEG 개수만큼 0입니다.",
+        "새 문장도 같은 사전과 길이로 `encode`해야 합니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\n\n\nPOS = [\"정말 재미있는 영화\", \"배우 연기가 최고\", \"다시 보고 싶은 영화\", \"음악이 정말 좋다\",\n       \"최고의 영화 추천\", \"재미있고 감동적인 이야기\", \"연기가 훌륭하다\", \"감동적인 음악과 연기\"]\nNEG = [\"정말 지루한 영화\", \"연기가 너무 어색하다\", \"다시는 보고 싶지 않다\", \"음악이 시끄럽고 별로\",\n       \"최악의 영화\", \"지루하고 뻔한 이야기\", \"시간이 아까운 영화\", \"어색한 연기와 지루한 전개\"]\n\n\ndef build_vocab(sentences):\n    words = sorted({w for s in sentences for w in s.split()})\n    return {\"<pad>\": 0, \"<unk>\": 1, **{w: i + 2 for i, w in enumerate(words)}}\n\n\ndef encode(sentences, vocab, max_len):\n    rows = []\n    for s in sentences:\n        ids = [vocab.get(w, 1) for w in s.split()][:max_len]\n        rows.append(ids + [0] * (max_len - len(ids)))\n    return torch.tensor(rows)\n\n\nclass MeanEmbedding(nn.Module):\n    def __init__(self, vocab_size, dim, n_classes):\n        super().__init__()\n        self.emb = nn.Embedding(vocab_size, dim, padding_idx=0)\n        self.fc = nn.Linear(dim, n_classes)\n\n    def forward(self, ids):\n        mask = (ids != 0).unsqueeze(-1).float()\n        pooled = (self.emb(ids) * mask).sum(dim=1) / mask.sum(dim=1)\n        return self.fc(pooled)\n\n\ndef sentiment(seed, tests):\n    vocab = build_vocab(POS + NEG)\n    X = encode(POS + NEG, vocab, 6)\n    y = torch.tensor([1] * len(POS) + [0] * len(NEG))\n    torch.manual_seed(seed)\n    model = MeanEmbedding(len(vocab), 8, 2)\n    optimizer = optim.Adam(model.parameters(), lr=0.05)\n    for _ in range(100):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    with torch.no_grad():\n        train_acc = (model(X).argmax(dim=1) == y).float().mean().item()\n        pred = model(encode(tests, vocab, 6)).argmax(dim=1)\n    return [pred.tolist(), train_acc]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

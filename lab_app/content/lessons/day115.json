@@ -1,0 +1,391 @@
+{
+  "schema_version": 1,
+  "day": 115,
+  "title": "결측치 대체",
+  "stage": "ml",
+  "week": 17,
+  "is_review": false,
+  "objectives": [
+    "SimpleImputer로 결측치를 평균·중앙값·최빈값으로 채울 수 있다.",
+    "대체 값도 학습 데이터로만 정해야 함을 안다."
+  ],
+  "concepts": [
+    "imputation",
+    "pandas_missing"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 범주를 원-핫 인코딩했습니다. Day 60에서는 pandas로 결측치를 채웠죠.",
+      "quiz": [
+        {
+          "id": "d115_review_q1",
+          "question_md": "학습 때 없던 범주를 안전하게 처리하는 OneHotEncoder 옵션은?",
+          "choices": [
+            "`sparse_output=False`",
+            "`handle_unknown=\"ignore\"`",
+            "`drop=\"first\"`",
+            "`dtype=int`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "빈칸 채우기 도구",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**SimpleImputer**는 열마다 대체 값을 학습(`fit`)하고 빈칸을 채웁니다(`transform`). `strategy`는 `mean`, `median`, `most_frequent`(범주에도 사용), `constant`가 있습니다. Day 60의 `fillna`와 같은 일이지만, 학습 데이터로 정한 값을 테스트에 그대로 적용할 수 있어 파이프라인에 넣기 좋습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.impute import SimpleImputer\n\ntrain = np.array([[1, 10], [np.nan, 20], [3, np.nan], [5, 40]])\nimp = SimpleImputer(strategy=\"median\").fit(train)\nprint(imp.statistics_)\nprint(imp.transform([[np.nan, np.nan]]))\n",
+          "runnable": true,
+          "expected_output": "[ 3. 20.]\n[[ 3. 20.]]\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "`add_indicator=True`를 주면 \"원래 비어 있었는지\" 0/1 열을 추가합니다. 비어 있다는 사실 자체가 정보일 때 유용합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "중앙값으로 결측치를 채우세요.",
+      "exercise_ids": [
+        "d115_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "전략별로 결측치를 채우세요.",
+      "exercise_ids": [
+        "d115_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`SimpleImputer(strategy=...)`: mean, median, most_frequent, constant.",
+        "`statistics_`: 열별 대체 값.",
+        "학습 데이터로 fit → 테스트에 transform.",
+        "`add_indicator=True`로 결측 여부 열 추가."
+      ],
+      "quiz": [
+        {
+          "id": "d115_summary_q1",
+          "question_md": "범주형 열의 결측치에 알맞은 전략은?",
+          "choices": [
+            "mean",
+            "median",
+            "most_frequent",
+            "없음"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d115_summary_q2",
+          "question_md": "`statistics_`에 담긴 것은?",
+          "choices": [
+            "결측 개수",
+            "열별 대체 값",
+            "정확도",
+            "범주 목록"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d115_fill_1",
+      "kind": "fill_blank",
+      "title": "중앙값 대체",
+      "prompt_md": "2차원 데이터(None은 결측)를 중앙값으로 채운 결과를 반환하세요.",
+      "concepts": [
+        "imputation"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.impute import ____\n\n\ndef fill_median(rows):\n    X = np.array(rows, dtype=float)\n    return SimpleImputer(strategy=\"____\").fit_transform(X)\n",
+      "entry": {
+        "mode": "function",
+        "name": "fill_median"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  null
+                ],
+                [
+                  3,
+                  4
+                ],
+                [
+                  null,
+                  8
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1.0,
+                6.0
+              ],
+              [
+                3.0,
+                4.0
+              ],
+              [
+                2.0,
+                8.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  null
+                ],
+                [
+                  10
+                ],
+                [
+                  2
+                ],
+                [
+                  3
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                3.0
+              ],
+              [
+                10.0
+              ],
+              [
+                2.0
+              ],
+              [
+                3.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "결측치 대체 클래스 이름입니다.",
+        "중앙값 전략 이름입니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.impute import SimpleImputer\n\n\ndef fill_median(rows):\n    X = np.array(rows, dtype=float)\n    return SimpleImputer(strategy=\"median\").fit_transform(X)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d115_code_1",
+      "kind": "coding",
+      "title": "전략별 대체",
+      "prompt_md": "2차원 데이터(None은 결측)와 전략 이름을 받아 SimpleImputer로 채운 결과(소수 셋째 자리)를 반환하세요.",
+      "concepts": [
+        "imputation"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.impute import SimpleImputer\n\n\ndef impute(rows, strategy):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "impute"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "평균",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  null
+                ],
+                [
+                  3,
+                  4
+                ],
+                [
+                  null,
+                  8
+                ]
+              ],
+              "mean"
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1.0,
+                6.0
+              ],
+              [
+                3.0,
+                4.0
+              ],
+              [
+                2.0,
+                8.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2
+                ],
+                [
+                  null,
+                  2
+                ],
+                [
+                  5,
+                  9
+                ],
+                [
+                  7,
+                  null
+                ]
+              ],
+              "median"
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1.0,
+                2.0
+              ],
+              [
+                5.0,
+                2.0
+              ],
+              [
+                5.0,
+                9.0
+              ],
+              [
+                7.0,
+                2.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  1
+                ],
+                [
+                  1,
+                  null
+                ],
+                [
+                  2,
+                  1
+                ]
+              ],
+              "most_frequent"
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0
+              ],
+              [
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`np.array(rows, dtype=float)`이면 None이 NaN이 됩니다.",
+        "`np.round(..., 3)`로 정리하세요."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.impute import SimpleImputer\n\n\ndef impute(rows, strategy):\n    X = np.array(rows, dtype=float)\n    return np.round(SimpleImputer(strategy=strategy).fit_transform(X), 3)\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

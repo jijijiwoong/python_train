@@ -103,6 +103,10 @@ def _encode_value(value):
             if not all(isinstance(k, str) for k in x):
                 raise ValueError("non-str key")
             return {k: norm(v, depth + 1) for k, v in x.items()}
+        # numpy arrays/scalars, pandas Series, torch tensors: compare their plain-Python form
+        tolist = getattr(x, "tolist", None)
+        if callable(tolist):
+            return norm(tolist(), depth + 1)
         raise TypeError("not JSON-like")
 
     try:
@@ -140,6 +144,19 @@ class _Recorder:
     def emit(self, obj: dict) -> None:
         self._f.write(json.dumps(obj, ensure_ascii=False) + "\n")
         self._f.flush()
+
+
+def _save_figures(job_dir: str, limit: int = 6) -> list[str]:
+    """Free runs: save figures the user's code left open so the app can show them as images."""
+    plt = sys.modules.get("matplotlib.pyplot")
+    if plt is None:
+        return []
+    saved = []
+    for i, num in enumerate(plt.get_fignums()[:limit], start=1):
+        name = f"figure_{i}.png"
+        plt.figure(num).savefig(os.path.join(job_dir, name), dpi=90, bbox_inches="tight")
+        saved.append(name)
+    return saved
 
 
 def _run_one(code_obj, job: dict, test: dict, tee=None) -> dict:
@@ -206,6 +223,11 @@ def main(job_dir: str) -> None:
             tee = open(os.path.join(job_dir, "partial_stdout.txt"), "w", encoding="utf-8", newline="", buffering=1)
         for test in job["tests"]:
             rec.emit(_run_one(code_obj, job, test, tee))
+        if job["mode"] == "run":
+            try:
+                rec.emit({"event": "figures", "files": _save_figures(job_dir)})
+            except Exception:  # noqa: BLE001 - a broken figure must not hide the program's output
+                pass
         rec.emit({"event": "done"})
     except BaseException:  # noqa: BLE001
         rec.emit({"event": "internal_error", "message": traceback.format_exc()[-4000:]})

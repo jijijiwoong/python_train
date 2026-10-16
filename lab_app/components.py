@@ -84,6 +84,8 @@ def render_run_result(result: RunResult) -> None:
         st.caption("(출력 없음)")
     if result.stderr:
         st.code(result.stderr, language="text")
+    for i, png in enumerate(result.images, start=1):
+        st.image(png, caption=f"그림 {i}")
 
 
 def render_grade_result(result: GradeResult) -> None:
@@ -238,7 +240,7 @@ def render_blocks(service: LearningService, day: int, section: Section) -> None:
             if block.runnable:
                 key = f"block_{day}_{i}"
                 if st.button("▶ 예제 실행", key=key):
-                    st.session_state[f"{key}_out"] = service.run(block.code)
+                    st.session_state[f"{key}_out"] = service.run(block.code, timeout=block.time_limit_sec)
                 out = st.session_state.get(f"{key}_out")
                 if out is not None:
                     render_run_result(out)

@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "day": 85,
+  "title": "로지스틱 회귀",
+  "stage": "ml",
+  "week": 13,
+  "is_review": false,
+  "objectives": [
+    "시그모이드 함수가 점수를 0~1 확률로 바꾸는 원리를 설명할 수 있다.",
+    "LogisticRegression으로 이진 분류 모델을 학습할 수 있다."
+  ],
+  "concepts": [
+    "logistic_regression",
+    "sklearn_api"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "지난주 돌아보기",
+      "content_md": "12주차에는 숫자를 예측하는 회귀를 배웠습니다. 이번 주는 다시 **분류**입니다. 첫 모델 **로지스틱 회귀**는 이름에 \"회귀\"가 있지만 선형 회귀의 점수를 확률로 바꿔 **분류**하는 모델입니다.",
+      "quiz": [
+        {
+          "id": "d85_review_q1",
+          "question_md": "선형 회귀 `w·x + b`의 출력 범위는?",
+          "choices": [
+            "0~1",
+            "-1~1",
+            "제한 없음",
+            "0 이상"
+          ],
+          "answer_index": 2,
+          "explanation_md": "그래서 확률로 쓰려면 변환이 필요합니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "점수를 확률로",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**시그모이드** `σ(z) = 1 / (1 + e^(−z))`는 어떤 숫자든 0~1로 바꿉니다. z가 크면 1에, 작으면 0에 가깝고, z = 0이면 0.5입니다. 로지스틱 회귀는 `z = w·x + b`를 계산해 시그모이드로 \"양성일 확률\"을 만들고, 0.5 이상이면 양성으로 분류합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\n\nz = np.array([-5, -1, 0, 1, 5])\nprint(np.round(1 / (1 + np.exp(-z)), 3))\n",
+          "runnable": true,
+          "expected_output": "[0.007 0.269 0.5   0.731 0.993]\n",
+          "time_limit_sec": 40
+        },
+        {
+          "kind": "text",
+          "md": "유방암 데이터는 종양 특성 30개로 악성(0)/양성(1)을 가리는 이진 분류 문제입니다. 특성 크기가 제각각이라 **학습 데이터의 평균·표준편차로 표준화**한 뒤 학습합니다(테스트도 학습 데이터 기준으로 변환)."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\n\nX, y = load_breast_cancer(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.25, random_state=0, stratify=y\n)\nmean, std = X_train.mean(axis=0), X_train.std(axis=0)\nX_train, X_test = (X_train - mean) / std, (X_test - mean) / std\nmodel = LogisticRegression().fit(X_train, y_train)\nprint(round(model.score(X_test, y_test), 4))\nprint(model.coef_.shape)\n",
+          "runnable": true,
+          "expected_output": "0.958\n(1, 30)\n",
+          "time_limit_sec": 40
+        },
+        {
+          "kind": "tip",
+          "md": "표준화에 테스트 데이터의 평균을 쓰면 시험 정보를 미리 보는 셈(데이터 누수)입니다. 항상 학습 데이터로만 기준을 정하세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "시그모이드 함수를 완성하세요.",
+      "exercise_ids": [
+        "d85_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "유방암 데이터로 로지스틱 회귀를 학습하세요.",
+      "exercise_ids": [
+        "d85_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "시그모이드 σ(z) = 1/(1+e^(−z)) → 0~1.",
+        "로지스틱 회귀 = 선형 점수 + 시그모이드 → 확률 → 0.5 기준 분류.",
+        "`LogisticRegression().fit(X, y)`.",
+        "표준화 기준은 학습 데이터로만."
+      ],
+      "quiz": [
+        {
+          "id": "d85_summary_q1",
+          "question_md": "σ(0)의 값은?",
+          "choices": [
+            "0",
+            "0.5",
+            "1",
+            "e"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d85_summary_q2",
+          "question_md": "로지스틱 회귀는 어떤 문제에 쓰나?",
+          "choices": [
+            "회귀",
+            "분류",
+            "군집",
+            "압축"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d85_fill_1",
+      "kind": "fill_blank",
+      "title": "시그모이드",
+      "prompt_md": "점수 목록에 시그모이드를 적용한 값(소수 넷째 자리)을 반환하세요.",
+      "concepts": [
+        "logistic_regression"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef sigmoid(zs):\n    z = np.array(zs, dtype=float)\n    return np.round(1 / (1 + np.____(____)), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "sigmoid"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                -1,
+                0,
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0.2689,
+              0.5,
+              0.8808
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                10,
+                -10
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              1.0,
+              0.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "e의 거듭제곱을 계산하는 NumPy 함수입니다.",
+        "식 1/(1+e^(−z))에서 지수 부분입니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef sigmoid(zs):\n    z = np.array(zs, dtype=float)\n    return np.round(1 / (1 + np.exp(-z)), 4)\n",
+      "time_limit_sec": 40
+    },
+    {
+      "id": "d85_code_1",
+      "kind": "coding",
+      "title": "유방암 분류",
+      "prompt_md": "유방암 데이터를 `test_size=0.25, random_state=seed, stratify=y`로 나누고, **학습 데이터의 평균·표준편차로** 학습·테스트를 표준화한 뒤 로지스틱 회귀를 학습하세요. `[특성 수, 테스트 정확도(소수 넷째 자리)]`를 반환합니다.",
+      "concepts": [
+        "logistic_regression",
+        "train_test"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\n\n\ndef cancer_accuracy(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "cancer_accuracy"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              30,
+              0.958
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              30,
+              0.986
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "나눈 뒤 `X_train.mean(axis=0)`, `X_train.std(axis=0)`를 구하세요.",
+        "학습·테스트 모두 `(X - mean) / std`로 바꿉니다.",
+        "특성 수는 `X_train.shape[1]`."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\n\n\ndef cancer_accuracy(seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.25, random_state=seed, stratify=y\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    X_train, X_test = (X_train - mean) / std, (X_test - mean) / std\n    model = LogisticRegression().fit(X_train, y_train)\n    return [X_train.shape[1], round(model.score(X_test, y_test), 4)]\n",
+      "time_limit_sec": 40
+    }
+  ]
+}

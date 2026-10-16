@@ -1,0 +1,329 @@
+{
+  "schema_version": 1,
+  "day": 53,
+  "title": "집계와 축",
+  "stage": "advanced_data",
+  "week": 8,
+  "is_review": false,
+  "objectives": [
+    "sum, mean, max, argmax, std 등 집계 함수를 쓸 수 있다.",
+    "axis로 행 방향·열 방향 집계를 구분할 수 있다."
+  ],
+  "concepts": [
+    "numpy_aggregate",
+    "numpy_indexing"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 인덱싱과 불리언 마스크로 원소를 골랐습니다.",
+      "quiz": [
+        {
+          "id": "d53_review_q1",
+          "question_md": "2차원 배열 `m`에서 모든 행의 첫 번째 열은?",
+          "choices": [
+            "`m[0]`",
+            "`m[:, 0]`",
+            "`m[0, :]`",
+            "`m[0][0]`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "요약 통계 내기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`sum`, `mean`, `max`, `min`, `std`(표준편차)는 배열 전체를 하나의 값으로 요약합니다. `argmax`/`argmin`은 가장 큰/작은 값의 **위치**를 돌려줍니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\n\na = np.array([4, 9, 1, 7])\nprint(a.sum(), a.mean(), a.max(), a.argmax())\nprint(a.std().round(3))\nprint(np.cumsum(a))\n",
+          "runnable": true,
+          "expected_output": "21 5.25 9 1\n3.031\n[ 4 13 14 21]\n"
+        },
+        {
+          "kind": "text",
+          "md": "2차원에서 `axis=0`은 **세로 방향(열별)**, `axis=1`은 **가로 방향(행별)** 집계입니다. \"이 축을 따라 눌러서 없앤다\"고 생각하면 됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\n\nscores = np.array([[80, 90, 70],\n                   [95, 60, 85]])\nprint(scores.sum(axis=0))\nprint(scores.sum(axis=1))\nprint(scores.mean(axis=1))\nprint(scores.argmax(axis=1))\n",
+          "runnable": true,
+          "expected_output": "[175 150 155]\n[240 240]\n[80. 80.]\n[1 0]\n"
+        },
+        {
+          "kind": "tip",
+          "md": "행 = 학생, 열 = 과목인 표라면 `axis=0`은 과목별(학생들을 합침), `axis=1`은 학생별(과목들을 합침) 결과입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "과목(열)별 평균을 구하세요.",
+      "exercise_ids": [
+        "d53_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "axis와 argmax로 1등 학생과 과목별 최고점을 찾으세요.",
+      "exercise_ids": [
+        "d53_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`sum`, `mean`, `max`, `min`, `std`로 요약.",
+        "`argmax`/`argmin`은 위치(인덱스).",
+        "`axis=0` 열별(세로), `axis=1` 행별(가로).",
+        "`np.cumsum`은 누적 합."
+      ],
+      "quiz": [
+        {
+          "id": "d53_summary_q1",
+          "question_md": "(3, 4) 배열의 `sum(axis=0)` 결과 모양은?",
+          "choices": [
+            "(3,)",
+            "(4,)",
+            "(3, 4)",
+            "스칼라"
+          ],
+          "answer_index": 1,
+          "explanation_md": "0번 축(3)이 사라집니다."
+        },
+        {
+          "id": "d53_summary_q2",
+          "question_md": "`np.array([2, 8, 5]).argmax()`는?",
+          "choices": [
+            "8",
+            "1",
+            "2",
+            "0"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d53_fill_1",
+      "kind": "fill_blank",
+      "title": "과목별 평균",
+      "prompt_md": "행 = 학생, 열 = 과목인 점수 표에서 **과목별 평균** 배열을 반환하세요.",
+      "concepts": [
+        "numpy_aggregate"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef subject_means(scores):\n    return np.array(scores).____(axis=____)\n",
+      "entry": {
+        "mode": "function",
+        "name": "subject_means"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2×2",
+          "call": {
+            "args": [
+              [
+                [
+                  80,
+                  90
+                ],
+                [
+                  60,
+                  70
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              70.0,
+              80.0
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2,
+                  3
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              1.0,
+              2.0,
+              3.0
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "평균을 구하는 배열 메서드입니다.",
+        "학생(행)들을 눌러 합치는 축 번호입니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef subject_means(scores):\n    return np.array(scores).mean(axis=0)\n",
+      "time_limit_sec": 10
+    },
+    {
+      "id": "d53_code_1",
+      "kind": "coding",
+      "title": "1등과 과목별 최고점",
+      "prompt_md": "점수 표(행 = 학생, 열 = 과목)와 이름 목록을 받아 `[총점이 가장 높은 학생 이름, 과목별 최고점 리스트]`를 반환하세요. 동점이면 앞 학생입니다.\n\n예: `([[80, 90, 70], [95, 60, 85], [70, 75, 80]], [\"민준\", \"서연\", \"지호\"])` → `[\"민준\", [95, 90, 85]]`",
+      "concepts": [
+        "numpy_aggregate",
+        "numpy_indexing"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef best(scores, names):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "best"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3명 3과목",
+          "call": {
+            "args": [
+              [
+                [
+                  80,
+                  90,
+                  70
+                ],
+                [
+                  95,
+                  60,
+                  85
+                ],
+                [
+                  70,
+                  75,
+                  80
+                ]
+              ],
+              [
+                "민준",
+                "서연",
+                "지호"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "민준",
+              [
+                95,
+                90,
+                85
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2
+                ]
+              ],
+              [
+                "a"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "a",
+              [
+                1,
+                2
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  5,
+                  5
+                ],
+                [
+                  9,
+                  0
+                ],
+                [
+                  1,
+                  9
+                ]
+              ],
+              [
+                "x",
+                "y",
+                "z"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "x",
+              [
+                9,
+                9
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "학생별 총점은 `axis=1` 합계, 그중 가장 큰 위치는 `argmax()`입니다.",
+        "과목별 최고점은 `axis=0` 최댓값입니다.",
+        "`argmax()`가 돌려주는 위치로 `names`에서 이름을 꺼내세요(`int()`로 바꾸면 안전합니다)."
+      ],
+      "solution": "import numpy as np\n\n\ndef best(scores, names):\n    a = np.array(scores)\n    top = int(a.sum(axis=1).argmax())\n    return [names[top], a.max(axis=0)]\n",
+      "time_limit_sec": 10
+    }
+  ]
+}

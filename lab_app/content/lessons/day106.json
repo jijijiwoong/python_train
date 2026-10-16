@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "day": 106,
+  "title": "k-평균 군집",
+  "stage": "ml",
+  "week": 16,
+  "is_review": false,
+  "objectives": [
+    "정답 없이 비슷한 데이터끼리 묶는 군집(비지도 학습)을 설명할 수 있다.",
+    "KMeans로 군집을 만들고 중심·크기·inertia를 확인할 수 있다."
+  ],
+  "concepts": [
+    "kmeans",
+    "ml_basics"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "지난주 돌아보기",
+      "content_md": "지금까지는 정답(y)이 있는 **지도 학습**이었습니다. 이번 주는 정답 없이 데이터의 구조를 찾는 **비지도 학습**입니다. 첫 번째는 비슷한 것끼리 묶는 **군집**이에요.",
+      "quiz": [
+        {
+          "id": "d106_review_q1",
+          "question_md": "고객을 구매 패턴으로 몇 그룹으로 나누되 미리 정해진 그룹 이름이 없다면?",
+          "choices": [
+            "분류",
+            "회귀",
+            "군집",
+            "검증"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "중심을 찾아 묶기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**k-평균**은 ① 중심 k개를 정하고 ② 각 점을 가장 가까운 중심에 배정한 뒤 ③ 중심을 배정된 점들의 평균으로 옮기는 일을 반복합니다. `inertia_`는 각 점과 자기 중심 사이 거리 제곱의 합(작을수록 촘촘)입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.cluster import KMeans\nfrom sklearn.datasets import make_blobs\n\nX, _ = make_blobs(n_samples=300, centers=3, random_state=0)\nmodel = KMeans(n_clusters=3, n_init=10, random_state=0).fit(X)\nprint(np.bincount(model.labels_))\nprint(model.cluster_centers_.round(2))\nprint(round(model.inertia_, 2))\n",
+          "runnable": true,
+          "expected_output": "[ 93 105 102]\n[[-1.78  2.79]\n [ 0.87  4.44]\n [ 1.87  0.76]]\n536.37\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "군집 번호(0, 1, 2)에는 의미가 없고 실행 설정에 따라 바뀔 수 있습니다. 그래서 채점은 **크기를 정렬한 값**처럼 번호와 무관한 결과로 합니다. k-평균도 거리를 쓰므로 특성 스케일을 맞추는 것이 좋습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "KMeans로 군집을 만드세요.",
+      "exercise_ids": [
+        "d106_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "군집 크기와 inertia를 구하세요.",
+      "exercise_ids": [
+        "d106_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "비지도 학습: 정답 없이 구조 찾기.",
+        "k-평균: 배정 → 중심 이동 반복.",
+        "`labels_`, `cluster_centers_`, `inertia_`.",
+        "군집 번호 자체는 의미가 없다."
+      ],
+      "quiz": [
+        {
+          "id": "d106_summary_q1",
+          "question_md": "k-평균에서 사람이 정해야 하는 값은?",
+          "choices": [
+            "중심 위치",
+            "군집 수 k",
+            "레이블",
+            "inertia"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d106_summary_q2",
+          "question_md": "inertia가 작다는 것은?",
+          "choices": [
+            "군집이 촘촘하다",
+            "군집이 많다",
+            "정확도가 높다",
+            "데이터가 적다"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d106_fill_1",
+      "kind": "fill_blank",
+      "title": "군집 만들기",
+      "prompt_md": "`make_blobs(n_samples=200, centers=3, random_state=0)` 데이터를 `KMeans(n_clusters=k, n_init=10, random_state=0)`로 묶어 군집 크기를 큰 순으로 반환하세요.",
+      "concepts": [
+        "kmeans"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.cluster import ____\nfrom sklearn.datasets import make_blobs\n\n\ndef cluster_sizes(k):\n    X, _ = make_blobs(n_samples=200, centers=3, random_state=0)\n    model = KMeans(n_clusters=____, n_init=10, random_state=0).fit(X)\n    return sorted(np.bincount(model.labels_).tolist(), reverse=True)\n",
+      "entry": {
+        "mode": "function",
+        "name": "cluster_sizes"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "k=3",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              69,
+              68,
+              63
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              128,
+              72
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "k-평균 군집 클래스 이름입니다.",
+        "군집 수로 쓸 매개변수입니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.cluster import KMeans\nfrom sklearn.datasets import make_blobs\n\n\ndef cluster_sizes(k):\n    X, _ = make_blobs(n_samples=200, centers=3, random_state=0)\n    model = KMeans(n_clusters=k, n_init=10, random_state=0).fit(X)\n    return sorted(np.bincount(model.labels_).tolist(), reverse=True)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d106_code_1",
+      "kind": "coding",
+      "title": "군집 요약",
+      "prompt_md": "`make_blobs(n_samples=300, centers=4, random_state=seed)`의 X를 `KMeans(n_clusters=k, n_init=10, random_state=0)`로 묶어 `[큰 순 군집 크기 리스트, inertia(소수 둘째 자리)]`를 반환하세요.",
+      "concepts": [
+        "kmeans"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.cluster import KMeans\nfrom sklearn.datasets import make_blobs\n\n\ndef summarize_clusters(k, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "summarize_clusters"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "k=4",
+          "call": {
+            "args": [
+              4,
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                77,
+                75,
+                74,
+                74
+              ],
+              541.07
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2,
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                150,
+                150
+              ],
+              1885.75
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`make_blobs(...)`는 (X, y)를 돌려주지만 군집에는 X만 씁니다.",
+        "크기는 `np.bincount(model.labels_)`를 큰 순으로 정렬합니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.cluster import KMeans\nfrom sklearn.datasets import make_blobs\n\n\ndef summarize_clusters(k, seed):\n    X, _ = make_blobs(n_samples=300, centers=4, random_state=seed)\n    model = KMeans(n_clusters=k, n_init=10, random_state=0).fit(X)\n    sizes = sorted(np.bincount(model.labels_).tolist(), reverse=True)\n    return [sizes, round(float(model.inertia_), 2)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

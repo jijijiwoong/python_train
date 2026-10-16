@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "day": 87,
+  "title": "결정 경계",
+  "stage": "ml",
+  "week": 13,
+  "is_review": false,
+  "objectives": [
+    "모델이 특성 공간을 나누는 경계(결정 경계)를 그림으로 이해할 수 있다.",
+    "선형 모델과 비선형 모델의 경계 차이를 비교할 수 있다."
+  ],
+  "concepts": [
+    "decision_boundary",
+    "knn",
+    "logistic_regression"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 확률과 임계값으로 분류를 조절했습니다.",
+      "quiz": [
+        {
+          "id": "d87_review_q1",
+          "question_md": "양성 확률을 얻는 코드는?",
+          "choices": [
+            "`predict(X)`",
+            "`predict_proba(X)[:, 1]`",
+            "`score(X)`",
+            "`coef_`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "모델은 공간을 나눈다",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "특성이 2개면 데이터를 평면에 찍을 수 있고, 모델은 평면을 클래스별 구역으로 나눕니다. 그 경계선이 **결정 경계**입니다. 로지스틱 회귀의 경계는 **직선**, KNN은 구불구불한 곡선입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import matplotlib.pyplot as plt\nimport numpy as np\nfrom sklearn.datasets import make_moons\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.neighbors import KNeighborsClassifier\n\nX, y = make_moons(n_samples=200, noise=0.25, random_state=0)\nxx, yy = np.meshgrid(np.linspace(-1.5, 2.5, 200), np.linspace(-1, 1.5, 200))\ngrid = np.c_[xx.ravel(), yy.ravel()]\nfig, axes = plt.subplots(1, 2, figsize=(9, 3.5))\nfor ax, model in zip(axes, [LogisticRegression(), KNeighborsClassifier(n_neighbors=5)]):\n    model.fit(X, y)\n    ax.contourf(xx, yy, model.predict(grid).reshape(xx.shape), alpha=0.3)\n    ax.scatter(X[:, 0], X[:, 1], c=y, s=12)\n    ax.set_title(f\"{type(model).__name__} ({model.score(X, y):.2f})\")\nprint(\"그림 2개\")\n",
+          "runnable": true,
+          "expected_output": "그림 2개\n",
+          "time_limit_sec": 40
+        },
+        {
+          "kind": "tip",
+          "md": "`make_moons`는 초승달 두 개가 맞물린 모양의 연습용 데이터를 만듭니다. 직선 하나로는 잘 나눌 수 없어서 선형 모델의 한계를 보기 좋아요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "초승달 데이터를 만들고 크기를 확인하세요.",
+      "exercise_ids": [
+        "d87_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "초승달 데이터에서 선형 모델과 KNN을 비교하세요.",
+      "exercise_ids": [
+        "d87_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "결정 경계 = 클래스가 바뀌는 경계선.",
+        "로지스틱 회귀는 직선(평면) 경계, KNN은 유연한 경계.",
+        "`make_moons(n_samples, noise, random_state)`: 비선형 연습 데이터.",
+        "`contourf`로 격자 예측을 칠하면 경계가 보인다."
+      ],
+      "quiz": [
+        {
+          "id": "d87_summary_q1",
+          "question_md": "초승달 모양 데이터에 더 유리한 모델은?",
+          "choices": [
+            "로지스틱 회귀",
+            "KNN",
+            "둘 다 같다",
+            "선형 회귀"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d87_summary_q2",
+          "question_md": "특성이 2개일 때 로지스틱 회귀의 결정 경계 모양은?",
+          "choices": [
+            "직선",
+            "원",
+            "곡선",
+            "점"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d87_fill_1",
+      "kind": "fill_blank",
+      "title": "초승달 데이터",
+      "prompt_md": "`make_moons`로 `n`개 샘플(noise=0.2, random_state=0)을 만들어 `[X 모양 리스트, 클래스 1의 개수]`를 반환하세요.",
+      "concepts": [
+        "decision_boundary"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import ____\n\n\ndef moons_info(n):\n    X, y = make_moons(n_samples=____, noise=0.2, random_state=0)\n    return [list(X.shape), int(y.sum())]\n",
+      "entry": {
+        "mode": "function",
+        "name": "moons_info"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "100개",
+          "call": {
+            "args": [
+              100
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                100,
+                2
+              ],
+              50
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              30
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                30,
+                2
+              ],
+              15
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "초승달 데이터 생성 함수 이름입니다.",
+        "샘플 수로 쓸 매개변수입니다."
+      ],
+      "solution": "from sklearn.datasets import make_moons\n\n\ndef moons_info(n):\n    X, y = make_moons(n_samples=n, noise=0.2, random_state=0)\n    return [list(X.shape), int(y.sum())]\n",
+      "time_limit_sec": 40
+    },
+    {
+      "id": "d87_code_1",
+      "kind": "coding",
+      "title": "선형 vs 비선형",
+      "prompt_md": "`make_moons(n_samples=300, noise=noise, random_state=seed)`로 데이터를 만들고 `test_size=0.3, random_state=seed`로 나눈 뒤, `LogisticRegression()`과 `KNeighborsClassifier(n_neighbors=5)`의 테스트 정확도(소수 넷째 자리)를 `{\"logistic\": …, \"knn\": …}`로 반환하세요.",
+      "concepts": [
+        "decision_boundary",
+        "knn",
+        "logistic_regression"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import make_moons\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef compare_on_moons(noise, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "compare_on_moons"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "noise 0.25",
+          "call": {
+            "args": [
+              0.25,
+              0
+            ]
+          },
+          "expect": {
+            "return": {
+              "logistic": 0.8444,
+              "knn": 0.9667
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.1,
+              5
+            ]
+          },
+          "expect": {
+            "return": {
+              "logistic": 0.9,
+              "knn": 1.0
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "데이터 생성 → 나누기 → 두 모델 각각 `fit` → `score`.",
+        "딕셔너리 키 이름에 주의하세요."
+      ],
+      "solution": "from sklearn.datasets import make_moons\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef compare_on_moons(noise, seed):\n    X, y = make_moons(n_samples=300, noise=noise, random_state=seed)\n    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=seed)\n    logistic = LogisticRegression().fit(X_train, y_train).score(X_test, y_test)\n    knn = KNeighborsClassifier(n_neighbors=5).fit(X_train, y_train).score(X_test, y_test)\n    return {\"logistic\": round(logistic, 4), \"knn\": round(knn, 4)}\n",
+      "time_limit_sec": 40
+    }
+  ]
+}

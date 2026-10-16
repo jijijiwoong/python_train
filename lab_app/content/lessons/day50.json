@@ -1,0 +1,330 @@
+{
+  "schema_version": 1,
+  "day": 50,
+  "title": "NumPy 배열 만들기",
+  "stage": "advanced_data",
+  "week": 8,
+  "is_review": false,
+  "objectives": [
+    "NumPy 배열(ndarray)을 만들고 shape, ndim, dtype을 확인할 수 있다.",
+    "arange, linspace, zeros, ones로 배열을 생성할 수 있다."
+  ],
+  "concepts": [
+    "numpy_array",
+    "module"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "지난주 돌아보기",
+      "content_md": "7주차까지 파이썬 문법을 다졌습니다. 이번 주부터 **데이터 분석 도구**를 배웁니다. 첫 번째는 숫자 계산의 기본 도구 **NumPy**입니다. 리스트보다 훨씬 빠르고, 이후의 pandas·scikit-learn·PyTorch가 모두 NumPy 방식을 따릅니다.",
+      "quiz": [
+        {
+          "id": "d50_review_q1",
+          "question_md": "`[x * 2 for x in [1, 2, 3]]`의 결과는?",
+          "choices": [
+            "`[2, 4, 6]`",
+            "`[1, 2, 3, 1, 2, 3]`",
+            "`6`",
+            "오류"
+          ],
+          "answer_index": 0,
+          "explanation_md": "NumPy에서는 이것을 `배열 * 2` 한 번으로 씁니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "숫자 데이터를 담는 배열",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "관례적으로 `import numpy as np`로 불러옵니다. `np.array(리스트)`로 배열을 만들고, `shape`(모양), `ndim`(차원 수), `size`(원소 수), `dtype`(자료형)을 확인합니다. 배열의 원소는 **모두 같은 자료형**입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\n\na = np.array([1, 2, 3])\nprint(a)\nprint(a.shape, a.ndim, a.dtype)\nb = np.array([[1.5, 2], [3, 4]])\nprint(b)\nprint(b.shape, b.size, b.dtype)\n",
+          "runnable": true,
+          "expected_output": "[1 2 3]\n(3,) 1 int64\n[[1.5 2. ]\n [3.  4. ]]\n(2, 2) 4 float64\n"
+        },
+        {
+          "kind": "text",
+          "md": "자주 쓰는 생성 함수입니다. `arange`는 `range`처럼, `linspace(시작, 끝, 개수)`는 끝을 포함해 같은 간격으로 나눕니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\n\nprint(np.arange(0, 10, 2))\nprint(np.linspace(0, 1, 5))\nprint(np.zeros((2, 3)))\nprint(np.ones(3, dtype=int))\n",
+          "runnable": true,
+          "expected_output": "[0 2 4 6 8]\n[0.   0.25 0.5  0.75 1.  ]\n[[0. 0. 0.]\n [0. 0. 0.]]\n[1 1 1]\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`np.array([1, 2.5])`처럼 정수와 실수가 섞이면 모두 실수(float64)로 바뀝니다. 출력할 때 쉼표가 없고 공백으로 구분되는 것이 리스트와의 차이예요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "`arange`로 범위 배열을 만드세요.",
+      "exercise_ids": [
+        "d50_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "배열의 기본 정보를 꺼내 보세요.",
+      "exercise_ids": [
+        "d50_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`import numpy as np`, `np.array(리스트)`.",
+        "`shape`(모양 튜플), `ndim`(차원), `size`(개수), `dtype`(자료형).",
+        "`np.arange`, `np.linspace`, `np.zeros`, `np.ones`.",
+        "배열의 원소는 모두 같은 자료형."
+      ],
+      "quiz": [
+        {
+          "id": "d50_summary_q1",
+          "question_md": "`np.zeros((3, 4)).shape`는?",
+          "choices": [
+            "`(4, 3)`",
+            "`(3, 4)`",
+            "`12`",
+            "`3`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d50_summary_q2",
+          "question_md": "`np.linspace(0, 10, 3)`의 결과는?",
+          "choices": [
+            "`[0, 5, 10]` (실수)",
+            "`[0, 3, 6]`",
+            "`[0, 10]`",
+            "`[3, 6, 9]`"
+          ],
+          "answer_index": 0,
+          "explanation_md": "끝값 10을 포함해 3개로 나눕니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d50_fill_1",
+      "kind": "fill_blank",
+      "title": "범위 배열",
+      "prompt_md": "`start`부터 `stop` 직전까지 `step` 간격의 NumPy 배열을 반환하세요.\n\n예: `make_range(0, 10, 3)` → `[0, 3, 6, 9]` (배열은 채점 시 리스트로 비교됩니다)",
+      "concepts": [
+        "numpy_array"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as ____\n\n\ndef make_range(start, stop, step):\n    return np.____(start, stop, step)\n",
+      "entry": {
+        "mode": "function",
+        "name": "make_range"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              10,
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              3,
+              6,
+              9
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5,
+              5,
+              1
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              10,
+              0,
+              -4
+            ]
+          },
+          "expect": {
+            "return": [
+              10,
+              6,
+              2
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "NumPy를 불러올 때 쓰는 관례적인 별명입니다.",
+        "파이썬 `range`와 비슷한 이름의 NumPy 함수입니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef make_range(start, stop, step):\n    return np.arange(start, stop, step)\n",
+      "time_limit_sec": 10
+    },
+    {
+      "id": "d50_code_1",
+      "kind": "coding",
+      "title": "배열 정보",
+      "prompt_md": "리스트를 배열로 바꿔 `[차원 수, 모양(리스트), 원소 수, 자료형 이름]`을 반환하세요. 자료형 이름은 `str(배열.dtype)`입니다.\n\n예: `describe([1, 2, 3])` → `[1, [3], 3, \"int64\"]`",
+      "concepts": [
+        "numpy_array"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef describe(values):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "describe"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "1차원 정수",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              [
+                3
+              ],
+              3,
+              "int64"
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "2차원 실수",
+          "call": {
+            "args": [
+              [
+                [
+                  1.5,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              2,
+              [
+                2,
+                2
+              ],
+              4,
+              "float64"
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  [
+                    1
+                  ]
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              [
+                1,
+                1,
+                1
+              ],
+              1,
+              "int64"
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              [
+                0
+              ],
+              0,
+              "float64"
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`a = np.array(values)`로 만든 뒤 속성들을 읽으세요.",
+        "`shape`는 튜플이므로 `list()`로 바꿉니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef describe(values):\n    a = np.array(values)\n    return [a.ndim, list(a.shape), a.size, str(a.dtype)]\n",
+      "time_limit_sec": 10
+    }
+  ]
+}

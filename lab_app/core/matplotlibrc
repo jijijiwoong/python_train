@@ -1,0 +1,5 @@
+# matplotlib settings for code run by the harness (runner sets MATPLOTLIBRC to this file).
+# Korean text needs a Hangul font; fall back to the default when it is missing.
+font.family: Malgun Gothic, AppleGothic, NanumGothic, DejaVu Sans
+axes.unicode_minus: False
+figure.figsize: 6.4, 4.0

@@ -1,0 +1,339 @@
+{
+  "schema_version": 1,
+  "day": 43,
+  "title": "리스트 컴프리헨션",
+  "stage": "advanced_data",
+  "week": 7,
+  "is_review": false,
+  "objectives": [
+    "for문과 append로 만들던 리스트를 한 줄 컴프리헨션으로 쓸 수 있다.",
+    "조건(if)과 중첩 for가 있는 컴프리헨션을 읽고 쓸 수 있다."
+  ],
+  "concepts": [
+    "comprehension",
+    "list"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "지난주 돌아보기",
+      "content_md": "6주차에는 클래스로 데이터와 동작을 묶었습니다. 이번 주는 **더 파이썬다운 코드**를 배웁니다. 첫 번째는 리스트를 만드는 가장 흔한 패턴(빈 리스트 → for → append)을 한 줄로 줄이는 **컴프리헨션**입니다.",
+      "quiz": [
+        {
+          "id": "d43_review_q1",
+          "question_md": "`@dataclass`가 자동으로 만들어 주는 메서드가 **아닌** 것은?",
+          "choices": [
+            "`__init__`",
+            "`__repr__`",
+            "`__eq__`",
+            "`__add__`"
+          ],
+          "answer_index": 3,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "리스트를 한 줄로 만들기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`[식 for 변수 in 반복가능 if 조건]` 형태입니다. 왼쪽부터 \"무엇을 담을지 → 어디서 꺼낼지 → 어떤 것만\" 순서로 읽습니다."
+        },
+        {
+          "kind": "code",
+          "code": "squares = []\nfor x in range(5):\n    squares.append(x * x)\nprint(squares)\n\nprint([x * x for x in range(5)])\nprint([x for x in range(10) if x % 2 == 0])\nwords = [\"apple\", \"kiwi\", \"banana\"]\nprint([w.upper() for w in words if len(w) > 4])\n",
+          "runnable": true,
+          "expected_output": "[0, 1, 4, 9, 16]\n[0, 1, 4, 9, 16]\n[0, 2, 4, 6, 8]\n['APPLE', 'BANANA']\n"
+        },
+        {
+          "kind": "text",
+          "md": "for를 두 번 쓰면 중첩 반복입니다. 앞의 for가 바깥 반복이에요."
+        },
+        {
+          "kind": "code",
+          "code": "grid = [[1, 2], [3, 4], [5, 6]]\nprint([x for row in grid for x in row])\nprint([[x * 10 for x in row] for row in grid])\nprint([(i, j) for i in range(2) for j in range(2)])\n",
+          "runnable": true,
+          "expected_output": "[1, 2, 3, 4, 5, 6]\n[[10, 20], [30, 40], [50, 60]]\n[(0, 0), (0, 1), (1, 0), (1, 1)]\n"
+        },
+        {
+          "kind": "tip",
+          "md": "컴프리헨션이 한 줄에 다 안 들어올 만큼 복잡해지면 평범한 for문이 더 읽기 좋습니다. **짧고 명확할 때** 쓰세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "조건이 있는 컴프리헨션을 완성하세요.",
+      "exercise_ids": [
+        "d43_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "`for` 문(statement) 없이 컴프리헨션만으로 행렬을 뒤집으세요.",
+      "exercise_ids": [
+        "d43_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`[식 for x in 목록]`: 변환.",
+        "`[식 for x in 목록 if 조건]`: 거르기 + 변환.",
+        "`[x for row in grid for x in row]`: 중첩 펼치기.",
+        "복잡하면 일반 for문이 낫다."
+      ],
+      "quiz": [
+        {
+          "id": "d43_summary_q1",
+          "question_md": "`[n * 2 for n in [1, 2, 3] if n != 2]`의 결과는?",
+          "choices": [
+            "`[2, 4, 6]`",
+            "`[2, 6]`",
+            "`[1, 3]`",
+            "`[4]`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d43_summary_q2",
+          "question_md": "`[c for c in \"abc\"]`의 결과는?",
+          "choices": [
+            "`\"abc\"`",
+            "`['abc']`",
+            "`['a', 'b', 'c']`",
+            "오류"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d43_fill_1",
+      "kind": "fill_blank",
+      "title": "긴 단어만 대문자로",
+      "prompt_md": "단어 리스트에서 **3글자 이상**인 단어만 대문자로 바꾼 리스트를 반환하세요.\n\n예: `[\"hi\", \"cat\", \"apple\"]` → `[\"CAT\", \"APPLE\"]`",
+      "concepts": [
+        "comprehension"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def long_upper(words):\n    return [w.upper() ____ w in words ____ len(w) >= 3]\n",
+      "entry": {
+        "mode": "function",
+        "name": "long_upper"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                "hi",
+                "cat",
+                "apple"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "CAT",
+              "APPLE"
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "a",
+                "bb"
+              ]
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        }
+      ],
+      "hints": [
+        "컴프리헨션에서 반복을 나타내는 키워드입니다.",
+        "조건을 붙이는 키워드입니다."
+      ],
+      "solution": "def long_upper(words):\n    return [w.upper() for w in words if len(w) >= 3]\n"
+    },
+    {
+      "id": "d43_code_1",
+      "kind": "coding",
+      "title": "행렬 전치",
+      "prompt_md": "2차원 리스트(행렬)의 행과 열을 바꾼 **전치 행렬**을 반환하세요. 빈 리스트면 빈 리스트를 반환합니다.\n\n- `for` 문은 쓸 수 없고 컴프리헨션을 사용합니다.\n\n예: `[[1, 2, 3], [4, 5, 6]]` → `[[1, 4], [2, 5], [3, 6]]`",
+      "concepts": [
+        "comprehension",
+        "nested_list"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "def transpose(matrix):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "transpose"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2×3",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                5
+              ],
+              [
+                3,
+                6
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                3,
+                5
+              ],
+              [
+                2,
+                4,
+                6
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        }
+      ],
+      "hints": [
+        "결과의 c번째 행은 원래 각 행의 c번째 값들입니다.",
+        "바깥 컴프리헨션은 열 번호 `c`를, 안쪽은 각 행 `row`에서 `row[c]`를 꺼냅니다.",
+        "열 개수는 `len(matrix[0])`입니다. 빈 행렬은 먼저 처리하세요."
+      ],
+      "solution": "def transpose(matrix):\n    if not matrix:\n        return []\n    return [[row[c] for row in matrix] for c in range(len(matrix[0]))]\n",
+      "checks": {
+        "required_syntax": [
+          "list_comp"
+        ],
+        "forbidden_syntax": [
+          "for"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "day": 127,
+  "title": "nn.Linear와 순전파",
+  "stage": "dl",
+  "week": 19,
+  "is_review": false,
+  "objectives": [
+    "nn.Linear의 가중치·편향 모양을 설명할 수 있다.",
+    "층에 입력을 넣어 순전파 결과를 구할 수 있다."
+  ],
+  "concepts": [
+    "nn_linear",
+    "tensor_ops"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "지난주 돌아보기",
+      "content_md": "지난주에는 `w`, `b`를 직접 만들어 `x @ w + b`를 계산했습니다. `torch.nn`에는 이것을 묶어 둔 **층**(layer)이 있습니다.",
+      "quiz": [
+        {
+          "id": "d127_review_q1",
+          "question_md": "신경망 한 층의 계산은?",
+          "choices": [
+            "`X @ W + b`",
+            "`X + W`",
+            "`X * b`",
+            "`argmax(X)`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "선형 층",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`nn.Linear(입력 수, 출력 수)`는 가중치 `weight`(모양: 출력 × 입력)와 편향 `bias`(모양: 출력)를 무작위로 만들어 가지고 있습니다. 층을 함수처럼 부르면 `x @ weight.T + bias`를 계산하는데, 이것을 **순전파**(forward)라고 합니다.\n\n무작위 초깃값을 매번 같게 하려면 `torch.manual_seed(정수)`를 먼저 부릅니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\ntorch.manual_seed(0)\nlayer = nn.Linear(3, 2)\nprint(layer.weight.shape, layer.bias.shape)\nx = torch.ones(4, 3)\nprint(layer(x).shape)\nprint(sum(p.numel() for p in layer.parameters()))\n",
+          "runnable": true,
+          "expected_output": "torch.Size([2, 3]) torch.Size([2])\ntorch.Size([4, 2])\n8\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "`parameters()`는 학습할 텐서(가중치·편향)를 차례로 돌려줍니다. `numel()`은 원소 수입니다. 3×2 가중치 6개 + 편향 2개 = 8개."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "층들의 매개변수 수를 세세요.",
+      "exercise_ids": [
+        "d127_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "층의 계산을 직접 확인하세요.",
+      "exercise_ids": [
+        "d127_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`nn.Linear(입력, 출력)`: weight (출력, 입력), bias (출력).",
+        "층(x) = `x @ weight.T + bias`.",
+        "`torch.manual_seed`로 초깃값 고정.",
+        "`parameters()`와 `numel()`로 매개변수 수 세기."
+      ],
+      "quiz": [
+        {
+          "id": "d127_summary_q1",
+          "question_md": "`nn.Linear(10, 5)`의 weight 모양은?",
+          "choices": [
+            "(10, 5)",
+            "(5, 10)",
+            "(5,)",
+            "(50,)"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d127_summary_q2",
+          "question_md": "`nn.Linear(10, 5)`의 매개변수 수는?",
+          "choices": [
+            "50",
+            "55",
+            "60",
+            "15"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d127_fill_1",
+      "kind": "fill_blank",
+      "title": "매개변수 세기",
+      "prompt_md": "`sizes`가 `[4, 8, 3]`이면 `nn.Linear(4, 8)`, `nn.Linear(8, 3)`처럼 이웃한 수로 층을 만들고 전체 매개변수 수를 반환하세요.",
+      "concepts": [
+        "nn_linear"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from torch import nn\n\n\ndef param_count(sizes):\n    layers = [nn.____(a, b) for a, b in zip(sizes, sizes[1:])]\n    return sum(p.____() for layer in layers for p in layer.parameters())\n",
+      "entry": {
+        "mode": "function",
+        "name": "param_count"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                4,
+                8,
+                3
+              ]
+            ]
+          },
+          "expect": {
+            "return": 67
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                2,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": 3
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                10,
+                20,
+                20,
+                5
+              ]
+            ]
+          },
+          "expect": {
+            "return": 745
+          }
+        }
+      ],
+      "hints": [
+        "선형 층 클래스 이름입니다.",
+        "텐서의 원소 수를 돌려주는 메서드입니다."
+      ],
+      "solution": "from torch import nn\n\n\ndef param_count(sizes):\n    layers = [nn.Linear(a, b) for a, b in zip(sizes, sizes[1:])]\n    return sum(p.numel() for layer in layers for p in layer.parameters())\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d127_code_1",
+      "kind": "coding",
+      "title": "순전파 확인",
+      "prompt_md": "`torch.manual_seed(seed)` 후 `nn.Linear(2, 1)`을 만들고 입력 `rows`에 대해 ① 층 호출 결과와 ② `x @ weight.T + bias`를 직접 계산하세요. `[층 결과를 펼친 리스트(소수 넷째 자리), 두 결과가 같은지(torch.allclose)]`를 반환합니다.",
+      "concepts": [
+        "nn_linear"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef check_forward(seed, rows):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "check_forward"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              [
+                [
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.1714,
+                0.9194
+              ],
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              7,
+              [
+                [
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  -1
+                ],
+                [
+                  2,
+                  5
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.2252,
+                0.7005,
+                -1.8058
+              ],
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "층을 함수처럼 부르면 순전파 결과가 나옵니다.",
+        "가중치는 (출력, 입력) 모양이라 `.T`로 뒤집어 곱합니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef check_forward(seed, rows):\n    torch.manual_seed(seed)\n    layer = nn.Linear(2, 1)\n    x = torch.tensor(rows, dtype=torch.float32)\n    out = layer(x)\n    manual = x @ layer.weight.T + layer.bias\n    return [[round(v, 4) for v in out.flatten().tolist()], torch.allclose(out, manual)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

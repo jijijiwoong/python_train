@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "day": 143,
+  "title": "풀링과 특성 맵",
+  "stage": "dl",
+  "week": 21,
+  "is_review": false,
+  "objectives": [
+    "최대 풀링으로 특성 맵 크기를 줄일 수 있다.",
+    "합성곱·풀링을 거친 뒤의 모양을 계산해 선형 층 입력 크기를 정할 수 있다."
+  ],
+  "concepts": [
+    "pooling",
+    "conv"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 합성곱의 출력 크기를 계산했습니다.",
+      "quiz": [
+        {
+          "id": "d143_review_q1",
+          "question_md": "합성곱 층의 출력 채널 수가 뜻하는 것은?",
+          "choices": [
+            "커널(필터)의 개수",
+            "이미지 개수",
+            "패딩 크기",
+            "stride"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "줄이고 펼치기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**최대 풀링** `nn.MaxPool2d(2)`는 2×2 칸마다 가장 큰 값만 남겨 높이·너비를 절반으로 줄입니다. 계산량이 줄고, 위치가 조금 달라져도 같은 결과가 나옵니다.\n\nCNN은 보통 [합성곱 → ReLU → 풀링]을 몇 번 반복해 **특성 맵**을 만들고, `flatten(1)`으로 (N, C×H×W)로 펼쳐 선형 층에 넣습니다. 선형 층의 입력 수는 이 펼친 크기여야 합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nx = torch.tensor([[1, 3, 2, 0], [4, 2, 1, 1], [0, 1, 5, 6], [2, 2, 7, 8]], dtype=torch.float32)\nprint(nn.MaxPool2d(2)(x.reshape(1, 1, 4, 4))[0, 0])\n\nimages = torch.zeros(5, 1, 8, 8)\nh = nn.MaxPool2d(2)(torch.relu(nn.Conv2d(1, 8, 3, padding=1)(images)))\nprint(h.shape, h.flatten(1).shape)\n",
+          "runnable": true,
+          "expected_output": "tensor([[4., 2.],\n        [2., 8.]])\ntorch.Size([5, 8, 4, 4]) torch.Size([5, 128])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "모양 계산이 헷갈리면 가짜 입력 `torch.zeros(1, 1, 8, 8)`을 층에 통과시켜 `shape`을 출력해 보는 것이 가장 확실합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "최대 풀링을 적용하세요.",
+      "exercise_ids": [
+        "d143_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "층마다 특성 맵 모양을 기록하세요.",
+      "exercise_ids": [
+        "d143_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "MaxPool2d(2): 2×2마다 최댓값, 크기 절반.",
+        "[합성곱 → ReLU → 풀링] 반복.",
+        "`flatten(1)`로 (N, C×H×W).",
+        "선형 층 입력 수 = 펼친 크기."
+      ],
+      "quiz": [
+        {
+          "id": "d143_summary_q1",
+          "question_md": "(4, 16, 8, 8)에 MaxPool2d(2)를 적용하면?",
+          "choices": [
+            "(4, 16, 4, 4)",
+            "(4, 8, 8, 8)",
+            "(2, 16, 8, 8)",
+            "(4, 16, 16, 16)"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d143_summary_q2",
+          "question_md": "(4, 16, 2, 2)를 `flatten(1)` 하면?",
+          "choices": [
+            "(4, 64)",
+            "(64,)",
+            "(4, 16)",
+            "(256,)"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d143_fill_1",
+      "kind": "fill_blank",
+      "title": "최대 풀링",
+      "prompt_md": "2차원 목록 이미지에 2×2 최대 풀링을 적용한 2차원 결과를 반환하세요.",
+      "concepts": [
+        "pooling"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef max_pool(image):\n    x = torch.tensor(image, dtype=torch.float32).____, len(image), -1)\n    return nn.____(2)(x)[0, 0]\n",
+      "entry": {
+        "mode": "function",
+        "name": "max_pool"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  3,
+                  2,
+                  0
+                ],
+                [
+                  4,
+                  2,
+                  1,
+                  1
+                ],
+                [
+                  0,
+                  1,
+                  5,
+                  6
+                ],
+                [
+                  2,
+                  2,
+                  7,
+                  8
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                4.0,
+                2.0
+              ],
+              [
+                2.0,
+                8.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                4.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "최대 풀링 층 클래스 이름입니다.",
+        "(개수, 채널, 높이, 너비) 순서로 앞 두 차원을 1로 만듭니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef max_pool(image):\n    x = torch.tensor(image, dtype=torch.float32).reshape(1, 1, len(image), -1)\n    return nn.MaxPool2d(2)(x)[0, 0]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d143_code_1",
+      "kind": "coding",
+      "title": "특성 맵 추적",
+      "prompt_md": "`torch.zeros(1, 1, h, h)`를 `Conv2d(1, 4, 3, padding=1)` → ReLU → `MaxPool2d(2)` → `Conv2d(4, 8, 3)` → ReLU → `MaxPool2d(2)` 순서로 통과시키며 **각 풀링 직후**의 모양 두 개와 마지막에 `flatten(1)`한 모양을 `[모양1, 모양2, 펼친 모양]`으로 반환하세요.",
+      "concepts": [
+        "pooling",
+        "conv"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef trace_shapes(h):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "trace_shapes"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              8
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                4,
+                4,
+                4
+              ],
+              [
+                1,
+                8,
+                1,
+                1
+              ],
+              [
+                1,
+                8
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              16
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                4,
+                8,
+                8
+              ],
+              [
+                1,
+                8,
+                3,
+                3
+              ],
+              [
+                1,
+                72
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              28
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                4,
+                14,
+                14
+              ],
+              [
+                1,
+                8,
+                6,
+                6
+              ],
+              [
+                1,
+                288
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "풀링 층은 매개변수가 없어 하나를 두 번 써도 됩니다.",
+        "두 번째 합성곱은 padding이 없어 크기가 2 줄어듭니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef trace_shapes(h):\n    x = torch.zeros(1, 1, h, h)\n    pool = nn.MaxPool2d(2)\n    x = pool(torch.relu(nn.Conv2d(1, 4, 3, padding=1)(x)))\n    first = list(x.shape)\n    x = pool(torch.relu(nn.Conv2d(4, 8, 3)(x)))\n    return [first, list(x.shape), list(x.flatten(1).shape)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

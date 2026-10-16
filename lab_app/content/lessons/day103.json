@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "day": 103,
+  "title": "특성 중요도",
+  "stage": "ml",
+  "week": 15,
+  "is_review": false,
+  "objectives": [
+    "트리 모델의 feature_importances_로 어떤 특성이 예측에 많이 쓰였는지 볼 수 있다.",
+    "순열 중요도로 모델과 무관하게 중요도를 측정할 수 있다."
+  ],
+  "concepts": [
+    "feature_importance",
+    "random_forest"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 부스팅을 배웠습니다. 이제 \"모델이 무엇을 보고 판단했나\"를 알아봅니다.",
+      "quiz": [
+        {
+          "id": "d103_review_q1",
+          "question_md": "표 데이터에서 특히 강력한 모델 계열은?",
+          "choices": [
+            "KNN",
+            "부스팅",
+            "선형 회귀",
+            "나이브 베이즈"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "무엇을 보고 판단했나",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "트리 모델은 각 특성이 불순도를 얼마나 줄였는지 합산한 **특성 중요도**(`feature_importances_`, 합 = 1)를 줍니다. **순열 중요도**는 특성 하나의 값을 무작위로 섞었을 때 점수가 얼마나 떨어지는지로 중요도를 재며, 어떤 모델에도 쓸 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import RandomForestClassifier\n\ndata = load_breast_cancer()\nmodel = RandomForestClassifier(n_estimators=100, random_state=0).fit(data.data, data.target)\norder = np.argsort(model.feature_importances_)[::-1][:3]\nfor i in order:\n    print(data.feature_names[i], round(model.feature_importances_[i], 4))\n",
+          "runnable": true,
+          "expected_output": "worst perimeter 0.174\nworst radius 0.122\nworst concave points 0.1186\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "중요도가 높다고 원인이라는 뜻은 아닙니다(Day 68의 상관 ≠ 인과). 또 서로 비슷한 특성이 여럿이면 중요도가 나눠져 각각 낮게 보일 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "가장 중요한 특성의 위치를 찾으세요.",
+      "exercise_ids": [
+        "d103_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "중요도 상위 k개 특성을 이름과 함께 반환하세요.",
+      "exercise_ids": [
+        "d103_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`feature_importances_`: 트리 모델의 특성 중요도(합 1).",
+        "`np.argsort(...)[::-1]`로 큰 순서 정렬.",
+        "순열 중요도: 섞었을 때 점수 하락량, 모델 무관.",
+        "중요도 ≠ 인과관계."
+      ],
+      "quiz": [
+        {
+          "id": "d103_summary_q1",
+          "question_md": "`feature_importances_`의 합은?",
+          "choices": [
+            "0",
+            "1",
+            "특성 수",
+            "정확도"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d103_summary_q2",
+          "question_md": "순열 중요도가 큰 특성은?",
+          "choices": [
+            "섞어도 점수가 그대로",
+            "섞으면 점수가 크게 떨어짐",
+            "값이 큰 특성",
+            "결측치가 많은 특성"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d103_fill_1",
+      "kind": "fill_blank",
+      "title": "가장 중요한 특성",
+      "prompt_md": "중요도 목록에서 가장 큰 값의 위치를 반환하세요.",
+      "concepts": [
+        "feature_importance"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef top_index(importances):\n    return int(np.____(importances))\n",
+      "entry": {
+        "mode": "function",
+        "name": "top_index"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                0.1,
+                0.6,
+                0.3
+              ]
+            ]
+          },
+          "expect": {
+            "return": 1
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0.5,
+                0.2,
+                0.3
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        }
+      ],
+      "hints": [
+        "가장 큰 값의 위치를 돌려주는 NumPy 함수입니다(arg…).",
+        "가장 작은 값의 위치는 `argmin`이었죠. 그 반대입니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef top_index(importances):\n    return int(np.argmax(importances))\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d103_code_1",
+      "kind": "coding",
+      "title": "중요 특성 순위",
+      "prompt_md": "유방암 데이터 전체로 `RandomForestClassifier(n_estimators=100, random_state=0)`를 학습해, 중요도 상위 `k`개 특성을 `[이름, 중요도(소수 넷째 자리)]` 리스트로 큰 순서대로 반환하세요.",
+      "concepts": [
+        "feature_importance",
+        "random_forest",
+        "numpy_aggregate"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import RandomForestClassifier\n\n\ndef top_features(k):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "top_features"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "상위 3",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "worst perimeter",
+                0.174
+              ],
+              [
+                "worst radius",
+                0.122
+              ],
+              [
+                "worst concave points",
+                0.1186
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "worst perimeter",
+                0.174
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`return_X_y` 없이 데이터셋 객체를 받아 두면 `feature_names`도 쓸 수 있습니다.",
+        "`np.argsort(중요도)[::-1][:k]`가 상위 k개의 위치입니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import RandomForestClassifier\n\n\ndef top_features(k):\n    data = load_breast_cancer()\n    model = RandomForestClassifier(n_estimators=100, random_state=0).fit(data.data, data.target)\n    order = np.argsort(model.feature_importances_)[::-1][:k]\n    return [\n        [str(data.feature_names[i]), round(float(model.feature_importances_[i]), 4)] for i in order\n    ]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

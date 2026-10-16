@@ -71,6 +71,7 @@ class Block:
     code: str = ""
     runnable: bool = False
     expected_output: str | None = None
+    time_limit_sec: float | None = None   # heavy imports (torch, sklearn) need more than the default
 
 
 @dataclass(frozen=True)
@@ -210,6 +211,7 @@ class RunResult:
     error_type: ErrorType
     exception: ExceptionInfo | None
     duration_ms: int
+    images: list[bytes] = field(default_factory=list)   # PNGs of matplotlib figures left open
 
 
 # ---------------------------------------------------------------- grading

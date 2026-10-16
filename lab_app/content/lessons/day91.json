@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "day": 91,
+  "title": "13주차 누적 복습",
+  "stage": "ml",
+  "week": 13,
+  "is_review": true,
+  "objectives": [
+    "여러 분류 모델을 같은 데이터에서 비교하고 가장 좋은 모델을 고를 수 있다."
+  ],
+  "concepts": [
+    "logistic_regression",
+    "decision_boundary",
+    "svm",
+    "naive_bayes",
+    "multiclass"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "| Day | 주제 | 핵심 |\n|---|---|---|\n| 85 | 로지스틱 회귀 | 시그모이드, 확률 |\n| 86 | 임계값 | `predict_proba`, 기준 조절 |\n| 87 | 결정 경계 | 선형 vs 비선형 |\n| 88 | SVM | 마진, 커널, C |\n| 89 | 나이브 베이즈 | CountVectorizer, 텍스트 |\n| 90 | 다중 분류 | digits, 클래스별 정확도 |",
+      "quiz": [
+        {
+          "id": "d91_review_q1",
+          "question_md": "텍스트 분류에 특히 자주 쓰는 빠른 모델은?",
+          "choices": [
+            "SVM rbf",
+            "나이브 베이즈",
+            "KNN",
+            "선형 회귀"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d91_review_q2",
+          "question_md": "모델을 비교할 때 지켜야 할 것은?",
+          "choices": [
+            "모델마다 다른 분할",
+            "같은 분할·같은 지표",
+            "학습 정확도만 비교",
+            "가장 최신 모델 선택"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "로지스틱 회귀의 학습",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "로지스틱 회귀도 경사하강법으로 학습합니다. 손실은 **로그 손실**(교차 엔트로피)이고, 기울기는 선형 회귀와 거의 같은 모양입니다: `dw = Xᵀ(p − y) / n`, `db = 평균(p − y)` (p는 시그모이드 확률). 4단계 신경망의 마지막 층이 바로 이 구조입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\n\nX = np.array([[0.0], [1.0], [2.0], [3.0]])\ny = np.array([0, 0, 1, 1])\nw, b = np.zeros(1), 0.0\nfor _ in range(2000):\n    p = 1 / (1 + np.exp(-(X @ w + b)))\n    w -= 0.5 * X.T @ (p - y) / len(y)\n    b -= 0.5 * (p - y).mean()\nprint(np.round(1 / (1 + np.exp(-(X @ w + b))), 2))\n",
+          "runnable": true,
+          "expected_output": "[0.   0.03 0.98 1.  ]\n",
+          "time_limit_sec": 40
+        },
+        {
+          "kind": "tip",
+          "md": "도전 문제에서 직접 만든 모델과 scikit-learn의 결과를 비교해 보세요. scikit-learn은 기본으로 약한 규제(L2)가 걸려 있어 숫자가 조금 다를 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "여러 모델을 한 줄씩 비교할 준비를 하세요.",
+      "exercise_ids": [
+        "d91_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d91_code_1",
+        "d91_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "13주차 마무리",
+      "points": [
+        "분류 모델: 로지스틱 회귀, KNN, SVM, 나이브 베이즈, (다음 주 트리).",
+        "확률·임계값으로 결정을 조절한다.",
+        "비교는 같은 조건에서.",
+        "다음 주: 정확도 너머의 평가(혼동 행렬, 정밀도·재현율, 교차 검증)."
+      ],
+      "quiz": [
+        {
+          "id": "d91_summary_q1",
+          "question_md": "로지스틱 회귀의 손실 함수는?",
+          "choices": [
+            "MSE",
+            "로그 손실(교차 엔트로피)",
+            "MAE",
+            "정확도"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d91_summary_q2",
+          "question_md": "다음 주에 배울, 정확도 외의 평가 도구는?",
+          "choices": [
+            "혼동 행렬",
+            "PCA",
+            "KMeans",
+            "CountVectorizer"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d91_fill_1",
+      "kind": "fill_blank",
+      "title": "모델 이름 목록",
+      "prompt_md": "모델 객체 리스트를 받아 각 모델의 **클래스 이름** 리스트를 반환하세요. `check`가 모델을 만들어 넘깁니다.",
+      "concepts": [
+        "sklearn_api"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.linear_model import LogisticRegression\nfrom sklearn.svm import SVC\n\n\ndef model_names(models):\n    return [____(m).____ for m in models]\n\n\ndef check():\n    return model_names([LogisticRegression(), SVC()])\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "두 모델",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "return": [
+              "LogisticRegression",
+              "SVC"
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "객체의 클래스를 알려 주는 내장 함수입니다.",
+        "클래스의 이름을 담은 특수 속성입니다(양쪽 밑줄)."
+      ],
+      "solution": "from sklearn.linear_model import LogisticRegression\nfrom sklearn.svm import SVC\n\n\ndef model_names(models):\n    return [type(m).__name__ for m in models]\n\n\ndef check():\n    return model_names([LogisticRegression(), SVC()])\n",
+      "time_limit_sec": 40
+    },
+    {
+      "id": "d91_code_1",
+      "kind": "coding",
+      "title": "분류 모델 대결",
+      "prompt_md": "주어진 `cancer_split(seed)`로 표준화된 유방암 데이터를 얻고, `LogisticRegression()`, `KNeighborsClassifier()`, `SVC()`, `DecisionTreeClassifier(random_state=0)`의 테스트 정확도(소수 넷째 자리)를 `{\"logistic\", \"knn\", \"svm\", \"tree\"}` 키로 모은 `scores`와 가장 높은 모델 이름 `best`(동률이면 앞 순서)를 반환하세요.",
+      "concepts": [
+        "logistic_regression",
+        "svm",
+        "knn",
+        "sklearn_api"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.svm import SVC\nfrom sklearn.tree import DecisionTreeClassifier\n\ndef cancer_split(seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.25, random_state=seed, stratify=y\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef battle(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "battle"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": {
+              "scores": {
+                "logistic": 0.958,
+                "knn": 0.951,
+                "svm": 0.958,
+                "tree": 0.9021
+              },
+              "best": "logistic"
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": {
+              "scores": {
+                "logistic": 0.965,
+                "knn": 0.965,
+                "svm": 0.979,
+                "tree": 0.9301
+              },
+              "best": "svm"
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "이름 → 모델 딕셔너리를 위 순서대로 만들고 돌면서 점수를 기록하세요.",
+        "`max(scores, key=scores.get)`은 값이 가장 큰 첫 키를 돌려줍니다."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.svm import SVC\nfrom sklearn.tree import DecisionTreeClassifier\n\ndef cancer_split(seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.25, random_state=seed, stratify=y\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef battle(seed):\n    X_train, X_test, y_train, y_test = cancer_split(seed)\n    models = {\"logistic\": LogisticRegression(), \"knn\": KNeighborsClassifier(), \"svm\": SVC(),\n              \"tree\": DecisionTreeClassifier(random_state=0)}\n    scores = {}\n    for name, model in models.items():\n        scores[name] = round(model.fit(X_train, y_train).score(X_test, y_test), 4)\n    return {\"scores\": scores, \"best\": max(scores, key=scores.get)}\n",
+      "time_limit_sec": 40
+    },
+    {
+      "id": "d91_code_2",
+      "kind": "coding",
+      "title": "[도전] 로지스틱 회귀 직접 학습",
+      "prompt_md": "`make_moons(n_samples=200, noise=0.2, random_state=0)` 데이터에 대해 w = 0 벡터, b = 0에서 시작해 `epochs`번 경사하강법(`dw = Xᵀ(p − y)/n`, `db = 평균(p − y)`)을 하세요. `[내 모델의 학습 정확도(확률 0.5 이상을 1로), LogisticRegression의 학습 정확도]`(소수 셋째 자리)를 반환합니다.",
+      "concepts": [
+        "logistic_regression",
+        "gradient_descent",
+        "numpy_reshape"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import make_moons\nfrom sklearn.linear_model import LogisticRegression\n\n\ndef lr_from_scratch(lr, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "lr_from_scratch"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "lr 0.5",
+          "call": {
+            "args": [
+              0.5,
+              1000
+            ]
+          },
+          "expect": {
+            "return": [
+              0.845,
+              0.84
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.1,
+              300
+            ]
+          },
+          "expect": {
+            "return": [
+              0.825,
+              0.84
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "확률 p는 선형 점수 `X @ w + b`에 Day 85의 시그모이드를 씌운 값입니다.",
+        "문제의 기울기 식을 그대로 코드로 옮겨 w, b에서 학습률만큼 빼세요. `X.T @ (p - y)`가 행렬 곱 부분입니다.",
+        "학습 후 다시 확률을 계산해 `>= 0.5`와 `y`를 비교합니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import make_moons\nfrom sklearn.linear_model import LogisticRegression\n\n\ndef lr_from_scratch(lr, epochs):\n    X, y = make_moons(n_samples=200, noise=0.2, random_state=0)\n    w = np.zeros(2)\n    b = 0.0\n    for _ in range(epochs):\n        p = 1 / (1 + np.exp(-(X @ w + b)))\n        w -= lr * X.T @ (p - y) / len(y)\n        b -= lr * (p - y).mean()\n    final = 1 / (1 + np.exp(-(X @ w + b)))\n    mine = float(((final >= 0.5) == y).mean())\n    sk = LogisticRegression().fit(X, y).score(X, y)\n    return [round(mine, 3), round(float(sk), 3)]\n",
+      "time_limit_sec": 40
+    }
+  ]
+}

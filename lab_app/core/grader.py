@@ -202,7 +202,7 @@ def verify_lesson(lesson: Lesson) -> list[str]:
     for section in lesson.sections:
         for block in section.blocks:
             if block.kind == "code" and block.runnable:
-                run = run_program(block.code)
+                run = run_program(block.code, timeout=block.time_limit_sec)
                 if run.status != "ok" or run.stdout != block.expected_output:
                     problems.append(f"Day {lesson.day} '{section.title}' 코드 블록: 출력 {run.stdout!r} ≠ 기대 {block.expected_output!r}")
     return problems

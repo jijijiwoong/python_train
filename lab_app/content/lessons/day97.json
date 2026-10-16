@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "day": 97,
+  "title": "하이퍼파라미터 탐색",
+  "stage": "ml",
+  "week": 14,
+  "is_review": false,
+  "objectives": [
+    "GridSearchCV로 여러 하이퍼파라미터 조합을 교차 검증으로 비교할 수 있다.",
+    "best_params_, best_score_를 해석하고 테스트로 최종 확인할 수 있다."
+  ],
+  "concepts": [
+    "hyperparameter",
+    "cross_validation"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 깊이에 따른 과적합을 관찰했습니다. 적당한 깊이는 어떻게 고를까요?",
+      "quiz": [
+        {
+          "id": "d97_review_q1",
+          "question_md": "하이퍼파라미터를 고를 때 쓰면 안 되는 데이터는?",
+          "choices": [
+            "학습",
+            "검증(교차 검증)",
+            "테스트",
+            "모두 괜찮다"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "조합을 자동으로 시험하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`GridSearchCV(모델, {이름: 후보 목록}, cv=k)`는 모든 조합을 교차 검증으로 평가하고 가장 좋은 조합으로 **학습 데이터 전체에 다시 학습**까지 해 둡니다. 결과는 `best_params_`, `best_score_`(교차 검증 평균)에 있고, 객체 자체로 `predict`, `score`를 쓸 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import GridSearchCV, train_test_split\nfrom sklearn.svm import SVC\n\nX, y = load_iris(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)\ngrid = GridSearchCV(SVC(), {\"C\": [0.1, 1, 10], \"kernel\": [\"linear\", \"rbf\"]}, cv=5)\ngrid.fit(X_train, y_train)\nprint(grid.best_params_, round(grid.best_score_, 4))\nprint(round(grid.score(X_test, y_test), 4))\n",
+          "runnable": true,
+          "expected_output": "{'C': 1, 'kernel': 'linear'} 0.9714\n1.0\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "조합 수 × 겹 수만큼 학습하므로 후보를 너무 많이 주면 오래 걸립니다. `scoring=\"f1\"`처럼 기준 지표도 바꿀 수 있어요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "그리드 탐색을 실행하세요.",
+      "exercise_ids": [
+        "d97_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "KNN의 이웃 수를 그리드 탐색으로 고르고 테스트로 확인하세요.",
+      "exercise_ids": [
+        "d97_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`GridSearchCV(모델, 후보 딕셔너리, cv=k).fit(X_train, y_train)`.",
+        "`best_params_`, `best_score_`(교차 검증 평균).",
+        "가장 좋은 조합으로 자동 재학습 → 바로 `score(X_test, y_test)`.",
+        "`scoring`으로 기준 지표 지정."
+      ],
+      "quiz": [
+        {
+          "id": "d97_summary_q1",
+          "question_md": "후보 C 3개 × kernel 2개, cv=5면 학습 횟수(재학습 제외)는?",
+          "choices": [
+            "6",
+            "10",
+            "30",
+            "15"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d97_summary_q2",
+          "question_md": "`best_score_`는 무엇의 점수인가?",
+          "choices": [
+            "테스트",
+            "교차 검증 평균",
+            "학습",
+            "최악"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d97_fill_1",
+      "kind": "fill_blank",
+      "title": "그리드 탐색",
+      "prompt_md": "iris 전체로 `SVC`의 C 후보 `cs`를 5-겹 그리드 탐색해 가장 좋은 C 값을 반환하세요.",
+      "concepts": [
+        "hyperparameter"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import ____\nfrom sklearn.svm import SVC\n\n\ndef best_c(cs):\n    X, y = load_iris(return_X_y=True)\n    grid = GridSearchCV(SVC(), {\"C\": cs}, cv=5).fit(X, y)\n    return grid.____[\"C\"]\n",
+      "entry": {
+        "mode": "function",
+        "name": "best_c"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "세 후보",
+          "call": {
+            "args": [
+              [
+                0.01,
+                1,
+                100
+              ]
+            ]
+          },
+          "expect": {
+            "return": 100
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0.001,
+                0.1
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.001
+          }
+        }
+      ],
+      "hints": [
+        "그리드 탐색 클래스 이름입니다.",
+        "가장 좋은 조합이 담긴 속성입니다(best_…)."
+      ],
+      "solution": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import GridSearchCV\nfrom sklearn.svm import SVC\n\n\ndef best_c(cs):\n    X, y = load_iris(return_X_y=True)\n    grid = GridSearchCV(SVC(), {\"C\": cs}, cv=5).fit(X, y)\n    return grid.best_params_[\"C\"]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d97_code_1",
+      "kind": "coding",
+      "title": "이웃 수 고르기",
+      "prompt_md": "iris를 `test_size=0.3, random_state=seed, stratify=y`로 나누고, 학습 데이터로 KNN의 `n_neighbors` 후보 `ks`를 5-겹 그리드 탐색하세요. `[최적 k, 교차 검증 최고 점수(소수 넷째 자리), 테스트 정확도(소수 넷째 자리)]`를 반환합니다.",
+      "concepts": [
+        "hyperparameter",
+        "knn",
+        "cross_validation"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import GridSearchCV, train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef tune_knn(ks, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "tune_knn"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "다섯 후보",
+          "call": {
+            "args": [
+              [
+                1,
+                3,
+                5,
+                7,
+                9
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              7,
+              0.9333,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                2,
+                20
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              2,
+              0.9524,
+              0.9556
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "후보 딕셔너리는 `{\"n_neighbors\": ks}`.",
+        "탐색 객체로 바로 `score(X_test, y_test)`를 부를 수 있습니다."
+      ],
+      "solution": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import GridSearchCV, train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef tune_knn(ks, seed):\n    X, y = load_iris(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=seed,\n        stratify=y,\n    )\n    grid = GridSearchCV(KNeighborsClassifier(), {\"n_neighbors\": ks}, cv=5).fit(X_train, y_train)\n    return [\n        int(grid.best_params_[\"n_neighbors\"]),\n        round(float(grid.best_score_), 4),\n        round(float(grid.score(X_test, y_test)), 4),\n    ]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

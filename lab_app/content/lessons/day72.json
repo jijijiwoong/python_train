@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "day": 72,
+  "title": "데이터셋과 특성",
+  "stage": "ml",
+  "week": 11,
+  "is_review": false,
+  "objectives": [
+    "scikit-learn 내장 데이터셋을 불러와 X, y, 특성 이름, 클래스 이름을 확인할 수 있다.",
+    "클래스별 특성 평균으로 데이터를 이해할 수 있다."
+  ],
+  "concepts": [
+    "dataset",
+    "pandas_groupby",
+    "numpy_aggregate"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 특성(X)·정답(y)과 최근접 이웃 아이디어를 배웠습니다.",
+      "quiz": [
+        {
+          "id": "d72_review_q1",
+          "question_md": "지도 학습에 꼭 필요한 것은?",
+          "choices": [
+            "정답(레이블)이 있는 예시",
+            "그래프",
+            "GPU",
+            "인터넷"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "붓꽃(iris) 데이터",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "scikit-learn에는 연습용 데이터셋이 들어 있습니다. **붓꽃**(iris) 데이터는 꽃 150송이의 꽃받침·꽃잎 길이와 너비(특성 4개)로 품종 3가지를 맞히는 문제입니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_iris\n\niris = load_iris()\nprint(iris.data.shape, iris.target.shape)\nprint(iris.feature_names)\nprint(iris.target_names)\nprint(iris.data[0], iris.target[0])\n",
+          "runnable": true,
+          "expected_output": "(150, 4) (150,)\n['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']\n['setosa' 'versicolor' 'virginica']\n[5.1 3.5 1.4 0.2] 0\n",
+          "time_limit_sec": 30
+        },
+        {
+          "kind": "text",
+          "md": "`as_frame=True`로 불러오면 pandas DataFrame으로 받아 EDA(10주차)를 할 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_iris\n\ndf = load_iris(as_frame=True).frame\nprint(df.shape)\nprint(df.groupby(\"target\")[\"petal length (cm)\"].mean().round(2).to_dict())\n",
+          "runnable": true,
+          "expected_output": "(150, 5)\n{0: 1.46, 1: 4.26, 2: 5.55}\n",
+          "time_limit_sec": 30
+        },
+        {
+          "kind": "tip",
+          "md": "모델을 만들기 전에 클래스별로 특성이 어떻게 다른지 보면, 어떤 특성이 구분에 쓸모 있을지 감을 잡을 수 있습니다. 붓꽃은 꽃잎 길이만으로도 품종이 꽤 갈립니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "iris 데이터의 모양을 확인하세요.",
+      "exercise_ids": [
+        "d72_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "품종별 특성 평균을 구하세요.",
+      "exercise_ids": [
+        "d72_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`load_iris()` → `data`(X), `target`(y), `feature_names`, `target_names`.",
+        "X의 모양 = (샘플 수, 특성 수).",
+        "`as_frame=True`로 DataFrame 받기.",
+        "클래스별 특성 평균으로 데이터를 이해한다."
+      ],
+      "quiz": [
+        {
+          "id": "d72_summary_q1",
+          "question_md": "iris의 X 모양 (150, 4)에서 4는?",
+          "choices": [
+            "클래스 수",
+            "특성 수",
+            "샘플 수",
+            "결측치 수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d72_summary_q2",
+          "question_md": "iris의 클래스(품종) 수는?",
+          "choices": [
+            "2",
+            "3",
+            "4",
+            "150"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d72_fill_1",
+      "kind": "fill_blank",
+      "title": "데이터 모양",
+      "prompt_md": "iris 데이터를 불러와 `[샘플 수, 특성 수, 클래스 수]`를 반환하세요.",
+      "concepts": [
+        "dataset"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_iris\n\n\ndef iris_shape():\n    iris = ____()\n    n_samples, n_features = iris.data.____\n    return [n_samples, n_features, len(iris.target_names)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "iris_shape"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "iris",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "return": [
+              150,
+              4,
+              3
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "iris 데이터셋을 불러오는 함수 이름입니다.",
+        "배열의 모양을 담은 속성입니다."
+      ],
+      "solution": "from sklearn.datasets import load_iris\n\n\ndef iris_shape():\n    iris = load_iris()\n    n_samples, n_features = iris.data.shape\n    return [n_samples, n_features, len(iris.target_names)]\n",
+      "time_limit_sec": 30
+    },
+    {
+      "id": "d72_code_1",
+      "kind": "coding",
+      "title": "품종별 특성 평균",
+      "prompt_md": "iris 데이터에서 품종 이름 → 특성 4개의 평균(소수 둘째 자리 반올림) 리스트 딕셔너리를 반환하세요.\n\n예: `{\"setosa\": [5.01, 3.43, 1.46, 0.25], ...}`",
+      "concepts": [
+        "dataset",
+        "numpy_aggregate",
+        "numpy_indexing"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import load_iris\n\n\ndef class_means():\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "class_means"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3품종",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "return": {
+              "setosa": [
+                5.01,
+                3.43,
+                1.46,
+                0.25
+              ],
+              "versicolor": [
+                5.94,
+                2.77,
+                4.26,
+                1.33
+              ],
+              "virginica": [
+                6.59,
+                2.97,
+                5.55,
+                2.03
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "`iris.data[iris.target == i]`로 i번 품종의 행만 고르세요.",
+        "고른 행의 `mean(axis=0)`이 특성별 평균입니다.",
+        "`enumerate(iris.target_names)`로 번호와 이름을 함께 돌면 편합니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import load_iris\n\n\ndef class_means():\n    iris = load_iris()\n    result = {}\n    for i, name in enumerate(iris.target_names):\n        rows = iris.data[iris.target == i]\n        result[str(name)] = np.round(rows.mean(axis=0), 2).tolist()\n    return result\n",
+      "time_limit_sec": 30
+    }
+  ]
+}

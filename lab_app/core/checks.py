@@ -21,6 +21,9 @@ SUPPORTED_SYNTAX: dict[str, tuple[tuple[type[ast.AST], ...], str]] = {
     "try": ((ast.Try, ast.TryStar), "try/except"),
     "lambda": ((ast.Lambda,), "lambda 식"),
     "with": ((ast.With, ast.AsyncWith), "with 문"),
+    "yield": ((ast.Yield, ast.YieldFrom), "yield(제너레이터)"),
+    "class": ((ast.ClassDef,), "class 정의"),
+    "dict_comp": ((ast.DictComp,), "딕셔너리 컴프리헨션"),
 }
 
 LONG_LINE = 100

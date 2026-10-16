@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "day": 135,
+  "title": "사용자 정의 Dataset",
+  "stage": "dl",
+  "week": 20,
+  "is_review": false,
+  "objectives": [
+    "Dataset을 상속해 __len__과 __getitem__을 구현할 수 있다.",
+    "원하는 형식의 데이터를 DataLoader로 읽을 수 있다."
+  ],
+  "concepts": [
+    "dataloader",
+    "class",
+    "dunder"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 텐서를 TensorDataset으로 묶었습니다. 데이터가 딕셔너리 목록이나 파일이라면 어떻게 할까요?",
+      "quiz": [
+        {
+          "id": "d135_review_q1",
+          "question_md": "`DataLoader`의 `drop_last=True`는?",
+          "choices": [
+            "마지막 자투리 배치를 버린다",
+            "마지막 샘플을 버린다",
+            "섞지 않는다",
+            "배치를 하나만 만든다"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "내 데이터에 맞는 Dataset",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`torch.utils.data.Dataset`을 상속하고 두 메서드만 만들면 DataLoader가 사용할 수 있습니다.\n\n- `__len__(self)`: 전체 개수\n- `__getitem__(self, i)`: i번째 `(입력, 정답)`\n\n2단계에서 배운 매직 메서드 그대로입니다. 이미지 파일을 i번째에 열어 읽는 식으로, 메모리에 다 올리지 않고도 큰 데이터를 다룰 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch.utils.data import DataLoader, Dataset\n\nclass SquareDataset(Dataset):\n    def __init__(self, n):\n        self.n = n\n\n    def __len__(self):\n        return self.n\n\n    def __getitem__(self, i):\n        x = torch.tensor([float(i)])\n        return x, x ** 2\n\nds = SquareDataset(5)\nprint(len(ds), ds[3])\nfor xb, yb in DataLoader(ds, batch_size=2):\n    print(xb.flatten().tolist(), yb.flatten().tolist())\n",
+          "runnable": true,
+          "expected_output": "5 (tensor([3.]), tensor([9.]))\n[0.0, 1.0] [0.0, 1.0]\n[2.0, 3.0] [4.0, 9.0]\n[4.0] [16.0]\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "DataLoader는 `__getitem__`이 돌려준 샘플들을 모아 배치 텐서로 쌓아 줍니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "Dataset의 두 메서드를 채우세요.",
+      "exercise_ids": [
+        "d135_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "딕셔너리 목록용 Dataset을 만드세요.",
+      "exercise_ids": [
+        "d135_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "Dataset 상속 + `__len__` + `__getitem__`.",
+        "`__getitem__`은 (입력, 정답) 한 쌍.",
+        "DataLoader가 샘플을 배치로 쌓는다.",
+        "파일 등 큰 데이터도 필요할 때 읽을 수 있다."
+      ],
+      "quiz": [
+        {
+          "id": "d135_summary_q1",
+          "question_md": "`len(ds)`가 호출하는 메서드는?",
+          "choices": [
+            "`__getitem__`",
+            "`__len__`",
+            "`__init__`",
+            "`forward`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d135_summary_q2",
+          "question_md": "`ds[3]`이 호출하는 메서드는?",
+          "choices": [
+            "`__getitem__`",
+            "`__len__`",
+            "`__iter__`",
+            "`__call__`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d135_fill_1",
+      "kind": "fill_blank",
+      "title": "두 메서드",
+      "prompt_md": "0부터 n-1까지의 수 i에 대해 `(i, i의 짝수 여부)`를 주는 Dataset을 완성하고 `[길이, 마지막 샘플]`을 반환하세요.",
+      "concepts": [
+        "dataloader",
+        "dunder"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch.utils.data import Dataset\n\n\nclass EvenDataset(Dataset):\n    def __init__(self, n):\n        self.n = n\n\n    def ____(self):\n        return self.n\n\n    def ____(self, i):\n        return torch.tensor(float(i)), torch.tensor(int(i % 2 == 0))\n\n\ndef even_info(n):\n    ds = EvenDataset(n)\n    return [len(ds), [v.item() for v in ds[n - 1]]]\n",
+      "entry": {
+        "mode": "function",
+        "name": "even_info"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              5,
+              [
+                4.0,
+                1
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              8
+            ]
+          },
+          "expect": {
+            "return": [
+              8,
+              [
+                7.0,
+                0
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`len()`이 부르는 매직 메서드 이름입니다.",
+        "대괄호 인덱싱이 부르는 매직 메서드 이름입니다."
+      ],
+      "solution": "import torch\nfrom torch.utils.data import Dataset\n\n\nclass EvenDataset(Dataset):\n    def __init__(self, n):\n        self.n = n\n\n    def __len__(self):\n        return self.n\n\n    def __getitem__(self, i):\n        return torch.tensor(float(i)), torch.tensor(int(i % 2 == 0))\n\n\ndef even_info(n):\n    ds = EvenDataset(n)\n    return [len(ds), [v.item() for v in ds[n - 1]]]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d135_code_1",
+      "kind": "coding",
+      "title": "레코드 Dataset",
+      "prompt_md": "`records`는 `{\"x1\": 실수, \"x2\": 실수, \"label\": 정수}` 딕셔너리 목록입니다. `RecordDataset`의 `__len__`과 `__getitem__`을 완성하세요. `__getitem__`은 `(torch.tensor([x1, x2], dtype=torch.float32), torch.tensor(label))`을 반환합니다.",
+      "concepts": [
+        "dataloader",
+        "class"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch.utils.data import DataLoader, Dataset\n\n\nclass RecordDataset(Dataset):\n    def __init__(self, records):\n        self.records = records\n\n    def __len__(self):\n        # 데이터 개수를 반환하세요\n        pass\n\n    def __getitem__(self, i):\n        # (특성 텐서, 정답 텐서)를 반환하세요\n        pass\n\n\ndef first_batch(records, batch_size):\n    loader = DataLoader(RecordDataset(records), batch_size=batch_size)\n    xb, yb = next(iter(loader))\n    return [list(xb.shape), yb.tolist()]\n",
+      "entry": {
+        "mode": "function",
+        "name": "first_batch"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                {
+                  "x1": 1.0,
+                  "x2": 2.0,
+                  "label": 0
+                },
+                {
+                  "x1": 0.5,
+                  "x2": 1.5,
+                  "label": 1
+                },
+                {
+                  "x1": 3.0,
+                  "x2": 1.0,
+                  "label": 1
+                }
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                2,
+                2
+              ],
+              [
+                0,
+                1
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                {
+                  "x1": 0.0,
+                  "x2": 0.0,
+                  "label": 2
+                }
+              ],
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                2
+              ],
+              [
+                2
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`__len__`은 레코드 목록의 길이입니다.",
+        "`self.records[i]`에서 값을 꺼내 두 텐서를 만드세요."
+      ],
+      "solution": "import torch\nfrom torch.utils.data import DataLoader, Dataset\n\n\nclass RecordDataset(Dataset):\n    def __init__(self, records):\n        self.records = records\n\n    def __len__(self):\n        return len(self.records)\n\n    def __getitem__(self, i):\n        r = self.records[i]\n        return torch.tensor([r[\"x1\"], r[\"x2\"]], dtype=torch.float32), torch.tensor(r[\"label\"])\n\n\ndef first_batch(records, batch_size):\n    loader = DataLoader(RecordDataset(records), batch_size=batch_size)\n    xb, yb = next(iter(loader))\n    return [list(xb.shape), yb.tolist()]\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      },
+      "time_limit_sec": 60
+    }
+  ]
+}

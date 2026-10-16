@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "day": 39,
+  "title": "상속",
+  "stage": "advanced_data",
+  "week": 6,
+  "is_review": false,
+  "objectives": [
+    "기존 클래스를 상속해 새 클래스를 만들 수 있다.",
+    "메서드 재정의(오버라이딩)와 super()를 사용할 수 있다."
+  ],
+  "concepts": [
+    "inheritance",
+    "class",
+    "method"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `__str__`, `__add__` 등 특수 메서드로 문법을 지원했습니다.",
+      "quiz": [
+        {
+          "id": "d39_review_q1",
+          "question_md": "`len(obj)`가 동작하려면 정의해야 하는 메서드는?",
+          "choices": [
+            "`__size__`",
+            "`__len__`",
+            "`__count__`",
+            "`len`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "`len()`은 `__len__`을 호출합니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "물려받고 바꾸기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`class 자식(부모):`처럼 쓰면 부모 클래스의 속성과 메서드를 **물려받습니다(상속)**. 자식에서 같은 이름의 메서드를 다시 정의하면 부모 것을 **덮어씁니다(오버라이딩)**."
+        },
+        {
+          "kind": "code",
+          "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        return \"...\"\n\n    def introduce(self):\n        return f\"{self.name}: {self.speak()}\"\n\nclass Dog(Animal):\n    def speak(self):\n        return \"멍멍\"\n\nclass Cat(Animal):\n    def speak(self):\n        return \"야옹\"\n\nfor pet in [Dog(\"초코\"), Cat(\"나비\"), Animal(\"??\")]:\n    print(pet.introduce())\nprint(isinstance(Dog(\"a\"), Animal))\n",
+          "runnable": true,
+          "expected_output": "초코: 멍멍\n나비: 야옹\n??: ...\nTrue\n"
+        },
+        {
+          "kind": "text",
+          "md": "`super()`는 부모 클래스를 가리킵니다. 자식의 `__init__`에서 부모 초기화를 재사용하거나, 부모 메서드 결과에 무언가를 더할 때 씁니다."
+        },
+        {
+          "kind": "code",
+          "code": "class Employee:\n    def __init__(self, name, salary):\n        self.name = name\n        self.salary = salary\n\n    def pay(self):\n        return self.salary\n\nclass Manager(Employee):\n    def __init__(self, name, salary, bonus):\n        super().__init__(name, salary)\n        self.bonus = bonus\n\n    def pay(self):\n        return super().pay() + self.bonus\n\nprint(Manager(\"민준\", 300, 50).pay())\n",
+          "runnable": true,
+          "expected_output": "350\n"
+        },
+        {
+          "kind": "tip",
+          "md": "부모의 `introduce()` 안에서 부른 `self.speak()`는 실제 객체의 종류에 맞는 메서드를 찾아갑니다. 같은 코드로 여러 종류를 처리하는 이 성질을 **다형성**이라고 합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "정사각형을 직사각형의 자식 클래스로 만드세요.",
+      "exercise_ids": [
+        "d39_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "도형 클래스 계층을 만들어 넓이를 계산하세요. `report`는 채점용입니다.",
+      "exercise_ids": [
+        "d39_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`class Child(Parent):` → 부모의 속성·메서드 상속.",
+        "같은 이름의 메서드를 다시 정의하면 오버라이딩.",
+        "`super().__init__(...)`, `super().메서드()`로 부모 기능 재사용.",
+        "`isinstance(객체, 부모클래스)`는 자식 객체에도 True."
+      ],
+      "quiz": [
+        {
+          "id": "d39_summary_q1",
+          "question_md": "`class B(A):`에서 B의 객체가 A에만 정의된 메서드를 호출하면?",
+          "choices": [
+            "오류",
+            "A의 메서드가 실행된다",
+            "`None`",
+            "B를 다시 정의해야 함"
+          ],
+          "answer_index": 1,
+          "explanation_md": "상속받은 메서드가 그대로 쓰입니다."
+        },
+        {
+          "id": "d39_summary_q2",
+          "question_md": "자식 `__init__`에서 부모의 초기화를 호출하는 코드는?",
+          "choices": [
+            "`Parent()`",
+            "`self.__init__()`",
+            "`super().__init__(...)`",
+            "`init()`"
+          ],
+          "answer_index": 2,
+          "explanation_md": "`super()`가 부모를 가리킵니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d39_fill_1",
+      "kind": "fill_blank",
+      "title": "정사각형은 직사각형",
+      "prompt_md": "`Square`가 `Rectangle`을 상속하도록 완성하세요. 한 변의 길이만 받아 부모의 초기화를 재사용합니다.",
+      "concepts": [
+        "inheritance"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "class Rectangle:\n    def __init__(self, w, h):\n        self.w = w\n        self.h = h\n\n    def area(self):\n        return self.w * self.h\n\n\nclass Square(____):\n    def __init__(self, side):\n        ____().__init__(side, side)\n\n\ndef check(side):\n    s = Square(side)\n    return [s.area(), isinstance(s, Rectangle)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "한 변 3",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              9,
+              true
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              true
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2.5
+            ]
+          },
+          "expect": {
+            "return": [
+              6.25,
+              true
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "괄호 안에는 부모 클래스 이름을 씁니다.",
+        "부모 클래스를 가리키는 내장 함수입니다."
+      ],
+      "solution": "class Rectangle:\n    def __init__(self, w, h):\n        self.w = w\n        self.h = h\n\n    def area(self):\n        return self.w * self.h\n\n\nclass Square(Rectangle):\n    def __init__(self, side):\n        super().__init__(side, side)\n\n\ndef check(side):\n    s = Square(side)\n    return [s.area(), isinstance(s, Rectangle)]\n"
+    },
+    {
+      "id": "d39_code_1",
+      "kind": "coding",
+      "title": "도형 계층",
+      "prompt_md": "부모 클래스 `Shape`와 자식 `Circle(r)`, `Rect(w, h)`를 만드세요.\n\n- `Shape`에는 `name` 속성과 `describe()`가 있고, `describe()`는 `f\"{self.name} 넓이 {self.area():.2f}\"`를 돌려줍니다.\n- 자식은 `name`(`\"원\"`, `\"직사각형\"`)을 정하고 `area()`를 오버라이딩합니다. 원의 넓이는 `math.pi * r ** 2`.\n\n`report`는 채점용입니다. 예: `report([[\"circle\", 1], [\"rect\", 2, 3]])` → `[[\"원 넓이 3.14\", \"직사각형 넓이 6.00\"], 9.14]`",
+      "concepts": [
+        "inheritance",
+        "class",
+        "method"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import math\n\n# 여기에 Shape, Circle, Rect 클래스를 작성하세요\n\n\ndef report(specs):\n    shapes = []\n    for s in specs:\n        shapes.append(Circle(s[1]) if s[0] == \"circle\" else Rect(s[1], s[2]))\n    total = 0\n    descriptions = []\n    for shape in shapes:\n        descriptions.append(shape.describe())\n        total += shape.area()\n    return [descriptions, round(total, 2)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "report"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "원과 직사각형",
+          "call": {
+            "args": [
+              [
+                [
+                  "circle",
+                  1
+                ],
+                [
+                  "rect",
+                  2,
+                  3
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "원 넓이 3.14",
+                "직사각형 넓이 6.00"
+              ],
+              9.14
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "없음",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": [
+              [],
+              0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  "rect",
+                  1.5,
+                  2
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "직사각형 넓이 3.00"
+              ],
+              3.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  "circle",
+                  2
+                ],
+                [
+                  "circle",
+                  0.5
+                ],
+                [
+                  "rect",
+                  10,
+                  1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "원 넓이 12.57",
+                "원 넓이 0.79",
+                "직사각형 넓이 10.00"
+              ],
+              23.35
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "`Shape.__init__(self, name)`에서 이름을 저장하고, 자식은 `super().__init__(...)`에 자기 이름 문자열을 넘깁니다.",
+        "`describe`는 부모에만 두고, 그 안에서 `self.area()`를 부르면 자식의 `area`가 실행됩니다.",
+        "`Shape.area()`에서 `NotImplementedError` 예외를 발생시켜 두면 자식이 꼭 구현해야 함을 알릴 수 있습니다."
+      ],
+      "solution": "import math\n\n\nclass Shape:\n    def __init__(self, name):\n        self.name = name\n\n    def area(self):\n        raise NotImplementedError\n\n    def describe(self):\n        return f\"{self.name} 넓이 {self.area():.2f}\"\n\n\nclass Circle(Shape):\n    def __init__(self, r):\n        super().__init__(\"원\")\n        self.r = r\n\n    def area(self):\n        return math.pi * self.r ** 2\n\n\nclass Rect(Shape):\n    def __init__(self, w, h):\n        super().__init__(\"직사각형\")\n        self.w = w\n        self.h = h\n\n    def area(self):\n        return self.w * self.h\n\n\ndef report(specs):\n    shapes = []\n    for s in specs:\n        shapes.append(Circle(s[1]) if s[0] == \"circle\" else Rect(s[1], s[2]))\n    total = 0\n    descriptions = []\n    for shape in shapes:\n        descriptions.append(shape.describe())\n        total += shape.area()\n    return [descriptions, round(total, 2)]\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      }
+    }
+  ]
+}

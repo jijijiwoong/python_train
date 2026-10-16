@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "day": 86,
+  "title": "확률과 결정 임계값",
+  "stage": "ml",
+  "week": 13,
+  "is_review": false,
+  "objectives": [
+    "predict_proba로 클래스별 확률을 얻을 수 있다.",
+    "임계값을 바꾸면 양성 예측 수와 정확도가 어떻게 달라지는지 설명할 수 있다."
+  ],
+  "concepts": [
+    "decision_boundary",
+    "logistic_regression"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 로지스틱 회귀가 시그모이드로 확률을 만든다는 것을 배웠습니다.",
+      "quiz": [
+        {
+          "id": "d86_review_q1",
+          "question_md": "로지스틱 회귀의 기본 분류 기준 확률은?",
+          "choices": [
+            "0.1",
+            "0.5",
+            "0.9",
+            "1"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "얼마나 확신하나",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`predict_proba(X)`는 샘플마다 각 클래스의 확률을 돌려줍니다(열 순서는 `classes_`). `predict`는 이 확률이 0.5 이상인 쪽을 고른 결과입니다. 임계값을 직접 정하면 \"확실할 때만 양성\"(높은 임계값) 또는 \"조금이라도 의심되면 양성\"(낮은 임계값)처럼 조절할 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\n\nX, y = load_breast_cancer(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.25, random_state=0, stratify=y\n)\nmean, std = X_train.mean(axis=0), X_train.std(axis=0)\nmodel = LogisticRegression().fit((X_train - mean) / std, y_train)\nproba = model.predict_proba((X_test - mean) / std)\nprint(proba[:3].round(3))\nfor th in [0.3, 0.5, 0.9]:\n    pred = (proba[:, 1] >= th).astype(int)\n    print(th, pred.sum(), round((pred == y_test).mean(), 3))\n",
+          "runnable": true,
+          "expected_output": "[[0.004 0.996]\n [1.    0.   ]\n [1.    0.   ]]\n0.3 95 0.965\n0.5 90 0.958\n0.9 81 0.923\n",
+          "time_limit_sec": 40
+        },
+        {
+          "kind": "tip",
+          "md": "암 검진처럼 놓치면 위험한 문제는 임계값을 낮춰 양성을 더 많이 잡고, 스팸 필터처럼 잘못 거르면 곤란한 문제는 임계값을 높입니다(14주차 정밀도·재현율)."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "양성 확률이 임계값 이상인 개수를 세세요.",
+      "exercise_ids": [
+        "d86_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "임계값별 양성 예측 수와 정확도를 비교하세요.",
+      "exercise_ids": [
+        "d86_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`predict_proba(X)[:, 1]` = 양성(클래스 1) 확률.",
+        "`predict`는 임계값 0.5와 같다.",
+        "임계값↑ → 양성 예측↓(더 신중), 임계값↓ → 양성 예측↑.",
+        "임계값은 문제의 비용에 맞게 정한다."
+      ],
+      "quiz": [
+        {
+          "id": "d86_summary_q1",
+          "question_md": "임계값을 0.5에서 0.9로 올리면 양성 예측 수는?",
+          "choices": [
+            "늘어난다",
+            "줄어들거나 같다",
+            "변함없다",
+            "0이 된다"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d86_summary_q2",
+          "question_md": "`predict_proba`의 각 행 합은?",
+          "choices": [
+            "0",
+            "0.5",
+            "1",
+            "클래스 수"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d86_fill_1",
+      "kind": "fill_blank",
+      "title": "임계값 이상 개수",
+      "prompt_md": "확률 목록에서 임계값 이상인 것의 개수를 반환하세요.",
+      "concepts": [
+        "decision_boundary"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef count_positive(probs, threshold):\n    p = np.array(probs)\n    return int((p ____ threshold).____())\n",
+      "entry": {
+        "mode": "function",
+        "name": "count_positive"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "0.5 기준",
+          "call": {
+            "args": [
+              [
+                0.2,
+                0.5,
+                0.9
+              ],
+              0.5
+            ]
+          },
+          "expect": {
+            "return": 2
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0.1,
+                0.2
+              ],
+              0.9
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0.3,
+                0.6,
+                0.6
+              ],
+              0.3
+            ]
+          },
+          "expect": {
+            "return": 3
+          }
+        }
+      ],
+      "hints": [
+        "\"이상\"을 나타내는 비교 연산자입니다.",
+        "True의 개수를 세려면 더하면 됩니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef count_positive(probs, threshold):\n    p = np.array(probs)\n    return int((p >= threshold).sum())\n",
+      "time_limit_sec": 40
+    },
+    {
+      "id": "d86_code_1",
+      "kind": "coding",
+      "title": "임계값 비교",
+      "prompt_md": "주어진 `cancer_split(seed)`로 표준화된 데이터를 얻고 로지스틱 회귀를 학습하세요. `thresholds`의 각 임계값마다 `[양성(1) 예측 개수, 테스트 정확도(소수 넷째 자리)]`를 담은 리스트를 반환합니다.",
+      "concepts": [
+        "decision_boundary",
+        "logistic_regression",
+        "numpy_ops"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\n\ndef cancer_split(seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.25, random_state=seed, stratify=y\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef threshold_report(thresholds, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "threshold_report"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "세 임계값",
+          "call": {
+            "args": [
+              [
+                0.3,
+                0.5,
+                0.9
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                95,
+                0.965
+              ],
+              [
+                90,
+                0.958
+              ],
+              [
+                81,
+                0.9231
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0.1,
+                0.99
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                96,
+                0.958
+              ],
+              [
+                73,
+                0.8671
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "양성 확률은 `predict_proba(X_test)[:, 1]`.",
+        "임계값마다 `(확률 >= th).astype(int)`로 예측을 만들고 개수와 `(pred == y_test).mean()`을 구합니다."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\n\ndef cancer_split(seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.25, random_state=seed, stratify=y\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef threshold_report(thresholds, seed):\n    X_train, X_test, y_train, y_test = cancer_split(seed)\n    proba = LogisticRegression().fit(X_train, y_train).predict_proba(X_test)[:, 1]\n    report = []\n    for th in thresholds:\n        pred = (proba >= th).astype(int)\n        report.append([int(pred.sum()), round(float((pred == y_test).mean()), 4)])\n    return report\n",
+      "time_limit_sec": 40
+    }
+  ]
+}

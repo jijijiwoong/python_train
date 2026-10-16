@@ -79,7 +79,7 @@ lab_app/content/
 | `kind` | 필드 | 설명 |
 |---|---|---|
 | `text` | `md` | 설명 문단 |
-| `code` | `code`, `runnable`(bool), `expected_output`(str, runnable이면 필수) | 예제 코드. 화면에서 "실행" 버튼으로 바로 돌려 볼 수 있다. pytest가 실제로 실행해 `expected_output`과 비교한다 |
+| `code` | `code`, `runnable`(bool), `expected_output`(str, runnable이면 필수) | 예제 코드. 화면에서 "실행" 버튼으로 바로 돌려 볼 수 있다. pytest가 실제로 실행해 `expected_output`과 비교한다. 선택 `time_limit_sec`(기본 5): torch·sklearn을 쓰는 예제는 60 등으로 늘린다. matplotlib 그림은 PNG로 저장되어 출력 아래에 표시된다 |
 | `tip` | `md` | 주의점·팁 강조 상자 |
 
 **`quiz[]`** (복습·정리):
@@ -107,7 +107,7 @@ lab_app/content/
 | `hints` | list[str] | ✔ | 2~3단계. 앞 단계일수록 추상적으로. **정답 코드를 그대로 쓰지 않는다** |
 | `solution` | str | ✔ | 모범 답안. 모든 테스트와 정적 검사를 통과해야 한다 (pytest 검증) |
 | `checks` | object | | 정적 검사 (아래) |
-| `time_limit_sec` | number | | 기본 5 |
+| `time_limit_sec` | number | | 기본 5. import가 무거운 3·4단계(sklearn·torch)는 60~150 |
 
 **`tests[]`**:
 | 필드 | 타입 | 설명 |
@@ -133,7 +133,9 @@ lab_app/content/
 | `forbidden_calls` | `["eval", "exec", "sum"]` | error (예: 직접 누적 연습 문제에서 sum 금지) |
 | `max_lines` | `15` | warning |
 
-검사 이름 ↔ ast 노드 매핑은 `core/checks.py`에 둔다. 처음 버전에서 지원하는 이름: `for`, `while`, `if`, `def`, `return`, `fstring`, `import`, `list_comp`, `try`, `lambda`, `with`(`lambda`·`with`는 Day 15–35 콘텐츠 작업에서 추가).
+검사 이름 ↔ ast 노드 매핑은 `core/checks.py`에 둔다. 처음 버전에서 지원하는 이름: `for`, `while`, `if`, `def`, `return`, `fstring`, `import`, `list_comp`, `try`, `lambda`, `with`, `yield`, `class`, `dict_comp`(`lambda`·`with`는 Day 15–35, `yield`·`class`·`dict_comp`는 2단계 콘텐츠 작업에서 추가).
+
+함수 모드의 반환값이 NumPy 배열·pandas Series·torch 텐서이면 `tolist()`로 바꿔 비교한다. 결과가 학습에 따라 미세하게 달라질 수 있는 3·4단계 문제는 `compare.mode = "float"`와 `tol`(1e-4~3e-3)을 쓰고, 시드(`random_state`, `torch.manual_seed`)를 문제에 명시한다.
 
 ## 4. ID 규칙 요약
 | 대상 | 형식 | 예 |

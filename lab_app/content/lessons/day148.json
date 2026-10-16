@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "day": 148,
+  "title": "시퀀스 데이터와 윈도우",
+  "stage": "dl",
+  "week": 22,
+  "is_review": false,
+  "objectives": [
+    "시계열을 고정 길이 윈도우와 다음 값 정답으로 바꿀 수 있다.",
+    "RNN 입력 모양 (N, 길이, 특성)을 만들 수 있다."
+  ],
+  "concepts": [
+    "sequence",
+    "tensor_shape"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "22주차 시작",
+      "content_md": "이번 주는 **순서가 중요한 데이터**(시계열, 문장)를 다룹니다. CNN이 공간의 무늬를 봤다면 RNN은 시간의 흐름을 봅니다.",
+      "quiz": [
+        {
+          "id": "d148_review_q1",
+          "question_md": "CNN이 이미지에서 같은 커널을 모든 위치에 쓰는 것을 무엇이라 하나?",
+          "choices": [
+            "가중치 공유",
+            "드롭아웃",
+            "정규화",
+            "풀링"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "윈도우 만들기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "\"지난 5일의 값으로 내일 값을 예측\"하려면 시계열을 길이 5짜리 조각(**윈도우**)과 그 다음 값(정답)의 쌍으로 바꿉니다.\n\n값이 n개, 윈도우 길이가 w이면 쌍은 n - w개입니다. RNN은 입력을 **(N, 길이, 특성 수)** 모양으로 받으므로(`batch_first=True`일 때) 값 하나짜리 시계열은 마지막에 `unsqueeze(-1)`로 특성 차원 1을 붙입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\n\nseries = torch.arange(1, 9, dtype=torch.float32)\nw = 3\nX = torch.stack([series[i:i + w] for i in range(len(series) - w)])\ny = series[w:]\nprint(X)\nprint(y)\nprint(X.unsqueeze(-1).shape)\n",
+          "runnable": true,
+          "expected_output": "tensor([[1., 2., 3.],\n        [2., 3., 4.],\n        [3., 4., 5.],\n        [4., 5., 6.],\n        [5., 6., 7.]])\ntensor([4., 5., 6., 7., 8.])\ntorch.Size([5, 3, 1])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "시계열은 섞어서 나누면 미래 정보가 학습에 새어 들어갑니다. 학습·테스트는 **앞부분과 뒷부분**으로 나누세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "윈도우를 만드세요.",
+      "exercise_ids": [
+        "d148_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "RNN 입력 모양으로 준비하세요.",
+      "exercise_ids": [
+        "d148_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "시계열 → (윈도우, 다음 값) 쌍.",
+        "쌍의 개수 = n - w.",
+        "RNN 입력 = (N, 길이, 특성).",
+        "시계열은 시간 순서로 분할."
+      ],
+      "quiz": [
+        {
+          "id": "d148_summary_q1",
+          "question_md": "값 10개, 윈도우 4이면 쌍의 수는?",
+          "choices": [
+            "4",
+            "6",
+            "7",
+            "10"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d148_summary_q2",
+          "question_md": "`batch_first=True` RNN의 입력 모양은?",
+          "choices": [
+            "(길이, N, 특성)",
+            "(N, 길이, 특성)",
+            "(N, 특성)",
+            "(특성, 길이)"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d148_fill_1",
+      "kind": "fill_blank",
+      "title": "윈도우",
+      "prompt_md": "값 목록을 길이 `w` 윈도우 텐서 X와 다음 값 텐서 y로 바꿔 `[X, y]`를 반환하세요.",
+      "concepts": [
+        "sequence"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef windows(values, w):\n    series = torch.tensor(values, dtype=torch.float32)\n    X = torch.____([series[i:i + w] for i in range(len(series) - w)])\n    y = ____\n    return [X, y]\n",
+      "entry": {
+        "mode": "function",
+        "name": "windows"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                [
+                  1.0,
+                  2.0
+                ],
+                [
+                  2.0,
+                  3.0
+                ],
+                [
+                  3.0,
+                  4.0
+                ]
+              ],
+              [
+                3.0,
+                4.0,
+                5.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                10,
+                20,
+                30,
+                40
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                [
+                  10.0,
+                  20.0,
+                  30.0
+                ]
+              ],
+              [
+                40.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                1,
+                0,
+                1,
+                0,
+                1
+              ],
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                [
+                  0.0,
+                  1.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              [
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "여러 텐서를 새 차원으로 쌓는 함수입니다.",
+        "정답은 w번째 값부터 끝까지입니다."
+      ],
+      "solution": "import torch\n\n\ndef windows(values, w):\n    series = torch.tensor(values, dtype=torch.float32)\n    X = torch.stack([series[i:i + w] for i in range(len(series) - w)])\n    y = series[w:]\n    return [X, y]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d148_code_1",
+      "kind": "coding",
+      "title": "RNN 입력 준비",
+      "prompt_md": "값 목록으로 길이 `w` 윈도우를 만들어 X는 (N, w, 1), y는 (N, 1) 모양으로 바꾸세요. 앞 `train`개 쌍을 학습용으로 나누고 `[X 모양, y 모양, 학습 X 개수, 테스트의 첫 윈도우(펼친 리스트), 테스트의 첫 정답]`을 반환합니다.",
+      "concepts": [
+        "sequence",
+        "tensor_shape"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef prepare(values, w, train):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "prepare"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              3,
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                5,
+                3,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              3,
+              [
+                4.0,
+                5.0,
+                6.0
+              ],
+              7.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                5,
+                10,
+                15,
+                20,
+                25,
+                30,
+                35,
+                40,
+                45
+              ],
+              4,
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                6,
+                4,
+                1
+              ],
+              [
+                6,
+                1
+              ],
+              4,
+              [
+                20.0,
+                25.0,
+                30.0,
+                35.0
+              ],
+              40.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "윈도우를 만든 뒤 `unsqueeze(-1)`로 특성 차원을 붙입니다.",
+        "시간 순서대로 앞 `train`개, 나머지로 나눕니다."
+      ],
+      "solution": "import torch\n\n\ndef prepare(values, w, train):\n    series = torch.tensor(values, dtype=torch.float32)\n    X = torch.stack([series[i:i + w] for i in range(len(series) - w)]).unsqueeze(-1)\n    y = series[w:].unsqueeze(-1)\n    X_train, X_test, y_test = X[:train], X[train:], y[train:]\n    return [\n        list(X.shape),\n        list(y.shape),\n        len(X_train),\n        X_test[0].flatten().tolist(),\n        y_test[0].item(),\n    ]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

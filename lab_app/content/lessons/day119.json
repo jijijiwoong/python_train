@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "day": 119,
+  "title": "3단계 마무리 누적 복습",
+  "stage": "ml",
+  "week": 17,
+  "is_review": true,
+  "objectives": [
+    "여러 모델을 같은 파이프라인 구조로 교차 검증해 비교하고, 직접 만든 변환기를 파이프라인에 넣을 수 있다."
+  ],
+  "concepts": [
+    "pipeline",
+    "cross_validation",
+    "random_forest",
+    "logistic_regression",
+    "knn"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "3단계 7주 돌아보기",
+      "content_md": "| 주차 | 주제 | 핵심 |\n|---|---|---|\n| 11 | 시작 | 데이터 분할, KNN, 추정기 API |\n| 12 | 회귀 | 선형 회귀, 평가 지표, 규제, 경사하강법 |\n| 13 | 분류 | 로지스틱, 임계값, SVM, 나이브 베이즈 |\n| 14 | 평가 | 혼동 행렬, F1, AUC, 교차 검증, 그리드 탐색 |\n| 15 | 트리·앙상블 | 불순도, 포레스트, 부스팅, 중요도 |\n| 16 | 비지도 | k-평균, DBSCAN, PCA, 이상치 |\n| 17 | 파이프라인 | 스케일링, 인코딩, 대체, ColumnTransformer |\n\n다음 4단계에서는 **PyTorch로 신경망을 직접 만들고 학습**합니다. 경사하강법(Day 83)과 로지스틱 회귀(Day 91)가 그 출발점이에요.",
+      "quiz": [
+        {
+          "id": "d119_review_q1",
+          "question_md": "누수 없이 교차 검증하려면 전처리를 어디에 두어야 하나?",
+          "choices": [
+            "교차 검증 전에 전체 데이터에",
+            "파이프라인 안에",
+            "테스트 데이터에만",
+            "필요 없다"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d119_review_q2",
+          "question_md": "신경망 학습에 쓰는 기본 방법은?",
+          "choices": [
+            "최소제곱 공식",
+            "경사하강법",
+            "k-평균",
+            "투표"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "나만의 변환기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`BaseEstimator`, `TransformerMixin`을 상속하고 `fit`(학습 데이터로 기준을 배움, `self` 반환)과 `transform`(변환)을 만들면 파이프라인에 넣을 수 있는 변환기가 됩니다. 배운 값은 이름 끝에 `_`를 붙여 저장하는 것이 관례입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.base import BaseEstimator, TransformerMixin\n\nclass LogTransformer(BaseEstimator, TransformerMixin):\n    def fit(self, X, y=None):\n        return self\n\n    def transform(self, X):\n        return np.log1p(np.asarray(X, dtype=float))\n\nprint(LogTransformer().fit_transform([[0], [9], [99]]).round(3))\n",
+          "runnable": true,
+          "expected_output": "[[0.   ]\n [2.303]\n [4.605]]\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "도전 문제는 학습 데이터의 분위수(예: 5%, 95%)로 극단값을 잘라내는 변환기입니다. `np.quantile(X, q, axis=0)`과 `np.clip`을 쓰세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "파이프라인 단계 이름 목록을 확인하세요.",
+      "exercise_ids": [
+        "d119_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d119_code_1",
+        "d119_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "3단계 마무리",
+      "points": [
+        "머신러닝 = 데이터 → 전처리 → 모델 → 평가 → 개선의 반복.",
+        "파이프라인으로 누수 없이, 교차 검증으로 공정하게.",
+        "문제에 맞는 지표(F1·AUC·R²)를 고른다.",
+        "다음: 4단계 PyTorch 딥러닝."
+      ],
+      "quiz": [
+        {
+          "id": "d119_summary_q1",
+          "question_md": "직접 만든 변환기의 `fit`이 돌려줘야 하는 것은?",
+          "choices": [
+            "None",
+            "self",
+            "변환 결과",
+            "점수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d119_summary_q2",
+          "question_md": "4단계에서 쓸 딥러닝 라이브러리는?",
+          "choices": [
+            "scikit-learn",
+            "PyTorch",
+            "pandas",
+            "matplotlib"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d119_fill_1",
+      "kind": "fill_blank",
+      "title": "단계 이름",
+      "prompt_md": "스케일러와 모델로 만든 파이프라인의 단계 이름 리스트를 반환하세요.",
+      "concepts": [
+        "pipeline"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.linear_model import LogisticRegression\nfrom sklearn.pipeline import ____\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef step_names():\n    pipe = Pipeline([(\"scale\", StandardScaler()), (\"model\", LogisticRegression())])\n    return list(pipe.____.keys())\n",
+      "entry": {
+        "mode": "function",
+        "name": "step_names"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "두 단계",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "return": [
+              "scale",
+              "model"
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "단계 목록으로 파이프라인을 만드는 클래스 이름입니다.",
+        "이름 → 단계 딕셔너리 속성입니다(named_…)."
+      ],
+      "solution": "from sklearn.linear_model import LogisticRegression\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef step_names():\n    pipe = Pipeline([(\"scale\", StandardScaler()), (\"model\", LogisticRegression())])\n    return list(pipe.named_steps.keys())\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d119_code_1",
+      "kind": "coding",
+      "title": "최종 모델 비교",
+      "prompt_md": "`churn_data(600, seed)` 전체로, 주어진 `make_pipe`에 `LogisticRegression()`(`logistic`), `KNeighborsClassifier(n_neighbors=15)`(`knn`), `RandomForestClassifier(n_estimators=100, random_state=0)`(`forest`)를 넣어 5-겹 교차 검증 AUC 평균(소수 넷째 자리)을 `scores`로, 최고 모델 이름을 `best`로 반환하세요.",
+      "concepts": [
+        "pipeline",
+        "cross_validation",
+        "roc_auc"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import numpy as np\nimport pandas as pd\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline, make_pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.neighbors import KNeighborsClassifier\n\ndef churn_data(n, seed):\n    rng = np.random.default_rng(seed)\n    age = rng.integers(18, 70, n).astype(float)\n    monthly = rng.normal(50, 20, n).round(1)\n    plan = rng.choice([\"basic\", \"standard\", \"premium\"], n)\n    region = rng.choice([\"서울\", \"부산\", \"대구\"], n)\n    complaints = rng.poisson(1.0, n)\n    score = 0.04 * (age - 40) - 0.03 * (monthly - 50) + 0.8 * complaints - 0.6 * (plan == \"premium\")\n    churn = (score + rng.normal(0, 0.8, n) > 0.8).astype(int)\n    age[rng.random(n) < 0.08] = np.nan\n    monthly[rng.random(n) < 0.05] = np.nan\n    return pd.DataFrame({\"age\": age, \"monthly\": monthly, \"plan\": plan, \"region\": region,\n                         \"complaints\": complaints, \"churn\": churn})\n\ndef make_pipe(model):\n    pre = ColumnTransformer([\n        (\"num\", make_pipeline(SimpleImputer(strategy=\"median\"), StandardScaler()),\n         [\"age\", \"monthly\", \"complaints\"]),\n        (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"plan\", \"region\"]),\n    ])\n    return Pipeline([(\"prep\", pre), (\"model\", model)])\n\n\ndef final_comparison(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "final_comparison"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": {
+              "scores": {
+                "logistic": 0.862,
+                "knn": 0.8285,
+                "forest": 0.8295
+              },
+              "best": "logistic"
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "다른 시드",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": {
+              "scores": {
+                "logistic": 0.9086,
+                "knn": 0.8793,
+                "forest": 0.8752
+              },
+              "best": "logistic"
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "모델 딕셔너리를 돌며 `cross_val_score(make_pipe(모델), X, y, cv=5, scoring=\"roc_auc\")`.",
+        "최고 모델은 `max(scores, key=scores.get)`."
+      ],
+      "solution": "import numpy as np\nimport pandas as pd\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline, make_pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.neighbors import KNeighborsClassifier\n\ndef churn_data(n, seed):\n    rng = np.random.default_rng(seed)\n    age = rng.integers(18, 70, n).astype(float)\n    monthly = rng.normal(50, 20, n).round(1)\n    plan = rng.choice([\"basic\", \"standard\", \"premium\"], n)\n    region = rng.choice([\"서울\", \"부산\", \"대구\"], n)\n    complaints = rng.poisson(1.0, n)\n    score = 0.04 * (age - 40) - 0.03 * (monthly - 50) + 0.8 * complaints - 0.6 * (plan == \"premium\")\n    churn = (score + rng.normal(0, 0.8, n) > 0.8).astype(int)\n    age[rng.random(n) < 0.08] = np.nan\n    monthly[rng.random(n) < 0.05] = np.nan\n    return pd.DataFrame({\"age\": age, \"monthly\": monthly, \"plan\": plan, \"region\": region,\n                         \"complaints\": complaints, \"churn\": churn})\n\ndef make_pipe(model):\n    pre = ColumnTransformer([\n        (\"num\", make_pipeline(SimpleImputer(strategy=\"median\"), StandardScaler()),\n         [\"age\", \"monthly\", \"complaints\"]),\n        (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"plan\", \"region\"]),\n    ])\n    return Pipeline([(\"prep\", pre), (\"model\", model)])\n\n\ndef final_comparison(seed):\n    df = churn_data(600, seed)\n    X, y = df.drop(columns=\"churn\"), df[\"churn\"]\n    models = {\"logistic\": LogisticRegression(), \"knn\": KNeighborsClassifier(n_neighbors=15),\n              \"forest\": RandomForestClassifier(n_estimators=100, random_state=0)}\n    scores = {}\n    for name, model in models.items():\n        auc = cross_val_score(make_pipe(model), X, y, cv=5, scoring=\"roc_auc\").mean()\n        scores[name] = round(float(auc), 4)\n    return {\"scores\": scores, \"best\": max(scores, key=scores.get)}\n",
+      "time_limit_sec": 120
+    },
+    {
+      "id": "d119_code_2",
+      "kind": "coding",
+      "title": "[도전] 극단값 자르기 변환기",
+      "prompt_md": "`ClipTransformer(low_q=0.05, high_q=0.95)` 변환기를 만드세요. `fit`은 학습 데이터 열마다 `low_q`, `high_q` 분위수를 `low_`, `high_`로 저장하고, `transform`은 값을 그 범위로 자릅니다(`np.clip`). `check`는 채점용으로 `[[변환 결과(소수 셋째 자리)]]`를 돌려줍니다.",
+      "concepts": [
+        "pipeline",
+        "class",
+        "numpy_aggregate"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import numpy as np\nfrom sklearn.base import BaseEstimator, TransformerMixin\n\n# 여기에 ClipTransformer 클래스를 작성하세요\n\n\ndef check(train, test):\n    transformer = ClipTransformer().fit(train)\n    return np.round(transformer.transform(test), 3)\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "1열",
+          "call": {
+            "args": [
+              [
+                [
+                  1
+                ],
+                [
+                  2
+                ],
+                [
+                  3
+                ],
+                [
+                  4
+                ],
+                [
+                  100
+                ]
+              ],
+              [
+                [
+                  0
+                ],
+                [
+                  50
+                ],
+                [
+                  200
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1.2
+              ],
+              [
+                50.0
+              ],
+              [
+                80.8
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  0,
+                  10
+                ],
+                [
+                  5,
+                  20
+                ],
+                [
+                  10,
+                  30
+                ]
+              ],
+              [
+                [
+                  -5,
+                  25
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.5,
+                25.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`__init__`에서 `low_q`, `high_q`를 같은 이름의 속성으로 저장하세요(scikit-learn 관례).",
+        "`fit`: `np.quantile(X, self.low_q, axis=0)` 등을 저장하고 `self` 반환.",
+        "`transform`: `np.clip(X, self.low_, self.high_)`."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.base import BaseEstimator, TransformerMixin\n\n\nclass ClipTransformer(BaseEstimator, TransformerMixin):\n    def __init__(self, low_q=0.05, high_q=0.95):\n        self.low_q = low_q\n        self.high_q = high_q\n\n    def fit(self, X, y=None):\n        X = np.asarray(X, dtype=float)\n        self.low_ = np.quantile(X, self.low_q, axis=0)\n        self.high_ = np.quantile(X, self.high_q, axis=0)\n        return self\n\n    def transform(self, X):\n        return np.clip(np.asarray(X, dtype=float), self.low_, self.high_)\n\n\ndef check(train, test):\n    transformer = ClipTransformer().fit(train)\n    return np.round(transformer.transform(test), 3)\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      },
+      "time_limit_sec": 60
+    }
+  ]
+}

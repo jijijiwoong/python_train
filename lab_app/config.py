@@ -14,6 +14,7 @@ MAX_STDOUT_CHARS = 20_000
 MAX_STDERR_CHARS = 10_000
 MAX_READ_BYTES = 256 * 1024          # raw stdout/stderr files of the child process
 MAX_RESULT_BYTES = 8 * 1024 * 1024   # result.jsonl written by the harness
+MAX_FIGURE_BYTES = 2 * 1024 * 1024   # each matplotlib PNG shown after a free run
 
 # Learning rules
 BLANK_TOKEN = "____"

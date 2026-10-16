@@ -20,7 +20,11 @@ def test_written_days_are_contiguous_and_clean():
         assert lesson.required_exercise_ids, f"Day {lesson.day} has no required exercise"
 
 
-@pytest.mark.parametrize("day", REPO.available_days)
+HEAVY_STAGES = {"ml", "dl"}  # importing sklearn/torch makes each check take seconds
+
+
+@pytest.mark.parametrize("day", [pytest.param(d, marks=pytest.mark.heavy) if REPO.lesson(d).stage in HEAVY_STAGES else d
+                                 for d in REPO.available_days])
 def test_lesson_self_check(day):
     """Solutions pass, starters fail, runnable examples print what the text claims."""
     assert verify_lesson(REPO.lesson(day)) == []
@@ -80,14 +84,26 @@ def test_lesson_self_check(day):
                    "        f.write(f'{i}. {input()}')\nwith open('diary.txt', encoding='utf-8') as f:\n"
                    "    for line in f:\n        print(line.strip())\nprint(f'총 {n}줄 저장')\n",
      ErrorType.WRONG_ANSWER),                                                     # forgot \n in write()
+    pytest.param("d125_fill_1", "import torch\n\n\ndef descend(w0, lr, steps):\n"
+                 "    w = torch.tensor(float(w0), requires_grad=True)\n    for _ in range(steps):\n"
+                 "        loss = (w - 3) ** 2\n        loss.backward()\n        with torch.no_grad():\n"
+                 "            w -= lr * w.grad\n    return round(w.item(), 4)\n",
+                 ErrorType.WRONG_ANSWER, marks=pytest.mark.heavy),               # forgot grad.zero_(): grads pile up
+    pytest.param("d130_code_1", "import torch\nfrom torch import nn, optim\n\n\ndef train_linear(xs, ys, lr, epochs):\n"
+                 "    torch.manual_seed(0)\n    X = torch.tensor(xs, dtype=torch.float32).reshape(-1, 1)\n"
+                 "    y = torch.tensor(ys, dtype=torch.float32)\n    model = nn.Linear(1, 1)\n"
+                 "    optimizer = optim.SGD(model.parameters(), lr=lr)\n    for _ in range(epochs):\n"
+                 "        loss = nn.MSELoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n"
+                 "        optimizer.step()\n    return [round(model.weight.item(), 3), round(model.bias.item(), 3)]\n",
+                 ErrorType.WRONG_ANSWER, marks=pytest.mark.heavy),               # y not (n, 1): MSELoss broadcasts
 ])
 def test_typical_mistakes(exercise_id, code, error_type):
     result = grade(REPO.exercise(exercise_id), code)
     assert result.error_type is error_type, [(t.test_id, t.error_type, t.message) for t in result.tests]
 
 
-@pytest.mark.parametrize("day, exercise_id", [(7, "d07_code_2"), (13, "d13_code_2"), (14, "d14_code_2"),
-                                              (21, "d21_code_2"), (28, "d28_code_2"), (35, "d35_code_2")])
+# Day 13 and every review day (7, 14, ..., 168) end with an optional challenge
+@pytest.mark.parametrize("day, exercise_id", [(13, "d13_code_2")] + [(d, f"d{d:02d}_code_2") for d in range(7, 169, 7)])
 def test_optional_challenge_is_not_required(day, exercise_id):
     lesson = REPO.lesson(day)
     assert exercise_id not in lesson.required_exercise_ids

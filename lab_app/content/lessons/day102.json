@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "day": 102,
+  "title": "부스팅",
+  "stage": "ml",
+  "week": 15,
+  "is_review": false,
+  "objectives": [
+    "앞 모델의 실수를 다음 모델이 보완하는 부스팅의 원리를 설명할 수 있다.",
+    "학습률과 트리 개수의 관계를 실험할 수 있다."
+  ],
+  "concepts": [
+    "boosting",
+    "ensemble"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 서로 독립적인 트리들의 투표(랜덤 포레스트)를 배웠습니다.",
+      "quiz": [
+        {
+          "id": "d102_review_q1",
+          "question_md": "랜덤 포레스트의 트리들은 어떻게 만들어지나?",
+          "choices": [
+            "순서대로 앞 트리를 보완",
+            "서로 독립적으로(병렬)",
+            "하나만",
+            "무작위 숫자"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "실수를 이어서 고치기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**부스팅**은 작은 트리를 **순서대로** 만들되, 각 트리가 앞 트리들이 틀린 부분(잔차)을 줄이도록 학습합니다. `learning_rate`는 각 트리의 기여를 줄여 천천히 배우게 하고, 대신 `n_estimators`가 더 필요합니다. 표 데이터에서 가장 강력한 모델 중 하나입니다(XGBoost, LightGBM도 이 계열)."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import GradientBoostingClassifier\nfrom sklearn.model_selection import train_test_split\n\nX, y = load_breast_cancer(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)\nfor lr in [0.01, 0.1, 1.0]:\n    model = GradientBoostingClassifier(learning_rate=lr, n_estimators=50, random_state=0).fit(\n        X_train,\n        y_train,\n    )\n    print(lr, round(model.score(X_test, y_test), 4))\n",
+          "runnable": true,
+          "expected_output": "0.01 0.924\n0.1 0.9357\n1.0 0.9357\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "큰 데이터에는 `HistGradientBoostingClassifier`가 훨씬 빠르고 결측치도 그대로 다룰 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "그래디언트 부스팅 모델을 학습하세요.",
+      "exercise_ids": [
+        "d102_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "학습률별 정확도를 비교하세요.",
+      "exercise_ids": [
+        "d102_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "부스팅 = 순차적으로 앞의 실수를 보완하는 앙상블.",
+        "`learning_rate`↓ → 천천히, 대신 트리 더 많이.",
+        "`GradientBoostingClassifier`, 큰 데이터엔 `HistGradientBoosting…`.",
+        "랜덤 포레스트는 병렬·투표, 부스팅은 순차·보완."
+      ],
+      "quiz": [
+        {
+          "id": "d102_summary_q1",
+          "question_md": "부스팅에서 트리들이 만들어지는 방식은?",
+          "choices": [
+            "독립적으로",
+            "순서대로 앞의 실수를 보완",
+            "무작위 하나",
+            "사람이 직접"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d102_summary_q2",
+          "question_md": "learning_rate를 아주 작게 하면 보통 필요한 것은?",
+          "choices": [
+            "트리 수 감소",
+            "트리 수 증가",
+            "스케일링",
+            "더 큰 깊이"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d102_fill_1",
+      "kind": "fill_blank",
+      "title": "부스팅 학습",
+      "prompt_md": "유방암 데이터를 `test_size=0.3, random_state=0, stratify=y`로 나누고 `GradientBoostingClassifier(n_estimators=n, random_state=0)`의 테스트 정확도(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "boosting"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import ____\nfrom sklearn.model_selection import train_test_split\n\n\ndef boost_acc(n):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=0,\n        stratify=y,\n    )\n    model = GradientBoostingClassifier(n_estimators=____, random_state=0).fit(X_train, y_train)\n    return round(model.score(X_test, y_test), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "boost_acc"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "30개",
+          "call": {
+            "args": [
+              30
+            ]
+          },
+          "expect": {
+            "return": 0.9357
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": 0.9064
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "그래디언트 부스팅 분류기 클래스 이름입니다.",
+        "트리 개수로 쓸 매개변수입니다."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import GradientBoostingClassifier\nfrom sklearn.model_selection import train_test_split\n\n\ndef boost_acc(n):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=0,\n        stratify=y,\n    )\n    model = GradientBoostingClassifier(n_estimators=n, random_state=0).fit(X_train, y_train)\n    return round(model.score(X_test, y_test), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d102_code_1",
+      "kind": "coding",
+      "title": "학습률 실험",
+      "prompt_md": "유방암 데이터를 `test_size=0.3, random_state=seed, stratify=y`로 나누고 `learning_rates`의 각 값으로 `GradientBoostingClassifier(learning_rate=값, n_estimators=50, random_state=0)`를 학습해 테스트 정확도(소수 넷째 자리) 리스트를 반환하세요.",
+      "concepts": [
+        "boosting"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import GradientBoostingClassifier\nfrom sklearn.model_selection import train_test_split\n\n\ndef lr_scores(learning_rates, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "lr_scores"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "세 학습률",
+          "call": {
+            "args": [
+              [
+                0.01,
+                0.1,
+                1.0
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              0.924,
+              0.9357,
+              0.9357
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0.3
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9708
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "학습률마다 새 모델을 만드세요.",
+        "`n_estimators=50`, `random_state=0`을 잊지 마세요."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.ensemble import GradientBoostingClassifier\nfrom sklearn.model_selection import train_test_split\n\n\ndef lr_scores(learning_rates, seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=seed,\n        stratify=y,\n    )\n    scores = []\n    for lr in learning_rates:\n        model = GradientBoostingClassifier(learning_rate=lr, n_estimators=50, random_state=0)\n        scores.append(round(model.fit(X_train, y_train).score(X_test, y_test), 4))\n    return scores\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

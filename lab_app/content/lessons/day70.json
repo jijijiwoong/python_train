@@ -1,0 +1,411 @@
+{
+  "schema_version": 1,
+  "day": 70,
+  "title": "2단계 마무리 누적 복습",
+  "stage": "advanced_data",
+  "week": 10,
+  "is_review": true,
+  "objectives": [
+    "객체지향·파이썬다운 문법·NumPy·pandas·시각화를 조합해 작은 분석 도구를 만들 수 있다."
+  ],
+  "concepts": [
+    "class",
+    "comprehension",
+    "numpy_ops",
+    "pandas_groupby",
+    "matplotlib",
+    "eda"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "2단계 5주 돌아보기",
+      "content_md": "| 주차 | 주제 | 핵심 |\n|---|---|---|\n| 6 | 객체지향 | 클래스, 메서드, 특수 메서드, 상속, property, dataclass |\n| 7 | 파이썬다운 코드 | 컴프리헨션, 이터레이터·제너레이터, 클로저, 데코레이터 |\n| 8 | NumPy | 배열, 벡터화·브로드캐스팅, 마스크, axis, `@`, 난수 |\n| 9 | pandas | 선택·변환·결측치·groupby·merge |\n| 10 | 시각화·EDA | 선·막대·히스토그램·산점도, describe, 상관·이상치 |\n\n다음 3단계부터는 이 도구들로 **머신러닝 모델**을 만듭니다.",
+      "quiz": [
+        {
+          "id": "d70_review_q1",
+          "question_md": "머신러닝 전에 데이터의 분포·결측치·이상치를 살피는 단계는?",
+          "choices": [
+            "배포",
+            "EDA",
+            "학습",
+            "평가"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d70_review_q2",
+          "question_md": "pandas가 내부적으로 데이터를 저장하는 데 쓰는 라이브러리는?",
+          "choices": [
+            "matplotlib",
+            "NumPy",
+            "json",
+            "csv"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "클래스로 분석 도구 묶기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "자주 하는 분석을 클래스로 묶으면 재사용하기 쉽습니다. 데이터는 속성으로, 분석 단계는 메서드로 둡니다."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\nclass Report:\n    def __init__(self, data):\n        self.df = pd.DataFrame(data)\n\n    def total(self, col):\n        return int(self.df[col].sum())\n\n    def top(self, by, col):\n        return self.df.groupby(by)[col].sum().idxmax()\n\nr = Report({\"상품\": [\"펜\", \"노트\", \"펜\"], \"매출\": [3000, 6000, 4000]})\nprint(r.total(\"매출\"), r.top(\"상품\", \"매출\"))\n",
+          "runnable": true,
+          "expected_output": "13000 펜\n",
+          "time_limit_sec": 20
+        },
+        {
+          "kind": "tip",
+          "md": "**이동 평균**(도전 문제)은 최근 몇 개 값의 평균으로, 들쭉날쭉한 시계열의 흐름을 부드럽게 보여 줍니다. pandas의 `rolling(창 크기).mean()`이 계산해 줍니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "리스트 컴프리헨션과 NumPy를 함께 써 보세요.",
+      "exercise_ids": [
+        "d70_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d70_code_1",
+        "d70_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "2단계 마무리",
+      "points": [
+        "클래스로 데이터와 분석 동작을 묶는다.",
+        "NumPy로 계산, pandas로 표 처리, matplotlib으로 보여 준다.",
+        "EDA로 데이터를 이해한 뒤 모델링한다.",
+        "다음: 3단계 머신러닝(scikit-learn)."
+      ],
+      "quiz": [
+        {
+          "id": "d70_summary_q1",
+          "question_md": "`s.rolling(3).mean()`의 처음 두 값은?",
+          "choices": [
+            "0",
+            "NaN",
+            "첫 값",
+            "평균"
+          ],
+          "answer_index": 1,
+          "explanation_md": "창이 다 차지 않으면 NaN입니다."
+        },
+        {
+          "id": "d70_summary_q2",
+          "question_md": "3단계에서 주로 쓸 머신러닝 라이브러리는?",
+          "choices": [
+            "pandas",
+            "scikit-learn",
+            "matplotlib",
+            "json"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d70_fill_1",
+      "kind": "fill_blank",
+      "title": "제곱 평균",
+      "prompt_md": "숫자 목록에서 짝수만 골라 제곱한 값들의 평균을 반환하세요(짝수가 하나 이상 있다고 가정).",
+      "concepts": [
+        "comprehension",
+        "numpy_aggregate"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef even_square_mean(values):\n    squares = [x * x for x in values ____ x % 2 == 0]\n    return float(np.____(squares))\n",
+      "entry": {
+        "mode": "function",
+        "name": "even_square_mean"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2, 4",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4
+              ]
+            ]
+          },
+          "expect": {
+            "return": 10.0
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.0
+          }
+        }
+      ],
+      "hints": [
+        "컴프리헨션에서 조건을 붙이는 키워드입니다.",
+        "평균을 구하는 NumPy 함수입니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef even_square_mean(values):\n    squares = [x * x for x in values if x % 2 == 0]\n    return float(np.mean(squares))\n",
+      "time_limit_sec": 20
+    },
+    {
+      "id": "d70_code_1",
+      "kind": "coding",
+      "title": "판매 리포트 클래스",
+      "prompt_md": "`SalesReport` 클래스를 작성하세요.\n\n- `__init__(self, data)`: 상품·분류·가격·수량 데이터로 DataFrame을 만들고 `매출 = 가격 × 수량` 열을 추가\n- `total()`: 전체 매출(int)\n- `by(col)`: 기준 열별 매출 합계를 큰 순으로 `{값: 매출}` 딕셔너리\n- `__len__`: 행 수\n\n`check`는 채점용입니다.",
+      "concepts": [
+        "class",
+        "dunder",
+        "pandas_groupby"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n# 여기에 SalesReport 클래스를 작성하세요\n\n\ndef check(data):\n    r = SalesReport(data)\n    return [len(r), r.total(), r.by(\"분류\"), r.by(\"상품\")]\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "상품": [
+                  "펜",
+                  "노트",
+                  "물"
+                ],
+                "분류": [
+                  "문구",
+                  "문구",
+                  "식품"
+                ],
+                "가격": [
+                  1000,
+                  3000,
+                  800
+                ],
+                "수량": [
+                  3,
+                  1,
+                  5
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              10000,
+              {
+                "문구": 6000,
+                "식품": 4000
+              },
+              {
+                "펜": 3000,
+                "노트": 3000,
+                "물": 4000
+              }
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "상품": [
+                  "a"
+                ],
+                "분류": [
+                  "x"
+                ],
+                "가격": [
+                  2
+                ],
+                "수량": [
+                  2
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              4,
+              {
+                "x": 4
+              },
+              {
+                "a": 4
+              }
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`__init__`에서 데이터를 DataFrame으로 바꿔 속성에 저장한 뒤 매출 열을 추가하세요.",
+        "`by`는 `groupby(col)[\"매출\"].sum().sort_values(ascending=False)`를 `{k: int(v)}`로 바꿉니다.",
+        "`__len__`은 `len(self.df)`."
+      ],
+      "solution": "import pandas as pd\n\n\nclass SalesReport:\n    def __init__(self, data):\n        self.df = pd.DataFrame(data)\n        self.df[\"매출\"] = self.df[\"가격\"] * self.df[\"수량\"]\n\n    def total(self):\n        return int(self.df[\"매출\"].sum())\n\n    def by(self, col):\n        sums = self.df.groupby(col)[\"매출\"].sum().sort_values(ascending=False)\n        return {key: int(value) for key, value in sums.items()}\n\n    def __len__(self):\n        return len(self.df)\n\n\ndef check(data):\n    r = SalesReport(data)\n    return [len(r), r.total(), r.by(\"분류\"), r.by(\"상품\")]\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      },
+      "time_limit_sec": 20
+    },
+    {
+      "id": "d70_code_2",
+      "kind": "coding",
+      "title": "[도전] 이동 평균",
+      "prompt_md": "값 목록과 창 크기 `window`를 받아 이동 평균을 계산하세요. 창이 다 차지 않은 앞부분은 빼고, 소수 둘째 자리까지 반올림한 리스트를 반환합니다.\n\n예: `moving_average([1, 2, 3, 4, 5], 3)` → `[2.0, 3.0, 4.0]`",
+      "concepts": [
+        "numpy_aggregate",
+        "pandas_transform"
+      ],
+      "difficulty": 2,
+      "required": false,
+      "starter_code": "import pandas as pd\n\n\ndef moving_average(values, window):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "moving_average"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "창 크기 3",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              2.0,
+              3.0,
+              4.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                10,
+                20
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              15.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                5,
+                1,
+                5,
+                1,
+                5,
+                1
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              3.0,
+              3.0,
+              3.0,
+              3.0,
+              3.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "`pd.Series(values, dtype=float).rolling(window).mean()`.",
+        "앞쪽 NaN은 `dropna()`로 지우고, 값마다 `round(float(x), 2)`."
+      ],
+      "solution": "import pandas as pd\n\n\ndef moving_average(values, window):\n    averages = pd.Series(values, dtype=float).rolling(window).mean().dropna()\n    return [round(float(x), 2) for x in averages]\n",
+      "time_limit_sec": 20
+    }
+  ]
+}

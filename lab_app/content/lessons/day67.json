@@ -1,0 +1,326 @@
+{
+  "schema_version": 1,
+  "day": 67,
+  "title": "EDA 1: 데이터 살펴보기",
+  "stage": "advanced_data",
+  "week": 10,
+  "is_review": false,
+  "objectives": [
+    "describe, value_counts, nunique로 데이터를 빠르게 요약할 수 있다.",
+    "숫자 열과 범주 열을 구분해 살펴볼 수 있다."
+  ],
+  "concepts": [
+    "eda",
+    "pandas_basics",
+    "pandas_groupby"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 pandas에서 바로 그래프를 그리고 여러 그래프를 배치했습니다.",
+      "quiz": [
+        {
+          "id": "d67_review_q1",
+          "question_md": "제목이 겹치지 않게 간격을 맞추는 코드는?",
+          "choices": [
+            "`fig.tight_layout()`",
+            "`ax.grid()`",
+            "`plt.legend()`",
+            "`ax.set_title()`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "처음 보는 데이터와 친해지기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**탐색적 데이터 분석**(EDA)은 모델을 만들기 전에 데이터를 이리저리 살펴보는 단계입니다. 먼저 크기·열·자료형을 보고, 숫자 열은 `describe()`, 범주 열은 `value_counts()`로 요약합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\"반\": [\"A\", \"B\", \"A\", \"A\"], \"키\": [172.5, 160.0, 181.0, 158.5], \"점수\": [85, 92, 78, 66]})\nprint(df.describe().round(1))\nprint(df[\"반\"].value_counts())\nprint(df[\"반\"].nunique())\nprint(df.select_dtypes(\"number\").columns.tolist())\n",
+          "runnable": true,
+          "expected_output": "           키    점수\ncount    4.0   4.0\nmean   168.0  80.2\nstd     10.7  11.1\nmin    158.5  66.0\n25%    159.6  75.0\n50%    166.2  81.5\n75%    174.6  86.8\nmax    181.0  92.0\n반\nA    3\nB    1\nName: count, dtype: int64\n2\n['키', '점수']\n",
+          "time_limit_sec": 20
+        },
+        {
+          "kind": "tip",
+          "md": "`describe()`의 `25%`, `50%`, `75%`는 사분위수입니다. `50%`가 중앙값이에요. 평균과 중앙값이 많이 다르면 한쪽으로 치우친 데이터일 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "범주 열의 값별 개수를 딕셔너리로 반환하세요.",
+      "exercise_ids": [
+        "d67_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "데이터 프로필(요약 보고서)을 만드세요.",
+      "exercise_ids": [
+        "d67_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "EDA = 모델링 전에 데이터 살펴보기.",
+        "숫자 열: `describe()`(개수·평균·표준편차·사분위수).",
+        "범주 열: `value_counts()`, `nunique()`.",
+        "`select_dtypes(\"number\")`로 숫자 열만 고르기."
+      ],
+      "quiz": [
+        {
+          "id": "d67_summary_q1",
+          "question_md": "`describe()`의 `50%` 값은?",
+          "choices": [
+            "평균",
+            "중앙값",
+            "최댓값의 절반",
+            "표준편차"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d67_summary_q2",
+          "question_md": "범주 열에서 값별 개수를 세는 메서드는?",
+          "choices": [
+            "`count()`",
+            "`value_counts()`",
+            "`describe()`",
+            "`size`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d67_fill_1",
+      "kind": "fill_blank",
+      "title": "값별 개수",
+      "prompt_md": "`반` 열의 값별 개수를 딕셔너리로 반환하세요.",
+      "concepts": [
+        "eda"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef class_counts(data):\n    df = pd.DataFrame(data)\n    return df[\"반\"].____().____()\n",
+      "entry": {
+        "mode": "function",
+        "name": "class_counts"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "민준",
+                  "서연",
+                  "지호",
+                  "하나"
+                ],
+                "반": [
+                  "A",
+                  "B",
+                  "A",
+                  "A"
+                ],
+                "키": [
+                  172.5,
+                  160.0,
+                  181.0,
+                  158.5
+                ],
+                "점수": [
+                  85,
+                  92,
+                  78,
+                  66
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "A": 3,
+              "B": 1
+            }
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "반": [
+                  "X"
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "X": 1
+            }
+          }
+        }
+      ],
+      "hints": [
+        "값별 개수를 세는 Series 메서드입니다.",
+        "Series를 딕셔너리로 바꾸는 메서드입니다."
+      ],
+      "solution": "import pandas as pd\n\n\ndef class_counts(data):\n    df = pd.DataFrame(data)\n    return df[\"반\"].value_counts().to_dict()\n",
+      "time_limit_sec": 20
+    },
+    {
+      "id": "d67_code_1",
+      "kind": "coding",
+      "title": "데이터 프로필",
+      "prompt_md": "데이터를 받아 다음을 담은 딕셔너리를 반환하세요.\n\n- `rows`: 행 수\n- `numeric`: 숫자 열마다 `{\"mean\": 평균(소수 둘째 자리), \"min\": 최솟값, \"max\": 최댓값}` (값은 float)\n- `top`: 숫자가 아닌 열마다 가장 많이 나온 값",
+      "concepts": [
+        "eda",
+        "pandas_basics"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef profile(data):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "profile"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "학생 표",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "민준",
+                  "서연",
+                  "지호",
+                  "하나"
+                ],
+                "반": [
+                  "A",
+                  "B",
+                  "A",
+                  "A"
+                ],
+                "키": [
+                  172.5,
+                  160.0,
+                  181.0,
+                  158.5
+                ],
+                "점수": [
+                  85,
+                  92,
+                  78,
+                  66
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "rows": 4,
+              "numeric": {
+                "키": {
+                  "mean": 168.0,
+                  "min": 158.5,
+                  "max": 181.0
+                },
+                "점수": {
+                  "mean": 80.25,
+                  "min": 66.0,
+                  "max": 92.0
+                }
+              },
+              "top": {
+                "이름": "민준",
+                "반": "A"
+              }
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "x": [
+                  1,
+                  3
+                ],
+                "y": [
+                  "a",
+                  "a"
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "rows": 2,
+              "numeric": {
+                "x": {
+                  "mean": 2.0,
+                  "min": 1.0,
+                  "max": 3.0
+                }
+              },
+              "top": {
+                "y": "a"
+              }
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "숫자 열은 `df.select_dtypes(\"number\").columns`, 그 밖은 `select_dtypes(exclude=\"number\")`.",
+        "가장 많이 나온 값은 `value_counts().index[0]`입니다.",
+        "숫자는 `float()`로 바꿔 넣으세요."
+      ],
+      "solution": "import pandas as pd\n\n\ndef profile(data):\n    df = pd.DataFrame(data)\n    numeric = {}\n    for col in df.select_dtypes(\"number\").columns:\n        numeric[col] = {\n            \"mean\": round(float(df[col].mean()), 2),\n            \"min\": float(df[col].min()),\n            \"max\": float(df[col].max()),\n        }\n    top = {}\n    for col in df.select_dtypes(exclude=\"number\").columns:\n        top[col] = df[col].value_counts().index[0]\n    return {\"rows\": len(df), \"numeric\": numeric, \"top\": top}\n",
+      "time_limit_sec": 20
+    }
+  ]
+}

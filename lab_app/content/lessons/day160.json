@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "day": 160,
+  "title": "조기 종료와 체크포인트",
+  "stage": "dl",
+  "week": 23,
+  "is_review": false,
+  "objectives": [
+    "검증 손실이 나아지지 않으면 학습을 멈출 수 있다.",
+    "가장 좋았던 시점의 가중치를 저장했다가 되돌릴 수 있다."
+  ],
+  "concepts": [
+    "early_stopping",
+    "state_dict",
+    "overfitting"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 증강으로 과적합을 줄였습니다. 학습을 **언제 멈출지**도 과적합을 막는 중요한 방법입니다.",
+      "quiz": [
+        {
+          "id": "d160_review_q1",
+          "question_md": "데이터 증강을 테스트 데이터에도 적용하나?",
+          "choices": [
+            "예",
+            "아니요",
+            "가끔",
+            "항상 두 배로"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "제때 멈추기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "학습을 오래 하면 학습 손실은 계속 줄지만 **검증 손실**은 어느 순간부터 다시 커집니다(과적합). **조기 종료**는 검증 손실이 `patience` 에폭 연속으로 최저 기록을 깨지 못하면 멈춥니다.\n\n그리고 최저 기록일 때의 가중치를 `copy.deepcopy(model.state_dict())`로 저장해 두었다가(**체크포인트**), 끝나면 `load_state_dict`로 되돌립니다. 파일로 저장하면 학습이 중간에 끊겨도 이어서 할 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "losses = [0.9, 0.7, 0.6, 0.62, 0.61, 0.65, 0.58, 0.6]\nbest, best_epoch, wait, patience = float(\"inf\"), -1, 0, 2\nfor epoch, loss in enumerate(losses):\n    if loss < best:\n        best, best_epoch, wait = loss, epoch, 0\n    else:\n        wait += 1\n        if wait >= patience:\n            print(\"멈춤:\", epoch)\n            break\nprint(\"최고:\", best_epoch, best)\n",
+          "runnable": true,
+          "expected_output": "멈춤: 4\n최고: 2 0.6\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "`state_dict()`는 실제 가중치와 연결된 딕셔너리라서 그냥 저장하면 학습하면서 함께 바뀝니다. 반드시 `copy.deepcopy`로 복사하세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "조기 종료 규칙을 완성하세요.",
+      "exercise_ids": [
+        "d160_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "체크포인트로 최고 시점을 되돌리세요.",
+      "exercise_ids": [
+        "d160_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "검증 손실이 나아지지 않으면 멈춘다.",
+        "patience = 기다려 줄 에폭 수.",
+        "최고 시점 가중치를 `deepcopy`로 저장.",
+        "끝나면 `load_state_dict`로 복원."
+      ],
+      "quiz": [
+        {
+          "id": "d160_summary_q1",
+          "question_md": "조기 종료가 보는 지표는?",
+          "choices": [
+            "학습 손실",
+            "검증 손실",
+            "학습률",
+            "에폭 수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d160_summary_q2",
+          "question_md": "`state_dict()`를 저장할 때 `deepcopy`가 필요한 이유는?",
+          "choices": [
+            "그냥 두면 학습하며 함께 바뀌어서",
+            "속도 때문에",
+            "파일 크기 때문에",
+            "필요 없다"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d160_fill_1",
+      "kind": "fill_blank",
+      "title": "멈출 시점",
+      "prompt_md": "검증 손실 목록과 patience로 조기 종료를 흉내 내 `[멈춘 에폭(끝까지 가면 None), 최고 에폭]`을 반환하세요.",
+      "concepts": [
+        "early_stopping"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def early_stop(losses, patience):\n    best, best_epoch, wait = float(\"inf\"), -1, 0\n    for epoch, loss in enumerate(losses):\n        if loss < best:\n            best, best_epoch, ____\n        else:\n            wait += 1\n            if ____:\n                return [epoch, best_epoch]\n    return [None, best_epoch]\n",
+      "entry": {
+        "mode": "function",
+        "name": "early_stop"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                0.9,
+                0.7,
+                0.6,
+                0.62,
+                0.61,
+                0.65
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              4,
+              2
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1.0,
+                0.8,
+                0.9,
+                0.7,
+                0.75
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              null,
+              3
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                3,
+                2,
+                1
+              ],
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              null,
+              2
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "더 좋아지면 기다린 횟수를 0으로 되돌립니다.",
+        "기다린 횟수가 patience에 닿으면 멈춥니다."
+      ],
+      "solution": "def early_stop(losses, patience):\n    best, best_epoch, wait = float(\"inf\"), -1, 0\n    for epoch, loss in enumerate(losses):\n        if loss < best:\n            best, best_epoch, wait = loss, epoch, 0\n        else:\n            wait += 1\n            if wait >= patience:\n                return [epoch, best_epoch]\n    return [None, best_epoch]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d160_code_1",
+      "kind": "coding",
+      "title": "체크포인트 복원",
+      "prompt_md": "`few_shot(seed, 10)`의 학습 데이터 50개 중 번호가 5의 배수인 10개(`torch.arange(len(y)) % 5 == 0`)는 검증, 나머지 40개는 학습에 씁니다. `torch.manual_seed(1)` 후 `Net(5)`와 `optim.Adam(lr=0.01)`로 전체 배치를 최대 100 에폭 학습하며, 에폭마다 검증 손실(`torch.no_grad()`)이 최저면 `copy.deepcopy(model.state_dict())`로 저장하고, patience 5로 조기 종료하세요. 끝나면 최고 가중치를 되돌리고 `[최고 에폭, 멈춘 에폭(끝까지면 99), 테스트 정확도]`를 반환합니다.",
+      "concepts": [
+        "early_stopping",
+        "state_dict"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import copy\nimport torch\nfrom sklearn.datasets import load_digits\nfrom torch import nn, optim\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef all_digits():\n    digits = load_digits()\n    X = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\n    return X, torch.tensor(digits.target)\n\n\ndef fit(model, X, y, epochs, lr=0.01):\n    params = [p for p in model.parameters() if p.requires_grad]\n    optimizer = optim.Adam(params, lr=lr)\n    for _ in range(epochs):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return loss.item()\n\n\ndef accuracy(model, X, y):\n    model.eval()\n    with torch.no_grad():\n        acc = (model(X).argmax(dim=1) == y).float().mean().item()\n    model.train()\n    return acc\n\n\ndef pretrained():\n    X, y = all_digits()\n    keep = y < 5\n    torch.manual_seed(0)\n    model = Net(5)\n    fit(model, X[keep], y[keep], 60)\n    return model\n\n\ndef few_shot(seed, per_class):\n    X, y = all_digits()\n    g = torch.Generator().manual_seed(seed)\n    train_idx, test_idx = [], []\n    for digit in range(5, 10):\n        idx = torch.nonzero(y == digit).flatten()\n        idx = idx[torch.randperm(len(idx), generator=g)]\n        train_idx += idx[:per_class].tolist()\n        test_idx += idx[per_class:].tolist()\n    return X[train_idx], y[train_idx] - 5, X[test_idx], y[test_idx] - 5\n\n\ndef train_with_checkpoint(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "train_with_checkpoint"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              99,
+              99,
+              0.948
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              17,
+              22,
+              0.9184
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "bool 마스크와 `~`(반대)로 검증·학습을 나눌 수 있습니다. 숫자마다 2장씩 검증에 들어갑니다.",
+        "멈춘 뒤 저장해 둔 최고 가중치를 모델에 다시 넣은 다음 정확도를 구합니다."
+      ],
+      "solution": "import copy\nimport torch\nfrom sklearn.datasets import load_digits\nfrom torch import nn, optim\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef all_digits():\n    digits = load_digits()\n    X = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\n    return X, torch.tensor(digits.target)\n\n\ndef fit(model, X, y, epochs, lr=0.01):\n    params = [p for p in model.parameters() if p.requires_grad]\n    optimizer = optim.Adam(params, lr=lr)\n    for _ in range(epochs):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return loss.item()\n\n\ndef accuracy(model, X, y):\n    model.eval()\n    with torch.no_grad():\n        acc = (model(X).argmax(dim=1) == y).float().mean().item()\n    model.train()\n    return acc\n\n\ndef pretrained():\n    X, y = all_digits()\n    keep = y < 5\n    torch.manual_seed(0)\n    model = Net(5)\n    fit(model, X[keep], y[keep], 60)\n    return model\n\n\ndef few_shot(seed, per_class):\n    X, y = all_digits()\n    g = torch.Generator().manual_seed(seed)\n    train_idx, test_idx = [], []\n    for digit in range(5, 10):\n        idx = torch.nonzero(y == digit).flatten()\n        idx = idx[torch.randperm(len(idx), generator=g)]\n        train_idx += idx[:per_class].tolist()\n        test_idx += idx[per_class:].tolist()\n    return X[train_idx], y[train_idx] - 5, X[test_idx], y[test_idx] - 5\n\n\ndef train_with_checkpoint(seed):\n    X, y, X_test, y_test = few_shot(seed, 10)\n    val = torch.arange(len(y)) % 5 == 0\n    X_tr, y_tr, X_val, y_val = X[~val], y[~val], X[val], y[val]\n    torch.manual_seed(1)\n    model = Net(5)\n    optimizer = optim.Adam(model.parameters(), lr=0.01)\n    best, best_epoch, best_state, wait = float(\"inf\"), -1, None, 0\n    for epoch in range(100):\n        loss = nn.CrossEntropyLoss()(model(X_tr), y_tr)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        with torch.no_grad():\n            val_loss = nn.CrossEntropyLoss()(model(X_val), y_val).item()\n        if val_loss < best:\n            best, best_epoch, wait = val_loss, epoch, 0\n            best_state = copy.deepcopy(model.state_dict())\n        else:\n            wait += 1\n            if wait >= 5:\n                break\n    model.load_state_dict(best_state)\n    return [best_epoch, epoch, round(accuracy(model, X_test, y_test), 4)]\n",
+      "time_limit_sec": 90
+    }
+  ]
+}

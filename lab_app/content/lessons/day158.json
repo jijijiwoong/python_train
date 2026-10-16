@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "day": 158,
+  "title": "미세 조정",
+  "stage": "dl",
+  "week": 23,
+  "is_review": false,
+  "objectives": [
+    "고정을 풀고 전체 모델을 작은 학습률로 미세 조정할 수 있다.",
+    "매개변수 그룹으로 층마다 다른 학습률을 줄 수 있다."
+  ],
+  "concepts": [
+    "fine_tuning",
+    "transfer",
+    "optimizer"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 특성 추출부를 고정하고 분류부만 학습했는데, 결과가 기대만큼 좋지는 않았습니다. 0~4에 맞춰진 특성을 새 과제에 맞게 **살짝 고치면** 어떨까요?",
+      "quiz": [
+        {
+          "id": "d158_review_q1",
+          "question_md": "새로 만든 `nn.Linear`의 `requires_grad` 기본값은?",
+          "choices": [
+            "False",
+            "True",
+            "None",
+            "0"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "살짝만 고치기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**미세 조정**(fine-tuning)은 사전 학습된 가중치에서 출발해 전체(또는 일부)를 **작은 학습률**로 더 학습하는 것입니다. 큰 학습률을 쓰면 애써 배운 특성이 망가집니다.\n\n옵티마이저에 **매개변수 그룹**을 넘기면 부분마다 학습률을 다르게 줄 수 있습니다.\n\n```\noptim.Adam([\n    {\"params\": model.features.parameters(), \"lr\": 0.001},\n    {\"params\": model.fc.parameters(), \"lr\": 0.01},\n])\n```"
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn, optim\n\nmodel = nn.Sequential(nn.Linear(4, 8), nn.ReLU(), nn.Linear(8, 2))\noptimizer = optim.Adam([\n    {\"params\": model[0].parameters(), \"lr\": 0.001},\n    {\"params\": model[2].parameters(), \"lr\": 0.01},\n])\nfor group in optimizer.param_groups:\n    print(group[\"lr\"], sum(p.numel() for p in group[\"params\"]))\n",
+          "runnable": true,
+          "expected_output": "0.001 40\n0.01 18\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "흔한 순서: ① 분류부만 학습(추출부 고정) → ② 고정을 풀고 전체를 작은 학습률로 미세 조정."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "매개변수 그룹을 만드세요.",
+      "exercise_ids": [
+        "d158_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "고정 학습 뒤 미세 조정을 이어 하세요.",
+      "exercise_ids": [
+        "d158_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "미세 조정 = 사전 학습 가중치에서 작은 학습률로 추가 학습.",
+        "큰 학습률은 배운 특성을 망가뜨린다.",
+        "매개변수 그룹으로 부분별 학습률.",
+        "분류부 먼저, 그다음 전체."
+      ],
+      "quiz": [
+        {
+          "id": "d158_summary_q1",
+          "question_md": "미세 조정에서 사전 학습된 층에 주는 학습률은?",
+          "choices": [
+            "더 크게",
+            "더 작게",
+            "0",
+            "무작위"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d158_summary_q2",
+          "question_md": "옵티마이저의 그룹별 학습률을 확인하는 곳은?",
+          "choices": [
+            "`optimizer.param_groups`",
+            "`model.lr`",
+            "`optimizer.state_dict`만",
+            "`scheduler`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d158_fill_1",
+      "kind": "fill_blank",
+      "title": "매개변수 그룹",
+      "prompt_md": "Sequential 모델의 첫 층은 `lr_body`, 마지막 층은 `lr_head`인 Adam을 만들고 그룹마다 `[학습률, 매개변수 수]`를 반환하세요.",
+      "concepts": [
+        "fine_tuning",
+        "optimizer"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from torch import nn, optim\n\n\ndef groups(lr_body, lr_head):\n    model = nn.Sequential(nn.Linear(4, 8), nn.ReLU(), nn.Linear(8, 2))\n    optimizer = optim.Adam([\n        {____, \"lr\": lr_body},\n        {\"params\": model[2].parameters(), \"lr\": lr_head},\n    ])\n    return [[g[\"lr\"], sum(p.numel() for p in g[\"params\"])] for g in optimizer.____]\n",
+      "entry": {
+        "mode": "function",
+        "name": "groups"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0.001,
+              0.01
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.001,
+                40
+              ],
+              [
+                0.01,
+                18
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.0005,
+              0.1
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.0005,
+                40
+              ],
+              [
+                0.1,
+                18
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "각 그룹은 \"params\"와 \"lr\" 키를 가진 딕셔너리입니다.",
+        "옵티마이저가 가진 그룹 목록 속성입니다."
+      ],
+      "solution": "from torch import nn, optim\n\n\ndef groups(lr_body, lr_head):\n    model = nn.Sequential(nn.Linear(4, 8), nn.ReLU(), nn.Linear(8, 2))\n    optimizer = optim.Adam([\n        {\"params\": model[0].parameters(), \"lr\": lr_body},\n        {\"params\": model[2].parameters(), \"lr\": lr_head},\n    ])\n    return [[g[\"lr\"], sum(p.numel() for p in g[\"params\"])] for g in optimizer.param_groups]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d158_code_1",
+      "kind": "coding",
+      "title": "두 단계 학습",
+      "prompt_md": "`few_shot(seed, 10)` 데이터로 ① `pretrained()`의 `features`를 고정하고 `torch.manual_seed(1)` 후 `fc`를 `nn.Linear(64, 5)`로 바꿔 `fit(..., 30)`. 이때 테스트 정확도를 기록합니다. ② 고정을 풀고(`requires_grad = True`) Adam 그룹(`features` lr 0.001, `fc` lr 0.005)으로 전체 배치를 30번 더 학습합니다. `{\"frozen\": ①의 정확도, \"finetuned\": ②의 정확도}`(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "fine_tuning",
+        "transfer"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\nfrom torch import nn, optim\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef all_digits():\n    digits = load_digits()\n    X = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\n    return X, torch.tensor(digits.target)\n\n\ndef fit(model, X, y, epochs, lr=0.01):\n    params = [p for p in model.parameters() if p.requires_grad]\n    optimizer = optim.Adam(params, lr=lr)\n    for _ in range(epochs):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return loss.item()\n\n\ndef accuracy(model, X, y):\n    model.eval()\n    with torch.no_grad():\n        acc = (model(X).argmax(dim=1) == y).float().mean().item()\n    model.train()\n    return acc\n\n\ndef pretrained():\n    X, y = all_digits()\n    keep = y < 5\n    torch.manual_seed(0)\n    model = Net(5)\n    fit(model, X[keep], y[keep], 60)\n    return model\n\n\ndef few_shot(seed, per_class):\n    X, y = all_digits()\n    g = torch.Generator().manual_seed(seed)\n    train_idx, test_idx = [], []\n    for digit in range(5, 10):\n        idx = torch.nonzero(y == digit).flatten()\n        idx = idx[torch.randperm(len(idx), generator=g)]\n        train_idx += idx[:per_class].tolist()\n        test_idx += idx[per_class:].tolist()\n    return X[train_idx], y[train_idx] - 5, X[test_idx], y[test_idx] - 5\n\n\ndef two_stage(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "two_stage"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": {
+              "frozen": 0.8806,
+              "finetuned": 0.9019
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": {
+              "frozen": 0.844,
+              "finetuned": 0.8771
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "①은 어제 문제와 같습니다.",
+        "②는 주어진 `fit` 대신 매개변수 그룹 옵티마이저로 학습 루프를 직접 씁니다."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\nfrom torch import nn, optim\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef all_digits():\n    digits = load_digits()\n    X = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\n    return X, torch.tensor(digits.target)\n\n\ndef fit(model, X, y, epochs, lr=0.01):\n    params = [p for p in model.parameters() if p.requires_grad]\n    optimizer = optim.Adam(params, lr=lr)\n    for _ in range(epochs):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return loss.item()\n\n\ndef accuracy(model, X, y):\n    model.eval()\n    with torch.no_grad():\n        acc = (model(X).argmax(dim=1) == y).float().mean().item()\n    model.train()\n    return acc\n\n\ndef pretrained():\n    X, y = all_digits()\n    keep = y < 5\n    torch.manual_seed(0)\n    model = Net(5)\n    fit(model, X[keep], y[keep], 60)\n    return model\n\n\ndef few_shot(seed, per_class):\n    X, y = all_digits()\n    g = torch.Generator().manual_seed(seed)\n    train_idx, test_idx = [], []\n    for digit in range(5, 10):\n        idx = torch.nonzero(y == digit).flatten()\n        idx = idx[torch.randperm(len(idx), generator=g)]\n        train_idx += idx[:per_class].tolist()\n        test_idx += idx[per_class:].tolist()\n    return X[train_idx], y[train_idx] - 5, X[test_idx], y[test_idx] - 5\n\n\ndef two_stage(seed):\n    X_train, y_train, X_test, y_test = few_shot(seed, 10)\n    model = pretrained()\n    for p in model.features.parameters():\n        p.requires_grad = False\n    torch.manual_seed(1)\n    model.fc = nn.Linear(64, 5)\n    fit(model, X_train, y_train, 30)\n    frozen = accuracy(model, X_test, y_test)\n    for p in model.features.parameters():\n        p.requires_grad = True\n    optimizer = optim.Adam([\n        {\"params\": model.features.parameters(), \"lr\": 0.001},\n        {\"params\": model.fc.parameters(), \"lr\": 0.005},\n    ])\n    for _ in range(30):\n        loss = nn.CrossEntropyLoss()(model(X_train), y_train)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return {\"frozen\": round(frozen, 4), \"finetuned\": round(accuracy(model, X_test, y_test), 4)}\n",
+      "time_limit_sec": 120
+    }
+  ]
+}

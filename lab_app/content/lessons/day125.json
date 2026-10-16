@@ -1,0 +1,317 @@
+{
+  "schema_version": 1,
+  "day": 125,
+  "title": "autograd로 경사하강법",
+  "stage": "dl",
+  "week": 18,
+  "is_review": false,
+  "objectives": [
+    "autograd로 구한 기울기로 가중치를 갱신할 수 있다.",
+    "torch.no_grad와 grad.zero_()의 역할을 설명할 수 있다."
+  ],
+  "concepts": [
+    "autograd",
+    "gradient_descent"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 autograd로 기울기를 구했습니다. 오늘은 그 기울기로 직접 학습해 봅니다.",
+      "quiz": [
+        {
+          "id": "d125_review_q1",
+          "question_md": "기울기가 누적되지 않게 하려면?",
+          "choices": [
+            "매번 `.grad`를 지운다",
+            "backward를 두 번 부른다",
+            "requires_grad를 끈다",
+            "아무것도 안 해도 된다"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "직접 학습시키기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "학습 한 번(스텝)은 네 단계입니다.\n\n1. 예측과 손실 계산\n2. `loss.backward()`로 기울기 계산\n3. `with torch.no_grad():` 안에서 `w -= lr * w.grad` (갱신 자체는 기록하면 안 되므로)\n4. `w.grad.zero_()`로 기울기 지우기"
+        },
+        {
+          "kind": "code",
+          "code": "import torch\n\nx = torch.tensor([1.0, 2.0, 3.0, 4.0])\ny = 2 * x + 1\nw = torch.tensor(0.0, requires_grad=True)\nb = torch.tensor(0.0, requires_grad=True)\nfor epoch in range(500):\n    loss = ((w * x + b - y) ** 2).mean()\n    loss.backward()\n    with torch.no_grad():\n        w -= 0.05 * w.grad\n        b -= 0.05 * b.grad\n    w.grad.zero_()\n    b.grad.zero_()\nprint(round(w.item(), 3), round(b.item(), 3), round(loss.item(), 6))\n",
+          "runnable": true,
+          "expected_output": "2.0 1.0 0.0\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "다음 주에는 이 네 단계를 `optimizer.zero_grad()`, `loss.backward()`, `optimizer.step()`으로 줄여 씁니다. 원리는 똑같습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "갱신 단계를 완성하세요.",
+      "exercise_ids": [
+        "d125_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "직선을 학습시키세요.",
+      "exercise_ids": [
+        "d125_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "손실 → backward → 갱신 → 기울기 지우기.",
+        "갱신은 `torch.no_grad()` 안에서.",
+        "`grad.zero_()`로 누적 방지.",
+        "학습률이 너무 크면 발산한다."
+      ],
+      "quiz": [
+        {
+          "id": "d125_summary_q1",
+          "question_md": "갱신을 `torch.no_grad()` 안에서 하는 이유는?",
+          "choices": [
+            "속도 때문",
+            "갱신 연산이 기록되지 않게",
+            "오류 메시지 때문",
+            "학습률 때문"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d125_summary_q2",
+          "question_md": "`zero_()`처럼 이름 끝에 `_`가 붙은 메서드는?",
+          "choices": [
+            "새 텐서 반환",
+            "제자리에서 값을 바꿈",
+            "기울기 계산",
+            "복사"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d125_fill_1",
+      "kind": "fill_blank",
+      "title": "최솟값 찾기",
+      "prompt_md": "f(w) = (w - 3)²을 `w0`에서 시작해 학습률 `lr`로 `steps`번 경사하강한 뒤의 w를 소수 넷째 자리로 반환하세요.",
+      "concepts": [
+        "autograd",
+        "gradient_descent"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef descend(w0, lr, steps):\n    w = torch.tensor(float(w0), requires_grad=True)\n    for _ in range(steps):\n        loss = (w - 3) ** 2\n        loss.backward()\n        with torch.____():\n            w -= lr * w.grad\n        w.grad.____\n    return round(w.item(), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "descend"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              0.1,
+              50
+            ]
+          },
+          "expect": {
+            "return": 3.0
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              10,
+              0.25,
+              3
+            ]
+          },
+          "expect": {
+            "return": 3.875
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              -2,
+              0.01,
+              10
+            ]
+          },
+          "expect": {
+            "return": -1.0854
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        }
+      ],
+      "hints": [
+        "기록하지 않는 구역을 여는 함수 이름입니다.",
+        "기울기를 제자리에서 0으로 만드는 메서드입니다."
+      ],
+      "solution": "import torch\n\n\ndef descend(w0, lr, steps):\n    w = torch.tensor(float(w0), requires_grad=True)\n    for _ in range(steps):\n        loss = (w - 3) ** 2\n        loss.backward()\n        with torch.no_grad():\n            w -= lr * w.grad\n        w.grad.zero_()\n    return round(w.item(), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d125_code_1",
+      "kind": "coding",
+      "title": "직선 학습",
+      "prompt_md": "w = 0, b = 0에서 시작해 평균 제곱 오차로 `epochs`번 경사하강(학습률 `lr`)한 뒤 `[w, b]`를 소수 셋째 자리로 반환하세요.",
+      "concepts": [
+        "autograd",
+        "gradient_descent"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef fit_line(xs, ys, lr, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "fit_line"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                3,
+                5,
+                7,
+                9
+              ],
+              0.05,
+              1000
+            ]
+          },
+          "expect": {
+            "return": [
+              2.0,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                1,
+                0,
+                -1
+              ],
+              0.1,
+              300
+            ]
+          },
+          "expect": {
+            "return": [
+              -1.0,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                1
+              ],
+              0.1,
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              0.414,
+              0.327
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        }
+      ],
+      "hints": [
+        "개념 설명의 네 단계를 그대로 반복하세요.",
+        "w와 b 모두 갱신하고 둘 다 기울기를 지워야 합니다."
+      ],
+      "solution": "import torch\n\n\ndef fit_line(xs, ys, lr, epochs):\n    x, y = torch.tensor(xs, dtype=torch.float32), torch.tensor(ys, dtype=torch.float32)\n    w = torch.tensor(0.0, requires_grad=True)\n    b = torch.tensor(0.0, requires_grad=True)\n    for _ in range(epochs):\n        loss = ((w * x + b - y) ** 2).mean()\n        loss.backward()\n        with torch.no_grad():\n            w -= lr * w.grad\n            b -= lr * b.grad\n        w.grad.zero_()\n        b.grad.zero_()\n    return [round(w.item(), 3), round(b.item(), 3)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

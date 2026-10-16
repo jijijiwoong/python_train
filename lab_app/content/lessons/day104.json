@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "day": 104,
+  "title": "앙상블 비교",
+  "stage": "ml",
+  "week": 15,
+  "is_review": false,
+  "objectives": [
+    "서로 다른 종류의 모델을 투표로 묶는 VotingClassifier를 쓸 수 있다.",
+    "hard 투표와 soft 투표의 차이를 설명할 수 있다."
+  ],
+  "concepts": [
+    "ensemble",
+    "logistic_regression",
+    "knn"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 특성 중요도로 모델이 무엇을 보는지 확인했습니다.",
+      "quiz": [
+        {
+          "id": "d104_review_q1",
+          "question_md": "어떤 모델에도 쓸 수 있는 중요도 측정법은?",
+          "choices": [
+            "feature_importances_",
+            "순열 중요도",
+            "coef_",
+            "n_support_"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "다른 관점 모으기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**VotingClassifier**는 종류가 다른 모델들(로지스틱 회귀, KNN, 트리 등)의 예측을 합칩니다. `hard`는 예측 클래스의 다수결, `soft`는 클래스 확률의 평균으로 결정합니다. 서로 다른 방식으로 틀리는 모델을 섞을수록 효과가 큽니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_wine\nfrom sklearn.ensemble import VotingClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.tree import DecisionTreeClassifier\n\nX, y = load_wine(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1, stratify=y)\nmean, std = X_train.mean(axis=0), X_train.std(axis=0)\nX_train, X_test = (X_train - mean) / std, (X_test - mean) / std\nmembers = [\n    (\"lr\", LogisticRegression()),\n    (\"knn\", KNeighborsClassifier()),\n    (\"tree\", DecisionTreeClassifier(random_state=0)),\n]\nfor name, m in members:\n    print(name, round(m.fit(X_train, y_train).score(X_test, y_test), 4))\nvote = VotingClassifier(members, voting=\"soft\").fit(X_train, y_train)\nprint(\"vote\", round(vote.score(X_test, y_test), 4))\n",
+          "runnable": true,
+          "expected_output": "lr 0.9815\nknn 0.9259\ntree 0.9444\nvote 0.9815\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "soft 투표는 모든 모델이 `predict_proba`를 지원해야 합니다. 앙상블이 항상 최고는 아니지만, 대체로 개별 모델보다 안정적입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "투표 앙상블을 만드세요.",
+      "exercise_ids": [
+        "d104_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "개별 모델과 투표 앙상블을 비교하세요.",
+      "exercise_ids": [
+        "d104_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "VotingClassifier: 서로 다른 모델의 예측을 합침.",
+        "hard = 클래스 다수결, soft = 확률 평균.",
+        "다양한 방식으로 틀리는 모델을 섞을수록 효과적.",
+        "앙상블: 배깅(포레스트), 부스팅, 투표."
+      ],
+      "quiz": [
+        {
+          "id": "d104_summary_q1",
+          "question_md": "soft 투표에 필요한 것은?",
+          "choices": [
+            "모든 모델의 predict_proba",
+            "같은 종류의 모델",
+            "스케일링 금지",
+            "홀수 개 모델"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d104_summary_q2",
+          "question_md": "세 모델이 A, A, B를 예측하면 hard 투표 결과는?",
+          "choices": [
+            "A",
+            "B",
+            "무승부",
+            "확률 평균"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d104_fill_1",
+      "kind": "fill_blank",
+      "title": "투표 앙상블",
+      "prompt_md": "두 모델을 묶은 hard 투표 앙상블의 iris 학습 정확도(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "ensemble"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_iris\nfrom sklearn.ensemble import ____\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\n\n\ndef vote_acc():\n    X, y = load_iris(return_X_y=True)\n    members = [\n        (\"lr\", LogisticRegression(max_iter=1000)),\n        (\"tree\", DecisionTreeClassifier(random_state=0)),\n    ]\n    model = VotingClassifier(members, voting=\"____\").fit(X, y)\n    return round(model.score(X, y), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "vote_acc"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "hard",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "return": 0.9933
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "투표 앙상블 클래스 이름입니다.",
+        "클래스 다수결 방식의 이름입니다."
+      ],
+      "solution": "from sklearn.datasets import load_iris\nfrom sklearn.ensemble import VotingClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\n\n\ndef vote_acc():\n    X, y = load_iris(return_X_y=True)\n    members = [\n        (\"lr\", LogisticRegression(max_iter=1000)),\n        (\"tree\", DecisionTreeClassifier(random_state=0)),\n    ]\n    model = VotingClassifier(members, voting=\"hard\").fit(X, y)\n    return round(model.score(X, y), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d104_code_1",
+      "kind": "coding",
+      "title": "개별 vs 앙상블",
+      "prompt_md": "주어진 `wine_split(seed)`의 표준화 데이터로 `LogisticRegression()`, `KNeighborsClassifier()`, `DecisionTreeClassifier(random_state=0)`(이름 `lr`, `knn`, `tree`)와 이들의 `VotingClassifier(voting=voting)`(이름 `vote`)의 테스트 정확도(소수 넷째 자리) 딕셔너리를 반환하세요.",
+      "concepts": [
+        "ensemble",
+        "logistic_regression",
+        "knn",
+        "decision_tree"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_wine\nfrom sklearn.ensemble import VotingClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.tree import DecisionTreeClassifier\n\ndef wine_split(seed):\n    X, y = load_wine(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=seed,\n        stratify=y,\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef ensemble_report(voting, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "ensemble_report"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "soft",
+          "call": {
+            "args": [
+              "soft",
+              1
+            ]
+          },
+          "expect": {
+            "return": {
+              "lr": 0.9815,
+              "knn": 0.9259,
+              "tree": 0.9444,
+              "vote": 0.9815
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "hard",
+              3
+            ]
+          },
+          "expect": {
+            "return": {
+              "lr": 1.0,
+              "knn": 0.9815,
+              "tree": 0.9074,
+              "vote": 1.0
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`(이름, 모델)` 튜플 리스트를 만들어 개별 점수를 먼저 구하세요.",
+        "같은 리스트로 `VotingClassifier(members, voting=voting)`을 만들어 학습합니다."
+      ],
+      "solution": "from sklearn.datasets import load_wine\nfrom sklearn.ensemble import VotingClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.tree import DecisionTreeClassifier\n\ndef wine_split(seed):\n    X, y = load_wine(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.3,\n        random_state=seed,\n        stratify=y,\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef ensemble_report(voting, seed):\n    X_train, X_test, y_train, y_test = wine_split(seed)\n    members = [(\"lr\", LogisticRegression()), (\"knn\", KNeighborsClassifier()),\n               (\"tree\", DecisionTreeClassifier(random_state=0))]\n    scores = {}\n    for name, model in members:\n        scores[name] = round(model.fit(X_train, y_train).score(X_test, y_test), 4)\n    vote = VotingClassifier(members, voting=voting).fit(X_train, y_train)\n    scores[\"vote\"] = round(vote.score(X_test, y_test), 4)\n    return scores\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

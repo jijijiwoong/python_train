@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "day": 109,
+  "title": "주성분 분석(PCA)",
+  "stage": "ml",
+  "week": 16,
+  "is_review": false,
+  "objectives": [
+    "PCA가 데이터의 분산이 큰 방향으로 새 축을 만들어 차원을 줄이는 방법임을 설명할 수 있다.",
+    "설명된 분산 비율로 필요한 주성분 수를 정할 수 있다."
+  ],
+  "concepts": [
+    "pca",
+    "numpy_aggregate"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 DBSCAN과 계층 군집을 배웠습니다. 오늘은 또 다른 비지도 학습, **차원 축소**입니다.",
+      "quiz": [
+        {
+          "id": "d109_review_q1",
+          "question_md": "비지도 학습의 공통점은?",
+          "choices": [
+            "정답 레이블을 쓰지 않는다",
+            "항상 분류다",
+            "테스트 데이터가 없다",
+            "트리를 쓴다"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "중요한 방향만 남기기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "특성이 많으면 계산이 느리고 시각화가 어렵습니다. **PCA**는 데이터가 가장 넓게 퍼진 방향을 첫 번째 축(주성분)으로, 그와 수직이면서 다음으로 넓은 방향을 두 번째 축으로… 새 축을 만듭니다. 앞의 몇 개 축만 남기면 정보를 많이 유지한 채 차원을 줄일 수 있습니다. `explained_variance_ratio_`는 각 축이 설명하는 분산의 비율입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.datasets import load_wine\nfrom sklearn.decomposition import PCA\n\nX = load_wine().data\nXs = (X - X.mean(axis=0)) / X.std(axis=0)\npca = PCA().fit(Xs)\nprint(pca.explained_variance_ratio_[:4].round(3))\nprint(np.cumsum(pca.explained_variance_ratio_)[:4].round(3))\nprint(PCA(n_components=0.9).fit(Xs).n_components_)\n",
+          "runnable": true,
+          "expected_output": "[0.362 0.192 0.111 0.071]\n[0.362 0.554 0.665 0.736]\n8\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "PCA 전에는 특성을 **표준화**해야 단위가 큰 특성이 분산을 독차지하지 않습니다. `n_components=0.9`처럼 비율을 주면 그만큼의 분산을 설명하는 최소 개수를 골라 줍니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "PCA로 데이터의 차원을 줄이세요.",
+      "exercise_ids": [
+        "d109_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "원하는 분산 비율을 위해 필요한 주성분 수를 구하세요.",
+      "exercise_ids": [
+        "d109_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "PCA: 분산이 큰 방향으로 새 축, 앞쪽 축만 남겨 차원 축소.",
+        "`explained_variance_ratio_`, 누적합은 `np.cumsum`.",
+        "`PCA(n_components=0.9)`: 90% 분산을 설명하는 최소 개수.",
+        "PCA 전에 표준화."
+      ],
+      "quiz": [
+        {
+          "id": "d109_summary_q1",
+          "question_md": "첫 번째 주성분의 특징은?",
+          "choices": [
+            "분산이 가장 작은 방향",
+            "분산이 가장 큰 방향",
+            "첫 번째 특성 그대로",
+            "정답과 가장 관련"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d109_summary_q2",
+          "question_md": "PCA 전에 표준화하는 이유는?",
+          "choices": [
+            "속도",
+            "단위가 큰 특성이 결과를 지배하지 않게",
+            "레이블 필요",
+            "음수 제거"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d109_fill_1",
+      "kind": "fill_blank",
+      "title": "차원 줄이기",
+      "prompt_md": "와인 데이터를 표준화한 뒤 `PCA(n_components=k)`로 변환한 결과의 모양을 반환하세요.",
+      "concepts": [
+        "pca"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_wine\nfrom sklearn.decomposition import ____\n\n\ndef reduced_shape(k):\n    X = load_wine().data\n    Xs = (X - X.mean(axis=0)) / X.std(axis=0)\n    return list(PCA(n_components=k).____(Xs).shape)\n",
+      "entry": {
+        "mode": "function",
+        "name": "reduced_shape"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2차원",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              178,
+              2
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              178,
+              5
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "주성분 분석 클래스 이름입니다.",
+        "학습과 변환을 한 번에 하는 메서드입니다."
+      ],
+      "solution": "from sklearn.datasets import load_wine\nfrom sklearn.decomposition import PCA\n\n\ndef reduced_shape(k):\n    X = load_wine().data\n    Xs = (X - X.mean(axis=0)) / X.std(axis=0)\n    return list(PCA(n_components=k).fit_transform(Xs).shape)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d109_code_1",
+      "kind": "coding",
+      "title": "필요한 주성분 수",
+      "prompt_md": "와인 데이터를 표준화한 뒤, 누적 설명 분산 비율이 `threshold` 이상이 되는 **최소 주성분 수**를 반환하세요. `PCA()`로 전체를 학습한 뒤 `np.cumsum`으로 직접 찾으세요.",
+      "concepts": [
+        "pca",
+        "numpy_aggregate"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import load_wine\nfrom sklearn.decomposition import PCA\n\n\ndef components_needed(threshold):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "components_needed"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "90%",
+          "call": {
+            "args": [
+              0.9
+            ]
+          },
+          "expect": {
+            "return": 8
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.5
+            ]
+          },
+          "expect": {
+            "return": 2
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.99
+            ]
+          },
+          "expect": {
+            "return": 12
+          }
+        }
+      ],
+      "hints": [
+        "누적 비율 배열에서 `threshold` 이상이 처음 나오는 위치를 찾으세요.",
+        "`np.argmax(cumulative >= threshold)`는 첫 True의 위치입니다. 개수는 위치 + 1."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import load_wine\nfrom sklearn.decomposition import PCA\n\n\ndef components_needed(threshold):\n    X = load_wine().data\n    Xs = (X - X.mean(axis=0)) / X.std(axis=0)\n    cumulative = np.cumsum(PCA().fit(Xs).explained_variance_ratio_)\n    return int(np.argmax(cumulative >= threshold)) + 1\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

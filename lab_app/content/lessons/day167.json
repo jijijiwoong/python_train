@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "day": 167,
+  "title": "프로젝트: 추론 함수",
+  "stage": "dl",
+  "week": 24,
+  "is_review": false,
+  "objectives": [
+    "학습된 모델로 새 입력의 클래스 확률과 상위 k개 예측을 구할 수 있다."
+  ],
+  "concepts": [
+    "inference",
+    "dl_project"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 검증 데이터로 설정을 골랐습니다. 마지막으로 모델을 **사용하는** 함수를 만듭니다.",
+      "quiz": [
+        {
+          "id": "d167_review_q1",
+          "question_md": "최종 테스트 정확도는 몇 번 확인하나?",
+          "choices": [
+            "에폭마다",
+            "후보마다",
+            "마지막에 한 번",
+            "확인하지 않는다"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "예측 결과 내보내기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**추론**(inference)은 학습된 모델로 새 데이터를 예측하는 것입니다. 순서는 늘 같습니다.\n\n1. `model.eval()`과 `torch.no_grad()`\n2. 입력을 학습 때와 같은 방식으로 전처리((N, 1, 8, 8), 16으로 나누기)\n3. 로짓 → `torch.softmax(로짓, dim=1)`로 확률\n4. `torch.topk(확률, k)`로 가장 그럴듯한 k개\n\n확률을 함께 보여 주면 모델이 얼마나 확신하는지 알 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\n\nlogits = torch.tensor([[2.0, 0.5, 4.0, 1.0]])\nprobs = torch.softmax(logits, dim=1)\nprint(probs.round(decimals=3), probs.sum().item())\ntop = torch.topk(probs, 2, dim=1)\nprint(top.indices.tolist(), top.values.round(decimals=3).tolist())\n",
+          "runnable": true,
+          "expected_output": "tensor([[0.1110, 0.0250, 0.8230, 0.0410]]) 0.9999999403953552\n[[2, 0]] [[0.8230000138282776, 0.11100000143051147]]\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "확률이 0.5도 안 되는 예측은 사람이 다시 확인하도록 표시하는 식으로, 확률을 서비스에 활용할 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "상위 k개를 구하세요.",
+      "exercise_ids": [
+        "d167_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "학습한 모델로 추론하세요.",
+      "exercise_ids": [
+        "d167_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "추론 = eval + no_grad + 같은 전처리.",
+        "softmax로 확률.",
+        "`topk`로 상위 k개.",
+        "확률로 확신 정도 판단."
+      ],
+      "quiz": [
+        {
+          "id": "d167_summary_q1",
+          "question_md": "softmax 출력의 합은?",
+          "choices": [
+            "0",
+            "1",
+            "클래스 수",
+            "로짓 합"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d167_summary_q2",
+          "question_md": "`torch.topk(x, 3, dim=1)`이 돌려주는 것은?",
+          "choices": [
+            "값과 위치",
+            "위치만",
+            "값만",
+            "합계"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d167_fill_1",
+      "kind": "fill_blank",
+      "title": "상위 k개",
+      "prompt_md": "로짓 목록(샘플 하나)을 softmax 확률로 바꿔 상위 k개의 `[번호 리스트, 확률 리스트(소수 넷째 자리)]`를 반환하세요.",
+      "concepts": [
+        "inference"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef top_k(logits, k):\n    probs = torch.____(torch.tensor([logits], dtype=torch.float32), dim=1)\n    top = torch.____(probs, k, dim=1)\n    return [top.indices[0].tolist(), [round(v, 4) for v in top.values[0].tolist()]]\n",
+      "entry": {
+        "mode": "function",
+        "name": "top_k"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                2.0,
+                0.5,
+                4.0,
+                1.0
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                2,
+                0
+              ],
+              [
+                0.8228,
+                0.1114
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                0,
+                0
+              ],
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0
+              ],
+              [
+                0.3333
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1,
+                3,
+                2,
+                -1,
+                0
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                2,
+                0
+              ],
+              [
+                0.6364,
+                0.2341,
+                0.0861
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "로짓을 확률로 바꾸는 함수입니다.",
+        "가장 큰 k개를 고르는 함수입니다."
+      ],
+      "solution": "import torch\n\n\ndef top_k(logits, k):\n    probs = torch.softmax(torch.tensor([logits], dtype=torch.float32), dim=1)\n    top = torch.topk(probs, k, dim=1)\n    return [top.indices[0].tolist(), [round(v, 4) for v in top.values[0].tolist()]]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d167_code_1",
+      "kind": "coding",
+      "title": "추론 함수",
+      "prompt_md": "`predict(model, images, k)`를 완성하세요. `images`는 0~16 값의 8×8 목록들입니다. 학습 때와 같이 전처리하고 eval·no_grad 상태에서 샘플마다 `{\"label\": 1순위 숫자, \"top\": 상위 k개 숫자, \"prob\": 1순위 확률(소수 넷째 자리)}`를 만든 리스트를 반환합니다. `run`은 이미 작성되어 있습니다.",
+      "concepts": [
+        "inference",
+        "dl_project"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef predict(model, images, k):\n    # 여기에 코드를 작성하세요\n    pass\n\n\ndef run(seed, indices, k):\n    train, _, test = split_data(seed)\n    torch.manual_seed(0)\n    model = fit(CNN(), make_loader(train, shuffle=True), 4)\n    images = (test[0][indices, 0] * 16).tolist()\n    return predict(model, images, k)\n",
+      "entry": {
+        "mode": "function",
+        "name": "run"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              {
+                "label": 7,
+                "top": [
+                  7,
+                  9
+                ],
+                "prob": 0.9959
+              },
+              {
+                "label": 6,
+                "top": [
+                  6,
+                  0
+                ],
+                "prob": 0.9983
+              },
+              {
+                "label": 3,
+                "top": [
+                  3,
+                  9
+                ],
+                "prob": 0.9923
+              }
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              [
+                5,
+                10
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              {
+                "label": 5,
+                "top": [
+                  5,
+                  9,
+                  3
+                ],
+                "prob": 0.9929
+              },
+              {
+                "label": 7,
+                "top": [
+                  7,
+                  8,
+                  9
+                ],
+                "prob": 0.5232
+              }
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "이미지 목록을 (N, 1, 8, 8) 텐서로 만들고 16으로 나누세요.",
+        "`topk` 결과의 `indices`, `values`를 샘플별로 묶어 딕셔너리를 만드세요."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef predict(model, images, k):\n    x = torch.tensor(images, dtype=torch.float32).unsqueeze(1) / 16\n    model.eval()\n    with torch.no_grad():\n        probs = torch.softmax(model(x), dim=1)\n    top = torch.topk(probs, k, dim=1)\n    return [{\"label\": idx[0], \"top\": idx, \"prob\": round(val[0], 4)}\n            for idx, val in zip(top.indices.tolist(), top.values.tolist())]\n\n\ndef run(seed, indices, k):\n    train, _, test = split_data(seed)\n    torch.manual_seed(0)\n    model = fit(CNN(), make_loader(train, shuffle=True), 4)\n    images = (test[0][indices, 0] * 16).tolist()\n    return predict(model, images, k)\n",
+      "time_limit_sec": 90
+    }
+  ]
+}

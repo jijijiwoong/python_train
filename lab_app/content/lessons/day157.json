@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "day": 157,
+  "title": "특성 추출기 재사용",
+  "stage": "dl",
+  "week": 23,
+  "is_review": false,
+  "objectives": [
+    "사전 학습된 특성 추출부를 고정하고 새 분류부만 학습할 수 있다.",
+    "데이터가 적을 때 전이 학습이 유리함을 확인할 수 있다."
+  ],
+  "concepts": [
+    "transfer",
+    "cnn"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 층을 고정했습니다. 오늘은 **다른 과제에서 학습한** 특성 추출부를 가져와 새 과제에 씁니다.",
+      "quiz": [
+        {
+          "id": "d157_review_q1",
+          "question_md": "고정할 층의 매개변수에 설정하는 값은?",
+          "choices": [
+            "`requires_grad = True`",
+            "`requires_grad = False`",
+            "`lr = 0`",
+            "`eval()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "남의 지식 빌려 쓰기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "이번 주 실험 설정입니다.\n\n- **원래 과제**: 숫자 0~4 분류(데이터 충분). `pretrained()`가 이 과제로 학습된 `Net(5)`를 돌려줌\n- **새 과제**: 숫자 5~9 분류인데 숫자마다 학습 데이터가 몇 장뿐. `few_shot(seed, 장수)`가 학습·테스트 데이터를 돌려줌\n\n0~4에서 배운 \"선·곡선·모서리 감지\" 합성곱 필터가 5~9에도 쓸모 있으리라 기대하고 `features`는 고정해 재사용, 분류부 `fc`만 새로 만들어 학습합니다. 실제로는 ImageNet으로 학습된 ResNet 같은 모델을 같은 방식으로 씁니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\nmodel = Net(5)\nfor p in model.features.parameters():\n    p.requires_grad = False\nmodel.fc = nn.Linear(64, 5)\nprint([name for name, p in model.named_parameters() if p.requires_grad])\n",
+          "runnable": true,
+          "expected_output": "['fc.weight', 'fc.bias']\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "실습 결과를 꼭 확인하세요. 이 작은 실험에서는 처음부터 학습한 모델이 비슷하거나 더 좋기도 합니다. 8×8 숫자는 단순해서 작은 CNN도 금방 배우고, 원래 과제 데이터도 900장 정도라 특성이 0~4에 치우쳐 있기 때문입니다. 전이 학습의 효과는 원래 과제가 크고 다양할수록(ImageNet 120만 장 등), 새 과제가 어려울수록 커집니다. 대신 학습할 매개변수가 크게 줄어 빠르게 학습된다는 장점은 여기서도 확인할 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "분류부를 새로 바꾸세요.",
+      "exercise_ids": [
+        "d157_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "처음부터 학습과 전이 학습을 비교하세요.",
+      "exercise_ids": [
+        "d157_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "전이 학습 = 다른 과제에서 학습한 특성 추출부 재사용.",
+        "특성 추출부 고정 + 새 분류부 학습.",
+        "효과는 원래 과제가 크고 다양할수록 크다. 실험으로 확인할 것.",
+        "실무에서는 ImageNet 사전 학습 모델을 같은 방식으로."
+      ],
+      "quiz": [
+        {
+          "id": "d157_summary_q1",
+          "question_md": "전이 학습에서 보통 새로 만드는 부분은?",
+          "choices": [
+            "특성 추출부",
+            "마지막 분류 층",
+            "입력 데이터",
+            "손실 함수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d157_summary_q2",
+          "question_md": "전이 학습이 특히 유리한 상황은?",
+          "choices": [
+            "새 과제 데이터가 적을 때",
+            "데이터가 무한할 때",
+            "모델이 작을 때",
+            "항상 불리"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d157_fill_1",
+      "kind": "fill_blank",
+      "title": "새 분류부",
+      "prompt_md": "사전 학습 모델의 `features`를 고정하고 `fc`를 `n_out`개 출력의 새 선형 층으로 바꾼 뒤, 학습 가능한 매개변수 이름 목록을 반환하세요.",
+      "concepts": [
+        "transfer"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef new_head(n_out):\n    model = Net(5)\n    for p in model.features.parameters():\n        p.____\n    ____\n    return [name for name, p in model.named_parameters() if p.requires_grad]\n",
+      "entry": {
+        "mode": "function",
+        "name": "new_head"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              "fc.weight",
+              "fc.bias"
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              "fc.weight",
+              "fc.bias"
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "특성 추출부의 매개변수를 고정하는 속성입니다.",
+        "펼친 특성 64개를 받는 새 선형 층을 `model.fc`에 넣습니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef new_head(n_out):\n    model = Net(5)\n    for p in model.features.parameters():\n        p.requires_grad = False\n    model.fc = nn.Linear(64, n_out)\n    return [name for name, p in model.named_parameters() if p.requires_grad]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d157_code_1",
+      "kind": "coding",
+      "title": "처음부터 대 전이",
+      "prompt_md": "주어진 도구를 사용해 `few_shot(seed, per_class)` 데이터로 두 모델을 비교하세요. ① 처음부터: `torch.manual_seed(1)` 후 `Net(5)`를 `fit(..., 40)`. ② 전이: `pretrained()`의 `features`를 고정하고 `torch.manual_seed(1)` 후 `fc`를 `nn.Linear(64, 5)`로 바꿔 `fit(..., 40)`. `{\"scratch\": 테스트 정확도, \"transfer\": 테스트 정확도, \"trainable\": [처음부터 모델의 학습 가능 매개변수 수, 전이 모델의 수]}`(정확도는 소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "transfer",
+        "cnn"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\nfrom torch import nn, optim\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef all_digits():\n    digits = load_digits()\n    X = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\n    return X, torch.tensor(digits.target)\n\n\ndef fit(model, X, y, epochs, lr=0.01):\n    params = [p for p in model.parameters() if p.requires_grad]\n    optimizer = optim.Adam(params, lr=lr)\n    for _ in range(epochs):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return loss.item()\n\n\ndef accuracy(model, X, y):\n    model.eval()\n    with torch.no_grad():\n        acc = (model(X).argmax(dim=1) == y).float().mean().item()\n    model.train()\n    return acc\n\n\ndef pretrained():\n    X, y = all_digits()\n    keep = y < 5\n    torch.manual_seed(0)\n    model = Net(5)\n    fit(model, X[keep], y[keep], 60)\n    return model\n\n\ndef few_shot(seed, per_class):\n    X, y = all_digits()\n    g = torch.Generator().manual_seed(seed)\n    train_idx, test_idx = [], []\n    for digit in range(5, 10):\n        idx = torch.nonzero(y == digit).flatten()\n        idx = idx[torch.randperm(len(idx), generator=g)]\n        train_idx += idx[:per_class].tolist()\n        test_idx += idx[per_class:].tolist()\n    return X[train_idx], y[train_idx] - 5, X[test_idx], y[test_idx] - 5\n\n\ndef compare_transfer(seed, per_class):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "compare_transfer"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              5
+            ]
+          },
+          "expect": {
+            "return": {
+              "scratch": 0.907,
+              "transfer": 0.8255,
+              "trainable": [
+                1573,
+                325
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              10
+            ]
+          },
+          "expect": {
+            "return": {
+              "scratch": 0.9515,
+              "transfer": 0.8759,
+              "trainable": [
+                1573,
+                325
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "두 모델 모두 같은 `fit` 함수로 학습합니다(고정된 매개변수는 `fit`이 알아서 뺍니다).",
+        "`fc`를 바꾸기 직전에 시드를 1로 다시 고정해야 결과가 같습니다."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\nfrom torch import nn, optim\n\n\nclass Net(nn.Module):\n    def __init__(self, n_out):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(64, n_out)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef all_digits():\n    digits = load_digits()\n    X = torch.tensor(digits.images, dtype=torch.float32).unsqueeze(1) / 16\n    return X, torch.tensor(digits.target)\n\n\ndef fit(model, X, y, epochs, lr=0.01):\n    params = [p for p in model.parameters() if p.requires_grad]\n    optimizer = optim.Adam(params, lr=lr)\n    for _ in range(epochs):\n        loss = nn.CrossEntropyLoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return loss.item()\n\n\ndef accuracy(model, X, y):\n    model.eval()\n    with torch.no_grad():\n        acc = (model(X).argmax(dim=1) == y).float().mean().item()\n    model.train()\n    return acc\n\n\ndef pretrained():\n    X, y = all_digits()\n    keep = y < 5\n    torch.manual_seed(0)\n    model = Net(5)\n    fit(model, X[keep], y[keep], 60)\n    return model\n\n\ndef few_shot(seed, per_class):\n    X, y = all_digits()\n    g = torch.Generator().manual_seed(seed)\n    train_idx, test_idx = [], []\n    for digit in range(5, 10):\n        idx = torch.nonzero(y == digit).flatten()\n        idx = idx[torch.randperm(len(idx), generator=g)]\n        train_idx += idx[:per_class].tolist()\n        test_idx += idx[per_class:].tolist()\n    return X[train_idx], y[train_idx] - 5, X[test_idx], y[test_idx] - 5\n\n\ndef compare_transfer(seed, per_class):\n    X_train, y_train, X_test, y_test = few_shot(seed, per_class)\n    torch.manual_seed(1)\n    scratch = Net(5)\n    fit(scratch, X_train, y_train, 40)\n    model = pretrained()\n    for p in model.features.parameters():\n        p.requires_grad = False\n    torch.manual_seed(1)\n    model.fc = nn.Linear(64, 5)\n    fit(model, X_train, y_train, 40)\n    count = lambda m: sum(p.numel() for p in m.parameters() if p.requires_grad)\n    return {\n        \"scratch\": round(accuracy(scratch, X_test, y_test), 4),\n        \"transfer\": round(accuracy(model, X_test, y_test), 4),\n        \"trainable\": [count(scratch), count(model)],\n    }\n",
+      "time_limit_sec": 120
+    }
+  ]
+}

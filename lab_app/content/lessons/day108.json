@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "day": 108,
+  "title": "계층 군집과 DBSCAN",
+  "stage": "ml",
+  "week": 16,
+  "is_review": false,
+  "objectives": [
+    "가까운 것부터 합쳐 가는 계층 군집을 설명할 수 있다.",
+    "밀도 기반 DBSCAN으로 모양이 자유로운 군집과 잡음(노이즈)을 찾을 수 있다."
+  ],
+  "concepts": [
+    "hierarchical",
+    "kmeans"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 실루엣 점수로 k를 골랐습니다. k-평균은 둥근 덩어리 모양에 잘 맞습니다.",
+      "quiz": [
+        {
+          "id": "d108_review_q1",
+          "question_md": "k-평균이 잘 못하는 군집 모양은?",
+          "choices": [
+            "둥근 덩어리",
+            "초승달처럼 휘어진 모양",
+            "크기가 비슷한 공",
+            "멀리 떨어진 덩어리"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "다른 방식의 군집",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "- **계층 군집**(`AgglomerativeClustering`): 모든 점을 따로 시작해 가장 가까운 것끼리 차례로 합칩니다. 합친 과정이 나무 그림(덴드로그램)으로 남습니다.\n- **DBSCAN**: 반경 `eps` 안에 이웃이 `min_samples`개 이상인 밀집 지역을 군집으로 이어 붙이고, 어디에도 속하지 않는 점은 **잡음**(레이블 −1)으로 둡니다. k를 미리 정하지 않아도 됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.cluster import DBSCAN, AgglomerativeClustering, KMeans\nfrom sklearn.datasets import make_moons\n\nX, y = make_moons(n_samples=300, noise=0.06, random_state=0)\nfor model in [\n    KMeans(n_clusters=2, n_init=10, random_state=0),\n    AgglomerativeClustering(n_clusters=2, linkage=\"single\"),\n    DBSCAN(eps=0.2, min_samples=5),\n]:\n    labels = model.fit_predict(X)\n    agree = max((labels == y).mean(), (labels == 1 - y).mean())\n    print(type(model).__name__, sorted(set(labels.tolist())), round(agree, 3))\n",
+          "runnable": true,
+          "expected_output": "KMeans [0, 1] 0.743\nAgglomerativeClustering [0, 1] 1.0\nDBSCAN [0, 1] 1.0\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "DBSCAN의 `eps`가 너무 작으면 대부분이 잡음이 되고, 너무 크면 모두 한 군집이 됩니다. 이 역시 특성 스케일에 민감합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "DBSCAN의 잡음 개수를 세세요.",
+      "exercise_ids": [
+        "d108_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "eps에 따른 군집 수와 잡음 수를 조사하세요.",
+      "exercise_ids": [
+        "d108_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "계층 군집: 가까운 것부터 합치기, `linkage` 방식 선택.",
+        "DBSCAN: 밀도로 군집, 잡음은 −1, k 불필요.",
+        "휘어진 모양에는 DBSCAN·single linkage가 유리.",
+        "`eps`, `min_samples`가 핵심 설정."
+      ],
+      "quiz": [
+        {
+          "id": "d108_summary_q1",
+          "question_md": "DBSCAN에서 레이블 −1의 의미는?",
+          "choices": [
+            "첫 군집",
+            "잡음(어느 군집에도 속하지 않음)",
+            "오류",
+            "가장 큰 군집"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d108_summary_q2",
+          "question_md": "군집 수를 미리 정하지 않아도 되는 방법은?",
+          "choices": [
+            "KMeans",
+            "DBSCAN",
+            "AgglomerativeClustering(n_clusters=3)",
+            "PCA"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d108_fill_1",
+      "kind": "fill_blank",
+      "title": "잡음 세기",
+      "prompt_md": "군집 레이블 목록에서 잡음(−1)의 개수를 반환하세요.",
+      "concepts": [
+        "hierarchical"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef noise_count(labels):\n    return int((np.array(labels) == ____).____())\n",
+      "entry": {
+        "mode": "function",
+        "name": "noise_count"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                0,
+                0,
+                -1,
+                1,
+                -1
+              ]
+            ]
+          },
+          "expect": {
+            "return": 2
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0
+          }
+        }
+      ],
+      "hints": [
+        "DBSCAN이 잡음에 붙이는 레이블 값입니다.",
+        "True의 개수를 세는 메서드입니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef noise_count(labels):\n    return int((np.array(labels) == -1).sum())\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d108_code_1",
+      "kind": "coding",
+      "title": "eps 실험",
+      "prompt_md": "`make_moons(n_samples=300, noise=0.06, random_state=0)`의 X에 `DBSCAN(eps=eps, min_samples=5)`를 적용해, `eps_list`의 각 값마다 `[군집 수(잡음 제외), 잡음 수]`를 반환하세요.",
+      "concepts": [
+        "hierarchical"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.cluster import DBSCAN\nfrom sklearn.datasets import make_moons\n\n\ndef eps_report(eps_list):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "eps_report"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "세 eps",
+          "call": {
+            "args": [
+              [
+                0.05,
+                0.2,
+                1.0
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                10,
+                243
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0.1
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                11,
+                15
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "eps마다 `fit_predict(X)`로 레이블을 구하세요.",
+        "군집 수는 `len(set(labels))`에서 −1이 있으면 1을 뺍니다."
+      ],
+      "solution": "from sklearn.cluster import DBSCAN\nfrom sklearn.datasets import make_moons\n\n\ndef eps_report(eps_list):\n    X, _ = make_moons(n_samples=300, noise=0.06, random_state=0)\n    report = []\n    for eps in eps_list:\n        labels = DBSCAN(eps=eps, min_samples=5).fit_predict(X)\n        clusters = len(set(labels)) - (1 if -1 in labels else 0)\n        report.append([int(clusters), int((labels == -1).sum())])\n    return report\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

@@ -1,0 +1,415 @@
+{
+  "schema_version": 1,
+  "day": 142,
+  "title": "합성곱 연산",
+  "stage": "dl",
+  "week": 21,
+  "is_review": false,
+  "objectives": [
+    "커널이 이미지 위를 움직이며 계산하는 합성곱을 설명할 수 있다.",
+    "kernel_size, stride, padding에 따른 출력 크기를 구할 수 있다."
+  ],
+  "concepts": [
+    "conv",
+    "image_tensor"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 이미지를 (N, C, H, W) 텐서로 만들었습니다.",
+      "quiz": [
+        {
+          "id": "d142_review_q1",
+          "question_md": "흑백 이미지 10장(8×8)의 텐서 모양은?",
+          "choices": [
+            "(10, 8, 8)",
+            "(10, 1, 8, 8)",
+            "(1, 10, 8, 8)",
+            "(8, 8, 10)"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "작은 창으로 훑기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**합성곱**은 작은 가중치 격자(**커널**, 필터)를 이미지 위에서 한 칸씩 옮기며, 겹친 부분끼리 곱해 더한 값을 출력합니다. 같은 커널을 모든 위치에 쓰므로 \"어디에 있든 같은 무늬\"를 찾을 수 있고, 가중치 수도 적습니다.\n\n출력 크기 = (H + 2 × padding - kernel) ÷ stride + 1 (나눗셈은 버림)\n\n`nn.Conv2d(입력 채널, 출력 채널, kernel_size, stride=1, padding=0)`. 출력 채널 수만큼 서로 다른 커널을 학습합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nimport torch.nn.functional as F\nfrom torch import nn\n\nimage = torch.tensor([[0, 0, 1, 1], [0, 0, 1, 1], [0, 0, 1, 1], [0, 0, 1, 1]], dtype=torch.float32)\nedge = torch.tensor([[-1, 1], [-1, 1]], dtype=torch.float32)\nprint(F.conv2d(image.reshape(1, 1, 4, 4), edge.reshape(1, 1, 2, 2))[0, 0])\n\nconv = nn.Conv2d(1, 6, kernel_size=3, padding=1)\nprint(conv.weight.shape, conv(torch.zeros(2, 1, 8, 8)).shape)\n",
+          "runnable": true,
+          "expected_output": "tensor([[0., 2., 0.],\n        [0., 2., 0.],\n        [0., 2., 0.]])\ntorch.Size([6, 1, 3, 3]) torch.Size([2, 6, 8, 8])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "위 커널은 왼쪽이 어둡고 오른쪽이 밝은 **세로 경계**에서만 큰 값을 냅니다. CNN은 이런 커널을 손으로 정하지 않고 학습으로 찾습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "합성곱 층의 출력 모양을 구하세요.",
+      "exercise_ids": [
+        "d142_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "커널을 직접 적용하세요.",
+      "exercise_ids": [
+        "d142_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "합성곱 = 커널을 옮기며 곱해서 더하기.",
+        "같은 커널을 모든 위치에 공유.",
+        "출력 = (H + 2p - k) // s + 1.",
+        "`nn.Conv2d(in, out, k, stride, padding)`."
+      ],
+      "quiz": [
+        {
+          "id": "d142_summary_q1",
+          "question_md": "8×8 입력, kernel 3, padding 0, stride 1의 출력 크기는?",
+          "choices": [
+            "8",
+            "6",
+            "5",
+            "3"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d142_summary_q2",
+          "question_md": "8×8 입력, kernel 3, padding 1의 출력 크기는?",
+          "choices": [
+            "8",
+            "6",
+            "10",
+            "4"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d142_fill_1",
+      "kind": "fill_blank",
+      "title": "출력 모양",
+      "prompt_md": "크기 h×h 흑백 이미지 1장에 `nn.Conv2d(1, 4, k, stride=s, padding=p)`를 적용한 출력 모양을 리스트로 반환하세요.",
+      "concepts": [
+        "conv"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef conv_shape(h, k, s, p):\n    conv = nn.____(1, 4, k, stride=s, ____)\n    return list(conv(torch.zeros(1, 1, h, h)).shape)\n",
+      "entry": {
+        "mode": "function",
+        "name": "conv_shape"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              8,
+              3,
+              1,
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              4,
+              6,
+              6
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              8,
+              3,
+              1,
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              4,
+              8,
+              8
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              28,
+              5,
+              2,
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              4,
+              14,
+              14
+            ]
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              7,
+              2,
+              2,
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              4,
+              3,
+              3
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "2차원 합성곱 층 클래스 이름입니다.",
+        "가장자리를 채우는 옵션을 인자 p로 지정합니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef conv_shape(h, k, s, p):\n    conv = nn.Conv2d(1, 4, k, stride=s, padding=p)\n    return list(conv(torch.zeros(1, 1, h, h)).shape)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d142_code_1",
+      "kind": "coding",
+      "title": "커널 적용",
+      "prompt_md": "2차원 목록 `image`와 `kernel`을 `F.conv2d`로 합성곱(stride 1, padding 0)한 2차원 결과를 반환하세요. 두 텐서 모두 (1, 1, 높이, 너비) 모양으로 바꿔야 합니다.",
+      "concepts": [
+        "conv"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nimport torch.nn.functional as F\n\n\ndef apply_kernel(image, kernel):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "apply_kernel"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              ],
+              [
+                [
+                  -1,
+                  1
+                ],
+                [
+                  -1,
+                  1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8,
+                  9
+                ]
+              ],
+              [
+                [
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  -1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -4.0,
+                -4.0
+              ],
+              [
+                -4.0,
+                -4.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              ],
+              [
+                [
+                  1
+                ],
+                [
+                  -1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "`x.reshape(1, 1, *x.shape)`처럼 앞에 개수·채널 차원을 붙이세요.",
+        "결과의 `[0, 0]`이 2차원 특성 맵입니다."
+      ],
+      "solution": "import torch\nimport torch.nn.functional as F\n\n\ndef apply_kernel(image, kernel):\n    x = torch.tensor(image, dtype=torch.float32)\n    k = torch.tensor(kernel, dtype=torch.float32)\n    out = F.conv2d(x.reshape(1, 1, *x.shape), k.reshape(1, 1, *k.shape))\n    return out[0, 0]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "day": 94,
+  "title": "ROC 곡선과 AUC",
+  "stage": "ml",
+  "week": 14,
+  "is_review": false,
+  "objectives": [
+    "임계값을 모두 바꿔 가며 그린 ROC 곡선의 의미를 설명할 수 있다.",
+    "AUC로 임계값과 상관없는 모델 성능을 비교할 수 있다."
+  ],
+  "concepts": [
+    "roc_auc",
+    "decision_boundary"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 정밀도·재현율이 임계값에 따라 바뀌는 것을 배웠습니다.",
+      "quiz": [
+        {
+          "id": "d94_review_q1",
+          "question_md": "재현율의 다른 이름은?",
+          "choices": [
+            "특이도",
+            "민감도(TPR)",
+            "정밀도",
+            "정확도"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "모든 임계값을 한 번에",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**ROC 곡선**은 임계값을 1에서 0까지 내리며 x축 = 거짓 양성 비율(FPR = FP/(FP+TN)), y축 = 참 양성 비율(TPR = 재현율)을 그린 것입니다. 곡선 아래 넓이 **AUC**가 1이면 완벽, 0.5면 동전 던지기 수준입니다. AUC는 \"무작위로 고른 양성이 음성보다 높은 점수를 받을 확률\"로도 해석됩니다."
+        },
+        {
+          "kind": "code",
+          "code": "import matplotlib.pyplot as plt\nfrom sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import roc_auc_score, roc_curve\nfrom sklearn.model_selection import train_test_split\n\nX, y = load_breast_cancer(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(\n    X,\n    y,\n    test_size=0.25,\n    random_state=0,\n    stratify=y,\n)\nmean, std = X_train.mean(axis=0), X_train.std(axis=0)\nproba = LogisticRegression().fit((X_train - mean) / std, y_train).predict_proba((X_test - mean) / std)[\n    :,\n    1,\n]\nfpr, tpr, _ = roc_curve(y_test, proba)\nfig, ax = plt.subplots()\nax.plot(fpr, tpr, label=f\"AUC {roc_auc_score(y_test, proba):.3f}\")\nax.plot([0, 1], [0, 1], linestyle=\"--\", label=\"무작위\")\nax.set_xlabel(\"FPR\")\nax.set_ylabel(\"TPR\")\nax.legend()\nprint(round(roc_auc_score(y_test, proba), 4))\n",
+          "runnable": true,
+          "expected_output": "0.9952\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "AUC에는 `predict`의 0/1이 아니라 `predict_proba`의 **확률**(점수)을 넣어야 합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "AUC를 계산하세요.",
+      "exercise_ids": [
+        "d94_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "학습한 모델과 무작위 점수의 AUC를 비교하세요.",
+      "exercise_ids": [
+        "d94_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "ROC: x = FPR, y = TPR(재현율), 임계값을 모두 훑는다.",
+        "AUC: 1 완벽, 0.5 무작위.",
+        "AUC에는 확률(점수)을 넣는다.",
+        "AUC는 임계값과 무관한 비교에 좋다."
+      ],
+      "quiz": [
+        {
+          "id": "d94_summary_q1",
+          "question_md": "AUC 0.5의 의미는?",
+          "choices": [
+            "완벽",
+            "무작위 수준",
+            "항상 틀림",
+            "과적합"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d94_summary_q2",
+          "question_md": "`roc_auc_score`에 넣어야 하는 것은?",
+          "choices": [
+            "예측 클래스(0/1)",
+            "양성 확률",
+            "정확도",
+            "혼동 행렬"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d94_fill_1",
+      "kind": "fill_blank",
+      "title": "AUC 계산",
+      "prompt_md": "실제값과 점수로 AUC(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "roc_auc"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.metrics import ____\n\n\ndef auc(y_true, scores):\n    return round(float(roc_auc_score(y_true, ____)), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "auc"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                0,
+                0,
+                1,
+                1
+              ],
+              [
+                0.1,
+                0.4,
+                0.35,
+                0.8
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.75
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                1
+              ],
+              [
+                0.2,
+                0.9
+              ]
+            ]
+          },
+          "expect": {
+            "return": 1.0
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1,
+                0,
+                1,
+                0
+              ],
+              [
+                0.3,
+                0.6,
+                0.2,
+                0.5
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.0
+          }
+        }
+      ],
+      "hints": [
+        "AUC를 계산하는 함수 이름입니다.",
+        "두 번째 인자는 점수(확률)입니다."
+      ],
+      "solution": "from sklearn.metrics import roc_auc_score\n\n\ndef auc(y_true, scores):\n    return round(float(roc_auc_score(y_true, scores)), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d94_code_1",
+      "kind": "coding",
+      "title": "모델 vs 무작위",
+      "prompt_md": "주어진 `cancer_split(seed)`로 로지스틱 회귀를 학습해 테스트 양성 확률의 AUC를 구하고, `np.random.default_rng(seed).random(테스트 개수)`로 만든 무작위 점수의 AUC도 구하세요. `[모델 AUC, 무작위 AUC]`(소수 넷째 자리)를 반환합니다.",
+      "concepts": [
+        "roc_auc",
+        "logistic_regression",
+        "numpy_random"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import roc_auc_score\nfrom sklearn.model_selection import train_test_split\n\ndef cancer_split(seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.25,\n        random_state=seed,\n        stratify=y,\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef auc_vs_random(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "auc_vs_random"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9952,
+              0.5128
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9883,
+              0.4751
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "양성 확률은 `predict_proba(X_test)[:, 1]`.",
+        "무작위 점수는 테스트 개수만큼 만들고 같은 `y_test`로 AUC를 구합니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import load_breast_cancer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import roc_auc_score\nfrom sklearn.model_selection import train_test_split\n\ndef cancer_split(seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.25,\n        random_state=seed,\n        stratify=y,\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef auc_vs_random(seed):\n    X_train, X_test, y_train, y_test = cancer_split(seed)\n    proba = LogisticRegression().fit(X_train, y_train).predict_proba(X_test)[:, 1]\n    random_scores = np.random.default_rng(seed).random(len(y_test))\n    return [\n        round(float(roc_auc_score(y_test, proba)), 4),\n        round(float(roc_auc_score(y_test, random_scores)), 4),\n    ]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

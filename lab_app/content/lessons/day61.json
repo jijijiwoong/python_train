@@ -1,0 +1,325 @@
+{
+  "schema_version": 1,
+  "day": 61,
+  "title": "그룹별 집계",
+  "stage": "advanced_data",
+  "week": 9,
+  "is_review": false,
+  "objectives": [
+    "groupby로 그룹별 합계·평균·개수를 구할 수 있다.",
+    "agg로 여러 집계를 한 번에 계산할 수 있다."
+  ],
+  "concepts": [
+    "pandas_groupby",
+    "pandas_transform"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 결측치를 찾고 지우거나 채웠습니다.",
+      "quiz": [
+        {
+          "id": "d61_review_q1",
+          "question_md": "이름 열이 빈 행만 지우는 코드는?",
+          "choices": [
+            "`df.dropna()`",
+            "`df.dropna(subset=[\"이름\"])`",
+            "`df.fillna(\"이름\")`",
+            "`df.isna()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "기준별로 묶어 요약하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`groupby(기준열)`은 Day 17의 **그룹화 패턴**을 한 줄로 해 줍니다. 그다음 열을 고르고 `sum`, `mean`, `count`, `size` 등으로 요약합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\"반\": [\"A\", \"B\", \"A\", \"B\", \"A\"], \"점수\": [85, 92, 78, 66, 90]})\nprint(df.groupby(\"반\")[\"점수\"].mean())\nprint(df.groupby(\"반\").size())\n",
+          "runnable": true,
+          "expected_output": "반\nA    84.333333\nB    79.000000\nName: 점수, dtype: float64\n반\nA    3\nB    2\ndtype: int64\n",
+          "time_limit_sec": 15
+        },
+        {
+          "kind": "text",
+          "md": "`agg`로 여러 집계를 한 번에 하고, 결과 열 이름도 정할 수 있습니다. `reset_index()`는 그룹 이름을 다시 일반 열로 돌려놓습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\"반\": [\"A\", \"B\", \"A\", \"B\", \"A\"], \"점수\": [85, 92, 78, 66, 90]})\nresult = df.groupby(\"반\").agg(평균=(\"점수\", \"mean\"), 최고=(\"점수\", \"max\"), 인원=(\"점수\", \"size\"))\nprint(result.reset_index())\n",
+          "runnable": true,
+          "expected_output": "   반         평균  최고  인원\n0  A  84.333333  90   3\n1  B  79.000000  92   2\n",
+          "time_limit_sec": 15
+        },
+        {
+          "kind": "tip",
+          "md": "groupby 결과의 인덱스는 그룹 이름입니다. 딕셔너리로 바꾸려면 `.to_dict()`, 일반 표로 쓰려면 `.reset_index()`를 붙이세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "반별 평균을 딕셔너리로 반환하세요.",
+      "exercise_ids": [
+        "d61_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "분류별 매출 합계와 판매 건수를 구해 매출 순으로 정리하세요.",
+      "exercise_ids": [
+        "d61_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`df.groupby(기준)[열].집계()`.",
+        "`size()`는 그룹별 행 수.",
+        "`agg(이름=(열, \"함수\"))`로 여러 집계.",
+        "`reset_index()`로 그룹 이름을 열로."
+      ],
+      "quiz": [
+        {
+          "id": "d61_summary_q1",
+          "question_md": "반별 학생 수를 구하는 코드는?",
+          "choices": [
+            "`df.groupby(\"반\").size()`",
+            "`df[\"반\"].sum()`",
+            "`df.size`",
+            "`len(df.groupby(\"반\"))`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d61_summary_q2",
+          "question_md": "`df.groupby(\"반\")[\"점수\"].max()`의 결과 인덱스는?",
+          "choices": [
+            "0, 1, 2…",
+            "반 이름",
+            "점수",
+            "열 이름"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d61_fill_1",
+      "kind": "fill_blank",
+      "title": "반별 평균",
+      "prompt_md": "`반`, `점수` 열이 있는 데이터에서 반별 평균 점수를 `{반: 평균}` 딕셔너리로 반환하세요.",
+      "concepts": [
+        "pandas_groupby"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef class_means(data):\n    df = pd.DataFrame(data)\n    return df.____(\"반\")[\"점수\"].mean().____()\n",
+      "entry": {
+        "mode": "function",
+        "name": "class_means"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "반": [
+                  "A",
+                  "B",
+                  "A"
+                ],
+                "점수": [
+                  80,
+                  70,
+                  90
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "A": 85.0,
+              "B": 70.0
+            }
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "반": [
+                  "X"
+                ],
+                "점수": [
+                  5
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "X": 5.0
+            }
+          }
+        }
+      ],
+      "hints": [
+        "기준 열로 묶는 메서드입니다.",
+        "Series를 딕셔너리로 바꾸는 메서드입니다."
+      ],
+      "solution": "import pandas as pd\n\n\ndef class_means(data):\n    df = pd.DataFrame(data)\n    return df.groupby(\"반\")[\"점수\"].mean().to_dict()\n",
+      "time_limit_sec": 15
+    },
+    {
+      "id": "d61_code_1",
+      "kind": "coding",
+      "title": "분류별 매출",
+      "prompt_md": "상품·분류·가격·수량 데이터에서 `매출 = 가격 × 수량` 열을 만들고, 분류별 **매출 합계와 판매 건수**(행 수)를 구하세요. 매출 높은 순(같으면 분류 이름 순)으로 `[분류, 매출, 건수]` 리스트들을 반환하세요.",
+      "concepts": [
+        "pandas_groupby",
+        "pandas_transform"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef sales_by_category(data):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "sales_by_category"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "상품": [
+                  "펜",
+                  "노트",
+                  "물",
+                  "빵",
+                  "펜",
+                  "우유"
+                ],
+                "분류": [
+                  "문구",
+                  "문구",
+                  "식품",
+                  "식품",
+                  "문구",
+                  "식품"
+                ],
+                "가격": [
+                  1000,
+                  3000,
+                  800,
+                  2500,
+                  1000,
+                  1800
+                ],
+                "수량": [
+                  3,
+                  1,
+                  5,
+                  2,
+                  2,
+                  1
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "식품",
+                10800,
+                3
+              ],
+              [
+                "문구",
+                8000,
+                3
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "상품": [
+                  "a",
+                  "b"
+                ],
+                "분류": [
+                  "x",
+                  "y"
+                ],
+                "가격": [
+                  10,
+                  5
+                ],
+                "수량": [
+                  1,
+                  2
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                "x",
+                10,
+                1
+              ],
+              [
+                "y",
+                10,
+                1
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "새 열을 만든 뒤 `groupby(\"분류\").agg(매출=(\"매출\", \"sum\"), 건수=(\"매출\", \"size\"))`.",
+        "`reset_index()` 후 `sort_values([\"매출\", \"분류\"], ascending=[False, True])`.",
+        "`itertuples()`나 `values.tolist()`로 행을 리스트로 바꿉니다. 숫자는 `int()`로."
+      ],
+      "solution": "import pandas as pd\n\n\ndef sales_by_category(data):\n    df = pd.DataFrame(data)\n    df[\"매출\"] = df[\"가격\"] * df[\"수량\"]\n    g = df.groupby(\"분류\").agg(매출=(\"매출\", \"sum\"), 건수=(\"매출\", \"size\")).reset_index()\n    g = g.sort_values([\"매출\", \"분류\"], ascending=[False, True])\n    return [[row.분류, int(row.매출), int(row.건수)] for row in g.itertuples()]\n",
+      "time_limit_sec": 15
+    }
+  ]
+}

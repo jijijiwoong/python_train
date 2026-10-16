@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "day": 82,
+  "title": "규제: Ridge와 Lasso",
+  "stage": "ml",
+  "week": 12,
+  "is_review": false,
+  "objectives": [
+    "규제가 가중치를 작게 만들어 과적합을 줄이는 원리를 설명할 수 있다.",
+    "Ridge와 Lasso의 차이(Lasso는 일부 가중치를 0으로)를 확인할 수 있다."
+  ],
+  "concepts": [
+    "regularization",
+    "linear_regression"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 다항 회귀에서 차수가 높으면 과적합이 생기는 것을 봤습니다.",
+      "quiz": [
+        {
+          "id": "d82_review_q1",
+          "question_md": "과적합 모델의 특징은?",
+          "choices": [
+            "학습·테스트 오차 모두 큼",
+            "학습 오차 작고 테스트 오차 큼",
+            "둘 다 작음",
+            "테스트만 작음"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "가중치에 벌점 주기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**규제**는 \"오차를 줄이되 가중치(coef)가 너무 커지지 않게\" 벌점을 더하는 방법입니다. `alpha`가 클수록 벌점이 커져 가중치가 0 쪽으로 줄어듭니다.\n\n- **Ridge**: 가중치 제곱에 벌점 → 골고루 작게\n- **Lasso**: 가중치 절댓값에 벌점 → 쓸모없는 특성의 가중치를 정확히 0으로(특성 선택 효과)"
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import Lasso, LinearRegression, Ridge\n\nX, y = load_diabetes(return_X_y=True)\nfor model in [LinearRegression(), Ridge(alpha=1.0), Lasso(alpha=1.0)]:\n    model.fit(X, y)\n    print(type(model).__name__, round(np.abs(model.coef_).sum(), 1), int((model.coef_ == 0).sum()))\n",
+          "runnable": true,
+          "expected_output": "LinearRegression 3460.0 0\nRidge 1300.2 0\nLasso 681.6 7\n",
+          "time_limit_sec": 30
+        },
+        {
+          "kind": "tip",
+          "md": "규제는 특성 크기(스케일)에 영향을 받습니다. diabetes 데이터는 이미 표준화되어 있지만, 일반 데이터에서는 먼저 스케일링(17주차)을 하세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "Ridge 모델을 학습시켜 가중치 크기를 확인하세요.",
+      "exercise_ids": [
+        "d82_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "alpha에 따라 Lasso가 0으로 만드는 가중치 개수를 세세요.",
+      "exercise_ids": [
+        "d82_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "규제 = 오차 + 가중치 벌점, `alpha`로 세기 조절.",
+        "Ridge: 제곱 벌점, 가중치를 골고루 줄임.",
+        "Lasso: 절댓값 벌점, 일부 가중치를 0으로.",
+        "규제는 과적합을 줄이는 대표적인 방법."
+      ],
+      "quiz": [
+        {
+          "id": "d82_summary_q1",
+          "question_md": "alpha를 키우면 가중치는?",
+          "choices": [
+            "커진다",
+            "0 쪽으로 작아진다",
+            "변함없다",
+            "음수가 된다"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d82_summary_q2",
+          "question_md": "쓸모없는 특성을 자동으로 빼 주는 효과가 있는 것은?",
+          "choices": [
+            "Ridge",
+            "Lasso",
+            "LinearRegression",
+            "PolynomialFeatures"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d82_fill_1",
+      "kind": "fill_blank",
+      "title": "Ridge 가중치 크기",
+      "prompt_md": "당뇨병 데이터 전체로 `Ridge(alpha=alpha)`를 학습해 가중치 절댓값 합(소수 첫째 자리)을 반환하세요.",
+      "concepts": [
+        "regularization"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import ____\n\n\ndef ridge_size(alpha):\n    X, y = load_diabetes(return_X_y=True)\n    model = Ridge(alpha=____).fit(X, y)\n    return round(float(np.abs(model.coef_).sum()), 1)\n",
+      "entry": {
+        "mode": "function",
+        "name": "ridge_size"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "alpha=1",
+          "call": {
+            "args": [
+              1.0
+            ]
+          },
+          "expect": {
+            "return": 1300.2
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              10.0
+            ]
+          },
+          "expect": {
+            "return": 395.2
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "제곱 벌점 규제 회귀 모델의 클래스 이름입니다.",
+        "규제 세기로 쓸 매개변수입니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import Ridge\n\n\ndef ridge_size(alpha):\n    X, y = load_diabetes(return_X_y=True)\n    model = Ridge(alpha=alpha).fit(X, y)\n    return round(float(np.abs(model.coef_).sum()), 1)\n",
+      "time_limit_sec": 30
+    },
+    {
+      "id": "d82_code_1",
+      "kind": "coding",
+      "title": "Lasso가 지운 특성 수",
+      "prompt_md": "당뇨병 데이터 전체로 `alphas`의 각 값마다 `Lasso(alpha=값)`을 학습해, 가중치가 정확히 0인 특성의 개수 리스트를 반환하세요.",
+      "concepts": [
+        "regularization",
+        "numpy_indexing"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import Lasso\n\n\ndef zero_counts(alphas):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "zero_counts"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "세 alpha",
+          "call": {
+            "args": [
+              [
+                0.01,
+                0.5,
+                2.0
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              6,
+              8
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                5.0
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              10
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "alpha마다 새 Lasso 모델을 만들어 `fit`.",
+        "`(model.coef_ == 0).sum()`을 `int()`로 바꿔 리스트에 담습니다."
+      ],
+      "solution": "from sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import Lasso\n\n\ndef zero_counts(alphas):\n    X, y = load_diabetes(return_X_y=True)\n    counts = []\n    for alpha in alphas:\n        model = Lasso(alpha=alpha).fit(X, y)\n        counts.append(int((model.coef_ == 0).sum()))\n    return counts\n",
+      "time_limit_sec": 30
+    }
+  ]
+}

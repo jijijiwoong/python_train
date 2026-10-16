@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "day": 139,
+  "title": "드롭아웃과 가중치 감쇠",
+  "stage": "dl",
+  "week": 20,
+  "is_review": false,
+  "objectives": [
+    "드롭아웃이 학습·평가 모드에서 다르게 동작함을 설명할 수 있다.",
+    "weight_decay로 가중치를 작게 유지할 수 있다."
+  ],
+  "concepts": [
+    "dropout",
+    "overfitting"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 학습률 스케줄러를 배웠습니다. Day 96에서 배운 **과적합**을 신경망에서는 어떻게 막을까요?",
+      "quiz": [
+        {
+          "id": "d139_review_q1",
+          "question_md": "과적합의 특징은?",
+          "choices": [
+            "학습·테스트 모두 나쁨",
+            "학습은 좋은데 테스트가 나쁨",
+            "테스트만 좋음",
+            "둘 다 좋음"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "신경망 규제",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "- **드롭아웃** `nn.Dropout(p)`: 학습 중 뉴런을 확률 p로 무작위로 끄고, 남은 값은 `1/(1-p)`배 키웁니다. 특정 뉴런에 의존하지 않게 만듭니다.\n- **가중치 감쇠** `optim.SGD(..., weight_decay=0.01)`: 가중치가 커지지 않게 매번 조금씩 줄입니다(Ridge 규제와 같은 효과).\n\n드롭아웃은 평가할 때 꺼야 하므로 `model.train()`과 `model.eval()`로 모드를 바꿉니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\ntorch.manual_seed(0)\ndrop = nn.Dropout(p=0.5)\nx = torch.ones(8)\nprint(drop(x))\ndrop.eval()\nprint(drop(x))\n",
+          "runnable": true,
+          "expected_output": "tensor([0., 0., 2., 0., 0., 0., 2., 2.])\ntensor([1., 1., 1., 1., 1., 1., 1., 1.])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "평가·예측 전에는 꼭 `model.eval()`, 다시 학습할 때는 `model.train()`을 부르세요. 다음 주 배치 정규화도 이 모드를 따릅니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "드롭아웃의 두 모드를 확인하세요.",
+      "exercise_ids": [
+        "d139_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "가중치 감쇠의 효과를 비교하세요.",
+      "exercise_ids": [
+        "d139_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "드롭아웃: 학습 중 무작위로 끄고 남은 값 확대.",
+        "평가 땐 `model.eval()`로 드롭아웃 끄기.",
+        "weight_decay: 가중치를 작게(L2 규제).",
+        "둘 다 과적합을 줄이는 방법."
+      ],
+      "quiz": [
+        {
+          "id": "d139_summary_q1",
+          "question_md": "p=0.5 드롭아웃에서 학습 중 살아남은 값은?",
+          "choices": [
+            "그대로",
+            "2배",
+            "절반",
+            "0"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d139_summary_q2",
+          "question_md": "평가 모드로 바꾸는 호출은?",
+          "choices": [
+            "`model.train()`",
+            "`model.eval()`",
+            "`model.test()`",
+            "`torch.no_grad()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d139_fill_1",
+      "kind": "fill_blank",
+      "title": "두 모드",
+      "prompt_md": "`torch.manual_seed(0)` 후 `nn.Dropout(p)`에 `torch.ones(20)`을 넣어 학습 모드에서 0이 된 개수와, 평가 모드에서의 합을 `[0의 개수, 평가 모드 합]`으로 반환하세요.",
+      "concepts": [
+        "dropout"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef dropout_modes(p):\n    torch.manual_seed(0)\n    drop = nn.____(p)\n    x = torch.ones(20)\n    zeros = int((drop(x) == 0).sum().item())\n    drop.____\n    return [zeros, drop(x).sum().item()]\n",
+      "entry": {
+        "mode": "function",
+        "name": "dropout_modes"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0.5
+            ]
+          },
+          "expect": {
+            "return": [
+              9,
+              20.0
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.2
+            ]
+          },
+          "expect": {
+            "return": [
+              2,
+              20.0
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.0
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              20.0
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "드롭아웃 층 클래스 이름입니다.",
+        "평가 모드로 바꾸는 메서드입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef dropout_modes(p):\n    torch.manual_seed(0)\n    drop = nn.Dropout(p)\n    x = torch.ones(20)\n    zeros = int((drop(x) == 0).sum().item())\n    drop.eval()\n    return [zeros, drop(x).sum().item()]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d139_code_1",
+      "kind": "coding",
+      "title": "가중치 감쇠 효과",
+      "prompt_md": "주어진 `noisy_data(seed)`로 데이터를 만드세요. `weight_decay`가 0일 때와 `wd`일 때 각각 `torch.manual_seed(0)` 후 `nn.Linear(8, 1)`, `optim.SGD(lr=0.05, weight_decay=값)`, MSELoss로 500번 학습합니다. 두 모델 가중치의 L2 노름(`model.weight.norm()`)을 `[감쇠 없음, 감쇠 있음, 감쇠 있음이 더 작은지]`로 반환하세요(노름은 소수 넷째 자리).",
+      "concepts": [
+        "dropout",
+        "regularization"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\n\ndef noisy_data(seed):\n    torch.manual_seed(seed)\n    X = torch.randn(12, 8)\n    y = X[:, :1] + 0.5 * torch.randn(12, 1)\n    return X, y\n\n\ndef train_norm(X, y, wd):\n    torch.manual_seed(0)\n    model = nn.Linear(8, 1)\n    optimizer = optim.SGD(model.parameters(), lr=0.05, weight_decay=wd)\n    for _ in range(500):\n        loss = nn.MSELoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return round(model.weight.norm().item(), 4)\n\n\ndef decay_effect(seed, wd):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "decay_effect"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              0.1
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9183,
+              0.8192,
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              0.5
+            ]
+          },
+          "expect": {
+            "return": [
+              1.0044,
+              0.6714,
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        }
+      ],
+      "hints": [
+        "학습 과정을 `weight_decay`만 다른 함수 하나로 만들어 두 번 부르면 편합니다.",
+        "노름은 `model.weight.norm().item()`입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\n\ndef noisy_data(seed):\n    torch.manual_seed(seed)\n    X = torch.randn(12, 8)\n    y = X[:, :1] + 0.5 * torch.randn(12, 1)\n    return X, y\n\n\ndef train_norm(X, y, wd):\n    torch.manual_seed(0)\n    model = nn.Linear(8, 1)\n    optimizer = optim.SGD(model.parameters(), lr=0.05, weight_decay=wd)\n    for _ in range(500):\n        loss = nn.MSELoss()(model(X), y)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    return round(model.weight.norm().item(), 4)\n\n\ndef decay_effect(seed, wd):\n    X, y = noisy_data(seed)\n    plain, decayed = train_norm(X, y, 0.0), train_norm(X, y, wd)\n    return [plain, decayed, decayed < plain]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

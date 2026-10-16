@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "day": 88,
+  "title": "서포트 벡터 머신",
+  "stage": "ml",
+  "week": 13,
+  "is_review": false,
+  "objectives": [
+    "SVM이 경계와 가장 가까운 점(서포트 벡터) 사이 간격을 넓히는 모델임을 설명할 수 있다.",
+    "커널(linear, rbf)과 C의 역할을 비교할 수 있다."
+  ],
+  "concepts": [
+    "svm",
+    "decision_boundary"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 결정 경계를 그려 선형·비선형 모델을 비교했습니다.",
+      "quiz": [
+        {
+          "id": "d88_review_q1",
+          "question_md": "직선 하나로 나누기 어려운 데이터에서 로지스틱 회귀의 한계는?",
+          "choices": [
+            "느리다",
+            "경계가 직선이라 곡선 경계를 못 만든다",
+            "확률을 못 낸다",
+            "학습이 안 된다"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "가장 넓은 길 찾기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**SVM**은 두 클래스 사이에 가능한 한 **넓은 길**(마진)을 내는 경계를 찾습니다. 길 가장자리에 걸친 점들을 **서포트 벡터**라고 합니다. **커널**을 쓰면 데이터를 높은 차원으로 옮긴 것처럼 계산해 곡선 경계를 만들 수 있습니다(`rbf`가 대표적). `C`가 크면 학습 데이터를 더 정확히 맞추려 하고(과적합 위험), 작으면 넓은 길을 우선합니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import make_moons\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.svm import SVC\n\nX, y = make_moons(n_samples=300, noise=0.25, random_state=0)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)\nfor kernel in [\"linear\", \"rbf\"]:\n    model = SVC(kernel=kernel, C=1.0).fit(X_train, y_train)\n    print(kernel, round(model.score(X_test, y_test), 3), model.n_support_.sum())\n",
+          "runnable": true,
+          "expected_output": "linear 0.856 78\nrbf 0.967 62\n",
+          "time_limit_sec": 40
+        },
+        {
+          "kind": "tip",
+          "md": "SVM도 거리를 쓰기 때문에 특성 스케일에 민감합니다. 실제 데이터에서는 표준화 후 사용하세요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "커널을 지정해 SVM을 학습하세요.",
+      "exercise_ids": [
+        "d88_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "커널별 정확도와 서포트 벡터 수를 비교하세요.",
+      "exercise_ids": [
+        "d88_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "SVM: 마진(길)을 최대화하는 경계.",
+        "서포트 벡터: 경계를 결정하는 가장자리 점들.",
+        "`kernel=\"linear\"` 직선, `\"rbf\"` 곡선 경계.",
+        "`C`↑ 학습 데이터에 더 맞춤, `C`↓ 넓은 마진."
+      ],
+      "quiz": [
+        {
+          "id": "d88_summary_q1",
+          "question_md": "곡선 경계를 만들 수 있는 커널은?",
+          "choices": [
+            "linear",
+            "rbf",
+            "둘 다 아님",
+            "C"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d88_summary_q2",
+          "question_md": "`n_support_`가 알려 주는 것은?",
+          "choices": [
+            "클래스 수",
+            "클래스별 서포트 벡터 수",
+            "정확도",
+            "특성 수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d88_fill_1",
+      "kind": "fill_blank",
+      "title": "SVM 학습",
+      "prompt_md": "초승달 데이터(`n_samples=200, noise=0.2, random_state=0`) 전체로 `SVC(kernel=kernel)`을 학습해 학습 정확도(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "svm"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import make_moons\nfrom sklearn.svm import ____\n\n\ndef svm_train_acc(kernel):\n    X, y = make_moons(n_samples=200, noise=0.2, random_state=0)\n    model = SVC(kernel=____).fit(X, y)\n    return round(model.score(X, y), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "svm_train_acc"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "rbf",
+          "call": {
+            "args": [
+              "rbf"
+            ]
+          },
+          "expect": {
+            "return": 0.945
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "linear"
+            ]
+          },
+          "expect": {
+            "return": 0.84
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "서포트 벡터 분류기 클래스 이름입니다(세 글자).",
+        "커널 이름으로 쓸 매개변수입니다."
+      ],
+      "solution": "from sklearn.datasets import make_moons\nfrom sklearn.svm import SVC\n\n\ndef svm_train_acc(kernel):\n    X, y = make_moons(n_samples=200, noise=0.2, random_state=0)\n    model = SVC(kernel=kernel).fit(X, y)\n    return round(model.score(X, y), 4)\n",
+      "time_limit_sec": 40
+    },
+    {
+      "id": "d88_code_1",
+      "kind": "coding",
+      "title": "커널 비교",
+      "prompt_md": "`make_moons(n_samples=300, noise=0.25, random_state=seed)`를 `test_size=0.3, random_state=seed`로 나누고, `linear`와 `rbf` 커널(`C=C`) SVM 각각의 `[테스트 정확도(소수 넷째 자리), 서포트 벡터 총수]`를 `{\"linear\": […], \"rbf\": […]}`로 반환하세요.",
+      "concepts": [
+        "svm",
+        "decision_boundary"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import make_moons\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.svm import SVC\n\n\ndef kernel_report(C, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "kernel_report"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "C=1",
+          "call": {
+            "args": [
+              1.0,
+              0
+            ]
+          },
+          "expect": {
+            "return": {
+              "linear": [
+                0.8556,
+                78
+              ],
+              "rbf": [
+                0.9667,
+                62
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              10.0,
+              3
+            ]
+          },
+          "expect": {
+            "return": {
+              "linear": [
+                0.8222,
+                80
+              ],
+              "rbf": [
+                0.9,
+                53
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "커널 이름 리스트를 돌며 모델을 만드세요.",
+        "서포트 벡터 총수는 `int(model.n_support_.sum())`."
+      ],
+      "solution": "from sklearn.datasets import make_moons\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.svm import SVC\n\n\ndef kernel_report(C, seed):\n    X, y = make_moons(n_samples=300, noise=0.25, random_state=seed)\n    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=seed)\n    report = {}\n    for kernel in [\"linear\", \"rbf\"]:\n        model = SVC(kernel=kernel, C=C).fit(X_train, y_train)\n        report[kernel] = [round(model.score(X_test, y_test), 4), int(model.n_support_.sum())]\n    return report\n",
+      "time_limit_sec": 40
+    }
+  ]
+}

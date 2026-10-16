@@ -1,0 +1,355 @@
+{
+  "schema_version": 1,
+  "day": 129,
+  "title": "손실 함수",
+  "stage": "dl",
+  "week": 19,
+  "is_review": false,
+  "objectives": [
+    "회귀에는 MSELoss, 분류에는 CrossEntropyLoss를 쓸 수 있다.",
+    "CrossEntropyLoss가 로짓과 정수 레이블을 받는다는 것을 안다."
+  ],
+  "concepts": [
+    "loss_fn",
+    "multiclass"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 활성화 함수와 Sequential로 모델을 만들었습니다. 이제 모델이 얼마나 틀렸는지 재는 **손실 함수**가 필요합니다.",
+      "quiz": [
+        {
+          "id": "d129_review_q1",
+          "question_md": "은닉층에 가장 흔히 쓰는 활성화 함수는?",
+          "choices": [
+            "시그모이드",
+            "ReLU",
+            "softmax",
+            "없음"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "틀린 정도 재기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "- `nn.MSELoss()`: 회귀, 평균 제곱 오차\n- `nn.CrossEntropyLoss()`: 다중 분류. 입력은 softmax 전의 점수인 **로짓**(logit) `(n, 클래스 수)`, 정답은 클래스 번호 `(n,)`이며 자료형은 `torch.long`\n- `nn.BCEWithLogitsLoss()`: 이진 분류(로짓 하나, 정답 0/1 실수)\n\nCrossEntropyLoss는 내부에서 softmax와 로그를 함께 계산하므로 모델 끝에 softmax를 넣지 않습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\npred, target = torch.tensor([2.5, 0.0]), torch.tensor([3.0, -1.0])\nprint(nn.MSELoss()(pred, target))\nlogits = torch.tensor([[2.0, 0.5, -1.0], [0.1, 0.2, 3.0]])\nlabels = torch.tensor([0, 2])\nprint(nn.CrossEntropyLoss()(logits, labels).round(decimals=4))\nprint(torch.softmax(logits, dim=1).round(decimals=3))\n",
+          "runnable": true,
+          "expected_output": "tensor(0.6250)\ntensor(0.1755)\ntensor([[0.7860, 0.1750, 0.0390],\n        [0.0490, 0.0540, 0.8960]])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "정답 클래스의 로짓이 클수록 CrossEntropy 손실이 작아집니다. 손실 = -log(정답 클래스의 softmax 확률)의 평균입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "교차 엔트로피 손실을 구하세요.",
+      "exercise_ids": [
+        "d129_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "교차 엔트로피를 직접 계산하세요.",
+      "exercise_ids": [
+        "d129_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "회귀 → MSELoss.",
+        "다중 분류 → CrossEntropyLoss(로짓, long 레이블).",
+        "모델 끝에 softmax를 넣지 않는다.",
+        "손실 = -log(정답 확률)의 평균."
+      ],
+      "quiz": [
+        {
+          "id": "d129_summary_q1",
+          "question_md": "CrossEntropyLoss의 정답 레이블 자료형은?",
+          "choices": [
+            "float32",
+            "long(int64)",
+            "bool",
+            "문자열"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d129_summary_q2",
+          "question_md": "모델이 정답 클래스를 확률 1로 맞히면 교차 엔트로피는?",
+          "choices": [
+            "0",
+            "1",
+            "무한대",
+            "-1"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d129_fill_1",
+      "kind": "fill_blank",
+      "title": "분류 손실",
+      "prompt_md": "로짓과 정답 번호로 교차 엔트로피 손실(소수 넷째 자리)을 반환하세요.",
+      "concepts": [
+        "loss_fn"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef ce_loss(logits, labels):\n    x = torch.tensor(logits, dtype=torch.float32)\n    y = torch.tensor(labels, dtype=torch.____)\n    return round(nn.____()(x, y).item(), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "ce_loss"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  2,
+                  0.5,
+                  -1
+                ],
+                [
+                  0.1,
+                  0.2,
+                  3
+                ]
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.1755
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  0,
+                  0
+                ]
+              ],
+              [
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.6931
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  5,
+                  1
+                ],
+                [
+                  1,
+                  5
+                ]
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": 4.0181
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "다중 분류 손실 클래스 이름입니다.",
+        "정답 레이블은 정수(64비트) 자료형이어야 합니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef ce_loss(logits, labels):\n    x = torch.tensor(logits, dtype=torch.float32)\n    y = torch.tensor(labels, dtype=torch.long)\n    return round(nn.CrossEntropyLoss()(x, y).item(), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d129_code_1",
+      "kind": "coding",
+      "title": "직접 계산하기",
+      "prompt_md": "`torch.log_softmax(x, dim=1)`로 각 행의 정답 클래스 로그 확률을 꺼내 평균에 -1을 곱한 값과, `nn.CrossEntropyLoss`의 결과를 `[직접 계산, 내장 함수]`로 반환하세요(소수 넷째 자리).",
+      "concepts": [
+        "loss_fn"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef my_ce(logits, labels):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "my_ce"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  2,
+                  0.5,
+                  -1
+                ],
+                [
+                  0.1,
+                  0.2,
+                  3
+                ]
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0.1755,
+              0.1755
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              ],
+              [
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              3.4402,
+              3.4402
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  -1
+                ],
+                [
+                  2,
+                  2
+                ]
+              ],
+              [
+                1,
+                0,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0.3415,
+              0.3415
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "행 번호 `torch.arange(n)`과 정답 `y`로 인덱싱하면 정답 위치의 값만 꺼낼 수 있습니다.",
+        "평균을 구한 뒤 부호를 바꾸세요."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef my_ce(logits, labels):\n    x = torch.tensor(logits, dtype=torch.float32)\n    y = torch.tensor(labels, dtype=torch.long)\n    log_prob = torch.log_softmax(x, dim=1)\n    manual = -log_prob[torch.arange(len(labels)), y].mean()\n    builtin = nn.CrossEntropyLoss()(x, y)\n    return [round(manual.item(), 4), round(builtin.item(), 4)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

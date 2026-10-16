@@ -1,0 +1,375 @@
+{
+  "schema_version": 1,
+  "day": 59,
+  "title": "정렬·새 열·apply",
+  "stage": "advanced_data",
+  "week": 9,
+  "is_review": false,
+  "objectives": [
+    "sort_values로 정렬하고 계산으로 새 열을 만들 수 있다.",
+    "apply, map, str 메서드로 열의 값을 변환할 수 있다."
+  ],
+  "concepts": [
+    "pandas_transform",
+    "pandas_select",
+    "lambda"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 `loc`, `iloc`, 조건 마스크로 원하는 데이터를 골랐습니다.",
+      "quiz": [
+        {
+          "id": "d59_review_q1",
+          "question_md": "`df.loc[df[\"수학\"] > 80, \"이름\"]`이 돌려주는 것은?",
+          "choices": [
+            "수학 80 초과인 사람의 이름",
+            "모든 이름",
+            "수학 점수",
+            "오류"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "표 다듬기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`sort_values(열, ascending=False)`로 정렬하고, `df[\"새 열\"] = 계산식`으로 열을 추가합니다. 열끼리의 계산은 NumPy처럼 행마다 이루어집니다."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\"이름\": [\"민준\", \"서연\", \"지호\"], \"국어\": [85, 92, 78], \"수학\": [95, 88, 61]})\ndf[\"총점\"] = df[\"국어\"] + df[\"수학\"]\nprint(df.sort_values(\"총점\", ascending=False))\n",
+          "runnable": true,
+          "expected_output": "   이름  국어  수학   총점\n0  민준  85  95  180\n1  서연  92  88  180\n2  지호  78  61  139\n",
+          "time_limit_sec": 15
+        },
+        {
+          "kind": "text",
+          "md": "`apply(함수)`는 열의 값마다 함수를 적용하고, `map(딕셔너리)`는 값을 바꿔치기합니다. 문자열 열은 `.str.메서드()`로 한꺼번에 처리합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\"이름\": [\"kim\", \"lee\"], \"점수\": [72, 95], \"반\": [\"A\", \"B\"]})\ndf[\"결과\"] = df[\"점수\"].apply(lambda s: \"합격\" if s >= 80 else \"재시험\")\ndf[\"담임\"] = df[\"반\"].map({\"A\": \"박선생\", \"B\": \"최선생\"})\ndf[\"이름\"] = df[\"이름\"].str.upper()\nprint(df)\n",
+          "runnable": true,
+          "expected_output": "    이름  점수  반   결과   담임\n0  KIM  72  A  재시험  박선생\n1  LEE  95  B   합격  최선생\n",
+          "time_limit_sec": 15
+        },
+        {
+          "kind": "tip",
+          "md": "여러 기준 정렬은 `sort_values([\"열1\", \"열2\"], ascending=[False, True])`처럼 리스트로 줍니다. Day 25의 `key=lambda` 정렬과 같은 개념이에요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "총점 열을 만들고 정렬하세요.",
+      "exercise_ids": [
+        "d59_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "평균과 학점 열을 만들어 정렬된 기록으로 반환하세요.",
+      "exercise_ids": [
+        "d59_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`df.sort_values(열, ascending=False)`, 여러 기준은 리스트.",
+        "`df[\"새 열\"] = 식`으로 열 추가.",
+        "`apply(함수)`, `map(딕셔너리)`, `.str.메서드()`.",
+        "`to_dict(\"records\")`는 행마다 딕셔너리인 리스트."
+      ],
+      "quiz": [
+        {
+          "id": "d59_summary_q1",
+          "question_md": "점수 내림차순 정렬은?",
+          "choices": [
+            "`sort_values(\"점수\")`",
+            "`sort_values(\"점수\", ascending=False)`",
+            "`sort(\"점수\")`",
+            "`df.sort()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d59_summary_q2",
+          "question_md": "`df[\"이름\"].str.len()`의 결과는?",
+          "choices": [
+            "이름 열의 길이(행 수)",
+            "각 이름의 글자 수",
+            "오류",
+            "열 개수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d59_fill_1",
+      "kind": "fill_blank",
+      "title": "총점 순위",
+      "prompt_md": "국어·수학 점수로 `총점` 열을 만들고, 총점 높은 순으로 정렬한 **이름 리스트**를 반환하세요.",
+      "concepts": [
+        "pandas_transform"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef ranking(data):\n    df = pd.DataFrame(data)\n    df[\"총점\"] = df[\"국어\"] ____ df[\"수학\"]\n    return df.sort_values(\"총점\", ascending=____)[\"이름\"].tolist()\n",
+      "entry": {
+        "mode": "function",
+        "name": "ranking"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "민준",
+                  "서연",
+                  "지호",
+                  "하나"
+                ],
+                "국어": [
+                  85,
+                  92,
+                  78,
+                  60
+                ],
+                "수학": [
+                  95,
+                  88,
+                  61,
+                  70
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              "민준",
+              "서연",
+              "지호",
+              "하나"
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "a",
+                  "b"
+                ],
+                "국어": [
+                  0,
+                  1
+                ],
+                "수학": [
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              "b",
+              "a"
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "두 열을 더하는 연산자입니다.",
+        "높은 순(내림차순)이 되도록 오름차순 여부를 정하세요."
+      ],
+      "solution": "import pandas as pd\n\n\ndef ranking(data):\n    df = pd.DataFrame(data)\n    df[\"총점\"] = df[\"국어\"] + df[\"수학\"]\n    return df.sort_values(\"총점\", ascending=False)[\"이름\"].tolist()\n",
+      "time_limit_sec": 15
+    },
+    {
+      "id": "d59_code_1",
+      "kind": "coding",
+      "title": "평균과 학점",
+      "prompt_md": "국어·수학 점수로 `평균`(소수 첫째 자리 반올림)과 `학점`(90 이상 A, 80 이상 B, 70 이상 C, 그 외 F) 열을 만드세요. 평균 높은 순(같으면 이름 순)으로 정렬해 `이름`, `평균`, `학점` 세 열만 `to_dict(\"records\")`로 반환하세요.",
+      "concepts": [
+        "pandas_transform",
+        "lambda",
+        "conditional_expr"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef add_grades(data):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "add_grades"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "민준",
+                  "서연",
+                  "지호",
+                  "하나"
+                ],
+                "국어": [
+                  85,
+                  92,
+                  78,
+                  60
+                ],
+                "수학": [
+                  95,
+                  88,
+                  61,
+                  70
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              {
+                "이름": "민준",
+                "평균": 90.0,
+                "학점": "A"
+              },
+              {
+                "이름": "서연",
+                "평균": 90.0,
+                "학점": "A"
+              },
+              {
+                "이름": "지호",
+                "평균": 69.5,
+                "학점": "F"
+              },
+              {
+                "이름": "하나",
+                "평균": 65.0,
+                "학점": "F"
+              }
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "민준",
+                  "서연",
+                  "지호",
+                  "하나",
+                  "도윤"
+                ],
+                "반": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A"
+                ],
+                "국어": [
+                  85,
+                  92,
+                  78,
+                  66,
+                  90
+                ],
+                "수학": [
+                  70,
+                  88,
+                  95,
+                  72,
+                  60
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              {
+                "이름": "서연",
+                "평균": 90.0,
+                "학점": "A"
+              },
+              {
+                "이름": "지호",
+                "평균": 86.5,
+                "학점": "B"
+              },
+              {
+                "이름": "민준",
+                "평균": 77.5,
+                "학점": "C"
+              },
+              {
+                "이름": "도윤",
+                "평균": 75.0,
+                "학점": "C"
+              },
+              {
+                "이름": "하나",
+                "평균": 69.0,
+                "학점": "F"
+              }
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "평균 열은 `((국어 + 수학) / 2).round(1)`.",
+        "학점은 평균 열에 `apply`로 함수(또는 lambda)를 적용합니다.",
+        "`sort_values([\"평균\", \"이름\"], ascending=[False, True])` 후 `df[[\"이름\", \"평균\", \"학점\"]].to_dict(\"records\")`."
+      ],
+      "solution": "import pandas as pd\n\n\ndef to_grade(m):\n    if m >= 90:\n        return \"A\"\n    if m >= 80:\n        return \"B\"\n    if m >= 70:\n        return \"C\"\n    return \"F\"\n\n\ndef add_grades(data):\n    df = pd.DataFrame(data)\n    df[\"평균\"] = ((df[\"국어\"] + df[\"수학\"]) / 2).round(1)\n    df[\"학점\"] = df[\"평균\"].apply(to_grade)\n    df = df.sort_values([\"평균\", \"이름\"], ascending=[False, True])\n    return df[[\"이름\", \"평균\", \"학점\"]].to_dict(\"records\")\n",
+      "time_limit_sec": 15
+    }
+  ]
+}

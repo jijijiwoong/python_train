@@ -1,0 +1,296 @@
+{
+  "schema_version": 1,
+  "day": 146,
+  "title": "배치 정규화와 eval 모드",
+  "stage": "dl",
+  "week": 21,
+  "is_review": false,
+  "objectives": [
+    "배치 정규화가 학습·평가 모드에서 다른 통계를 쓰는 것을 설명할 수 있다.",
+    "eval 모드에서 샘플 하나를 예측할 수 있다."
+  ],
+  "concepts": [
+    "batchnorm",
+    "dropout"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 CNN으로 손글씨 숫자를 학습시켰습니다. 더 깊은 CNN에는 **배치 정규화**가 거의 항상 들어갑니다.",
+      "quiz": [
+        {
+          "id": "d146_review_q1",
+          "question_md": "평가 전에 부르는 모드 전환 메서드는?",
+          "choices": [
+            "`train()`",
+            "`eval()`",
+            "`step()`",
+            "`zero_grad()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "층 사이에서 정규화하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**배치 정규화**(`nn.BatchNorm1d`, `nn.BatchNorm2d`)는 층의 출력을 배치 평균 0, 표준편차 1로 맞춰 깊은 신경망 학습을 빠르고 안정적으로 만듭니다.\n\n- 학습 모드: **현재 배치**의 평균·분산으로 정규화하고, 이동 평균 `running_mean`·`running_var`를 갱신(momentum 0.1)\n- 평가 모드: 쌓아 둔 **이동 평균**으로 정규화 → 샘플 하나만 넣어도 동작\n\n그래서 `model.eval()`을 잊으면 예측이 배치 구성에 따라 달라집니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nbn = nn.BatchNorm1d(2)\nx = torch.tensor([[1.0, 10.0], [3.0, 30.0], [5.0, 50.0]])\nout = bn(x).detach()\nprint(out.mean(dim=0).abs().round(decimals=4), bn.running_mean)\nbn.eval()\nprint(bn(torch.tensor([[3.0, 30.0]])).detach().round(decimals=3))\n",
+          "runnable": true,
+          "expected_output": "tensor([0., 0.]) tensor([0.3000, 3.0000])\ntensor([[2.3680, 4.2220]])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "이동 평균은 한 번만 갱신되어 아직 실제 평균(3, 30)과 멀기 때문에 마지막 출력이 0 근처가 아닙니다. 학습을 여러 번 하면 점점 가까워집니다. 합성곱 뒤에는 `nn.BatchNorm2d(채널 수)`, 선형 층 뒤에는 `nn.BatchNorm1d(특성 수)`를 씁니다. 보통 [층 → 배치 정규화 → ReLU] 순서입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "배치 정규화의 통계를 확인하세요.",
+      "exercise_ids": [
+        "d146_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "eval 모드로 샘플 하나를 예측하세요.",
+      "exercise_ids": [
+        "d146_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "배치 정규화: 배치 평균 0·표준편차 1로.",
+        "학습 모드: 배치 통계 + 이동 평균 갱신.",
+        "평가 모드: 이동 평균 사용.",
+        "Conv 뒤 BatchNorm2d, Linear 뒤 BatchNorm1d."
+      ],
+      "quiz": [
+        {
+          "id": "d146_summary_q1",
+          "question_md": "BatchNorm이 평가 모드에서 쓰는 통계는?",
+          "choices": [
+            "현재 배치",
+            "이동 평균(running)",
+            "0과 1",
+            "테스트 전체"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d146_summary_q2",
+          "question_md": "Conv2d(…, 16, …) 뒤에 붙이는 배치 정규화는?",
+          "choices": [
+            "`BatchNorm1d(16)`",
+            "`BatchNorm2d(16)`",
+            "`BatchNorm2d(1)`",
+            "`Dropout(16)`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d146_fill_1",
+      "kind": "fill_blank",
+      "title": "이동 평균",
+      "prompt_md": "`nn.BatchNorm1d`에 2차원 목록을 학습 모드로 한 번 통과시킨 뒤 `running_mean`을 소수 넷째 자리 리스트로 반환하세요.",
+      "concepts": [
+        "batchnorm"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef running_after_one(rows):\n    x = torch.tensor(rows, dtype=torch.float32)\n    bn = nn.____(x.shape[1])\n    bn(x)\n    return [round(v, 4) for v in bn.____.tolist()]\n",
+      "entry": {
+        "mode": "function",
+        "name": "running_after_one"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  10
+                ],
+                [
+                  3,
+                  30
+                ],
+                [
+                  5,
+                  50
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0.3,
+              3.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  0,
+                  2,
+                  4
+                ],
+                [
+                  2,
+                  2,
+                  0
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              0.1,
+              0.2,
+              0.2
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "선형 층 출력용 배치 정규화 클래스입니다.",
+        "이동 평균 속성 이름입니다(`running_…`)."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef running_after_one(rows):\n    x = torch.tensor(rows, dtype=torch.float32)\n    bn = nn.BatchNorm1d(x.shape[1])\n    bn(x)\n    return [round(v, 4) for v in bn.running_mean.tolist()]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d146_code_1",
+      "kind": "coding",
+      "title": "샘플 하나 예측",
+      "prompt_md": "`torch.manual_seed(seed)` 후 `nn.Sequential(nn.Linear(2, 4), nn.BatchNorm1d(4), nn.ReLU(), nn.Linear(4, 1))`을 만드세요. 학습 모드에서 `rows` 배치를 20번 통과시켜 이동 평균을 쌓은 뒤(`torch.no_grad()` 안, 학습은 하지 않음), `eval()`로 바꿔 `sample` 하나의 출력을 소수 넷째 자리로 반환하세요.",
+      "concepts": [
+        "batchnorm"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef predict_one(seed, rows, sample):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "predict_one"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              [
+                [
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  0
+                ]
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.0187
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              [
+                [
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  1
+                ]
+              ],
+              [
+                0.5,
+                0.5
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.0767
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.001
+          }
+        }
+      ],
+      "hints": [
+        "모델을 만들 때는 학습 모드이므로 그대로 20번 통과시키면 이동 평균이 쌓입니다.",
+        "샘플 하나는 `[sample]`로 감싸 (1, 2) 모양으로 만듭니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef predict_one(seed, rows, sample):\n    torch.manual_seed(seed)\n    model = nn.Sequential(nn.Linear(2, 4), nn.BatchNorm1d(4), nn.ReLU(), nn.Linear(4, 1))\n    X = torch.tensor(rows, dtype=torch.float32)\n    with torch.no_grad():\n        for _ in range(20):\n            model(X)\n        model.eval()\n        out = model(torch.tensor([sample], dtype=torch.float32))\n    return round(out.item(), 4)\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

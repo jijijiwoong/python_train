@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "day": 49,
+  "title": "7주차 누적 복습",
+  "stage": "advanced_data",
+  "week": 7,
+  "is_review": true,
+  "objectives": [
+    "컴프리헨션·제너레이터·데코레이터를 조합해 데이터 처리 파이프라인을 만들 수 있다."
+  ],
+  "concepts": [
+    "comprehension",
+    "generator",
+    "closure",
+    "decorator",
+    "iterator",
+    "conditional_expr"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "| Day | 주제 | 핵심 |\n|---|---|---|\n| 43 | 리스트 컴프리헨션 | `[식 for x in 목록 if 조건]` |\n| 44 | 딕셔너리·집합, 조건식 | `{k: v for ...}`, `A if 조건 else B` |\n| 45 | 이터레이터 | `iter`, `next`, `StopIteration` |\n| 46 | 제너레이터 | `yield`, `(식 for x in ...)` |\n| 47 | 클로저 | 함수는 값, `nonlocal` |\n| 48 | 데코레이터 | `@deco`, `wrapper(*args, **kwargs)` |",
+      "quiz": [
+        {
+          "id": "d49_review_q1",
+          "question_md": "큰 파일을 한 줄씩 처리하며 메모리를 아끼기에 알맞은 것은?",
+          "choices": [
+            "리스트 컴프리헨션",
+            "제너레이터",
+            "딕셔너리",
+            "튜플"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d49_review_q2",
+          "question_md": "함수 실행 결과를 저장해 두었다가 같은 인자면 바로 돌려주는 기능을 여러 함수에 붙이려면?",
+          "choices": [
+            "상속",
+            "데코레이터",
+            "property",
+            "컴프리헨션"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "파이프라인과 메모이제이션",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**파이프라인**은 데이터가 여러 단계를 차례로 통과하는 구조입니다. 제너레이터로 단계를 이으면 중간 리스트를 만들지 않고도 처리할 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "def read_numbers(lines):\n    for line in lines:\n        if line.strip().isdigit():\n            yield int(line)\n\ndef squares(nums):\n    for n in nums:\n        yield n * n\n\ndata = [\"1\", \"x\", \"2\", \"3\"]\nprint(sum(squares(read_numbers(data))))\n",
+          "runnable": true,
+          "expected_output": "14\n"
+        },
+        {
+          "kind": "text",
+          "md": "**메모이제이션**은 계산 결과를 딕셔너리에 저장해 같은 계산을 반복하지 않는 기법입니다. 데코레이터로 만들면 어떤 함수에도 붙일 수 있습니다. 표준 라이브러리 `functools.lru_cache`도 같은 일을 합니다."
+        },
+        {
+          "kind": "tip",
+          "md": "재귀 피보나치(Day 26)는 같은 값을 엄청나게 많이 다시 계산합니다. 메모이제이션을 붙이면 n=30도 즉시 끝납니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "제너레이터 표현식과 조건식으로 점수를 정리하세요.",
+      "exercise_ids": [
+        "d49_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d49_code_1",
+        "d49_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "7주차 마무리",
+      "points": [
+        "컴프리헨션으로 짧게, 제너레이터로 가볍게.",
+        "함수는 값 → 클로저와 데코레이터로 기능을 조립한다.",
+        "메모이제이션 = 결과 캐시.",
+        "다음 주: NumPy로 숫자 데이터를 빠르게 다룬다."
+      ],
+      "quiz": [
+        {
+          "id": "d49_summary_q1",
+          "question_md": "`functools.lru_cache`의 역할은?",
+          "choices": [
+            "로그 출력",
+            "결과 캐싱(메모이제이션)",
+            "정렬",
+            "예외 처리"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d49_summary_q2",
+          "question_md": "`max(len(w) for w in [\"a\", \"abc\"])`의 결과는?",
+          "choices": [
+            "1",
+            "3",
+            "`\"abc\"`",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d49_fill_1",
+      "kind": "fill_blank",
+      "title": "통과/미통과 개수",
+      "prompt_md": "점수 리스트를 받아 `[통과 개수, 미통과 개수]`를 반환하세요(기준 이상이면 통과). 제너레이터 표현식을 `sum()`에 넘기세요.",
+      "concepts": [
+        "generator",
+        "conditional_expr"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def count_pass(scores, cut):\n    passed = sum(1 ____ s in scores if s >= cut)\n    return [passed, ____(scores) - passed]\n",
+      "entry": {
+        "mode": "function",
+        "name": "count_pass"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                50,
+                60,
+                70
+              ],
+              60
+            ]
+          },
+          "expect": {
+            "return": [
+              2,
+              1
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [],
+              10
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                1,
+                2
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              2
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "제너레이터 표현식의 반복 키워드입니다.",
+        "전체 개수를 세는 내장 함수입니다."
+      ],
+      "solution": "def count_pass(scores, cut):\n    passed = sum(1 for s in scores if s >= cut)\n    return [passed, len(scores) - passed]\n"
+    },
+    {
+      "id": "d49_code_1",
+      "kind": "coding",
+      "title": "점수 파이프라인",
+      "prompt_md": "`\"이름:점수\"` 문자열 목록과 기준 점수를 받아 딕셔너리를 반환하세요.\n\n1. 형식이 맞지 않거나(`:`로 나눈 조각이 2개가 아님) 점수가 숫자가 아닌 줄은 버립니다. 이름·점수 앞뒤 공백은 무시합니다.\n2. `count`: 남은 기록 수, `average`: 평균(소수 첫째 자리 반올림, 기록이 없으면 0)\n3. `passed`: 기준 이상인 기록의 이름을 대문자로, 중복 없이 사전 순으로\n\n예: `([\"민준: 85\", \"서연:92\", \"잘못된줄\", \"지호: 58\", \"민준:70\"], 60)` → `{\"count\": 4, \"passed\": [\"민준\", \"서연\"], \"average\": 76.2}`",
+      "concepts": [
+        "comprehension",
+        "generator",
+        "string_parsing"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "def summarize(rows, min_score):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "summarize"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                "민준: 85",
+                "서연:92",
+                "잘못된줄",
+                "지호: 58",
+                "민준:70"
+              ],
+              60
+            ]
+          },
+          "expect": {
+            "return": {
+              "count": 4,
+              "passed": [
+                "민준",
+                "서연"
+              ],
+              "average": 76.2
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [],
+              60
+            ]
+          },
+          "expect": {
+            "return": {
+              "count": 0,
+              "passed": [],
+              "average": 0
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "a:100",
+                "b:x",
+                "c:0"
+              ],
+              50
+            ]
+          },
+          "expect": {
+            "return": {
+              "count": 2,
+              "passed": [
+                "A"
+              ],
+              "average": 50.0
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "각 줄을 `split(\":\")`로 나누고, 조각 수와 `strip().isdigit()`로 걸러 `(이름, 정수 점수)` 목록을 만드세요.",
+        "통과 이름은 집합 컴프리헨션 `{n.upper() for n, s in ... if s >= min_score}`을 정렬하면 됩니다.",
+        "평균은 `round(합계 / 개수, 1)`이고, 기록이 없을 때를 따로 처리합니다."
+      ],
+      "solution": "def summarize(rows, min_score):\n    parsed = []\n    for row in rows:\n        parts = row.split(\":\")\n        if len(parts) == 2 and parts[1].strip().isdigit():\n            parsed.append((parts[0].strip(), int(parts[1])))\n    passed = sorted({name.upper() for name, score in parsed if score >= min_score})\n    average = round(sum(s for _, s in parsed) / len(parsed), 1) if parsed else 0\n    return {\"count\": len(parsed), \"passed\": passed, \"average\": average}\n"
+    },
+    {
+      "id": "d49_code_2",
+      "kind": "coding",
+      "title": "[도전] 메모이제이션 데코레이터",
+      "prompt_md": "데코레이터 `memoize`를 작성하세요. 같은 인자로 다시 호출되면 함수를 실행하지 않고 저장해 둔 결과를 돌려줍니다. 감싼 함수에 `calls` 속성(실제로 원래 함수가 실행된 횟수)을 두세요.\n\n`check(n)`은 채점용이며 `[fib(n), 실제 실행 횟수]`를 반환합니다. 예: `check(10)` → `[55, 11]`",
+      "concepts": [
+        "decorator",
+        "closure",
+        "recursion",
+        "dict"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "# 여기에 memoize 데코레이터를 작성하세요\n\n\n@memoize\ndef fib(n):\n    if n <= 1:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\n\ndef check(n):\n    return [fib(n), fib.calls]\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "n=10",
+          "call": {
+            "args": [
+              10
+            ]
+          },
+          "expect": {
+            "return": [
+              55,
+              11
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              30
+            ]
+          },
+          "expect": {
+            "return": [
+              832040,
+              31
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              1
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`memoize` 안에 결과를 저장할 딕셔너리를 만들고, `wrapper(*args)`에서 `args`가 딕셔너리에 있으면 저장된 값을 반환합니다.",
+        "없으면 `wrapper.calls += 1` 후 원래 함수를 실행해 저장하고 반환합니다.",
+        "`wrapper.calls = 0`을 `return wrapper` 전에 설정하세요."
+      ],
+      "solution": "def memoize(func):\n    cache = {}\n\n    def wrapper(*args):\n        if args not in cache:\n            wrapper.calls += 1\n            cache[args] = func(*args)\n        return cache[args]\n\n    wrapper.calls = 0\n    return wrapper\n\n\n@memoize\ndef fib(n):\n    if n <= 1:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\n\ndef check(n):\n    return [fib(n), fib.calls]\n"
+    }
+  ]
+}

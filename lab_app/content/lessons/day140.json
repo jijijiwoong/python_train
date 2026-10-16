@@ -1,0 +1,353 @@
+{
+  "schema_version": 1,
+  "day": 140,
+  "title": "20주차 누적 복습",
+  "stage": "dl",
+  "week": 20,
+  "is_review": true,
+  "objectives": [
+    "실제 데이터를 DataLoader로 읽어 드롭아웃이 있는 모델을 Adam으로 학습하고 평가할 수 있다."
+  ],
+  "concepts": [
+    "dataloader",
+    "optimizer",
+    "lr_schedule",
+    "dropout",
+    "training_loop"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "20주차 돌아보기",
+      "content_md": "| 날 | 주제 | 핵심 |\n|---|---|---|\n| 134 | DataLoader | `TensorDataset`, `batch_size`, `shuffle` |\n| 135 | Dataset | `__len__`, `__getitem__` |\n| 136 | 미니배치 | 에폭·스텝, 에폭 평균 손실 |\n| 137 | 옵티마이저 | SGD, 모멘텀, Adam |\n| 138 | 스케줄러 | StepLR, ExponentialLR |\n| 139 | 규제 | 드롭아웃, `train()`/`eval()`, weight_decay |",
+      "quiz": [
+        {
+          "id": "d140_review_q1",
+          "question_md": "평가 전에 반드시 부를 것은?",
+          "choices": [
+            "`model.train()`",
+            "`model.eval()`",
+            "`scheduler.step()`",
+            "`optimizer.step()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d140_review_q2",
+          "question_md": "에폭 끝에 학습률을 줄이는 호출은?",
+          "choices": [
+            "`optimizer.zero_grad()`",
+            "`scheduler.step()`",
+            "`loss.backward()`",
+            "`model.eval()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "전체 과정 정리",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "지금까지 배운 것을 한 번에 쓰면 아래와 같습니다. **평가 함수**를 따로 두면 학습 중간에도 쉽게 성능을 확인할 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = total = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n            total += len(yb)\n    model.train()\n    return correct / total\n\ntorch.manual_seed(0)\nmodel = nn.Sequential(nn.Linear(4, 8), nn.ReLU(), nn.Dropout(0.2), nn.Linear(8, 3))\nloader = [(torch.randn(5, 4), torch.tensor([0, 1, 2, 0, 1]))]\nprint(round(evaluate(model, loader), 2), model.training)\n",
+          "runnable": true,
+          "expected_output": "0.4 True\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "도전 문제의 **워밍업**은 처음 몇 에폭 동안 학습률을 0에서 목표값까지 천천히 올리는 기법입니다. `LambdaLR`에 에폭 → 배율 함수를 넘기면 됩니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "모드 전환을 확인하세요.",
+      "exercise_ids": [
+        "d140_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d140_code_1",
+        "d140_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "마무리",
+      "points": [
+        "데이터: Dataset → DataLoader(셔플).",
+        "학습: 에폭 × 배치, zero_grad → backward → step.",
+        "규제: 드롭아웃·weight_decay, 평가 땐 eval.",
+        "다음 주: 이미지를 위한 합성곱 신경망."
+      ],
+      "quiz": [
+        {
+          "id": "d140_summary_q1",
+          "question_md": "`model.training` 속성이 False인 상태는?",
+          "choices": [
+            "학습 모드",
+            "평가 모드",
+            "기울기 없음",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d140_summary_q2",
+          "question_md": "`LambdaLR`에 넘기는 함수의 반환값은?",
+          "choices": [
+            "새 손실",
+            "기본 학습률에 곱할 배율",
+            "에폭 수",
+            "가중치"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d140_fill_1",
+      "kind": "fill_blank",
+      "title": "모드 전환",
+      "prompt_md": "드롭아웃이 있는 Sequential 모델을 만들고 `[처음 training 값, eval 뒤 training 값, train 뒤 training 값]`을 반환하세요.",
+      "concepts": [
+        "dropout"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from torch import nn\n\n\ndef modes(p):\n    model = nn.Sequential(nn.Linear(2, 4), nn.Dropout(p), nn.Linear(4, 1))\n    states = [model.training]\n    model.____\n    states.append(model.training)\n    model.____\n    states.append(model.training)\n    return states\n",
+      "entry": {
+        "mode": "function",
+        "name": "modes"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0.5
+            ]
+          },
+          "expect": {
+            "return": [
+              true,
+              false,
+              true
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.1
+            ]
+          },
+          "expect": {
+            "return": [
+              true,
+              false,
+              true
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "평가 모드로 바꾸는 메서드입니다.",
+        "학습 모드로 되돌리는 메서드입니다."
+      ],
+      "solution": "from torch import nn\n\n\ndef modes(p):\n    model = nn.Sequential(nn.Linear(2, 4), nn.Dropout(p), nn.Linear(4, 1))\n    states = [model.training]\n    model.eval()\n    states.append(model.training)\n    model.train()\n    states.append(model.training)\n    return states\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d140_code_1",
+      "kind": "coding",
+      "title": "와인 분류기",
+      "prompt_md": "주어진 `wine_loaders(seed)`로 학습·테스트 DataLoader를 만드세요. `torch.manual_seed(0)` 후 `nn.Sequential(nn.Linear(13, 32), nn.ReLU(), nn.Dropout(0.2), nn.Linear(32, 3))`, `optim.Adam(lr=0.01)`, CrossEntropyLoss로 `epochs` 에폭 학습하세요. 그다음 `model.eval()` 상태에서 테스트 정확도를 구해 `[마지막 에폭 평균 손실, 테스트 정확도]`(소수 넷째 자리)를 반환합니다.",
+      "concepts": [
+        "dataloader",
+        "training_loop",
+        "dropout"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_wine\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\ndef wine_loaders(seed):\n    X, y = load_wine(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.3, random_state=seed, stratify=y)\n    scaler = StandardScaler().fit(X_train)\n    to_t = lambda a: torch.tensor(a, dtype=torch.float32)\n    train = TensorDataset(to_t(scaler.transform(X_train)), torch.tensor(y_train))\n    test = TensorDataset(to_t(scaler.transform(X_test)), torch.tensor(y_test))\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(train, batch_size=16, shuffle=True, generator=g), DataLoader(\n        test,\n        batch_size=64,\n    )\n\n\ndef train_wine(seed, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "train_wine"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              20
+            ]
+          },
+          "expect": {
+            "return": [
+              0.0101,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              10
+            ]
+          },
+          "expect": {
+            "return": [
+              0.0126,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        }
+      ],
+      "hints": [
+        "에폭 평균 손실은 에폭마다 합계를 새로 시작해 구합니다.",
+        "평가는 `model.eval()`과 `torch.no_grad()` 안에서, 맞힌 개수를 테스트 개수로 나눕니다."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_wine\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\ndef wine_loaders(seed):\n    X, y = load_wine(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.3, random_state=seed, stratify=y)\n    scaler = StandardScaler().fit(X_train)\n    to_t = lambda a: torch.tensor(a, dtype=torch.float32)\n    train = TensorDataset(to_t(scaler.transform(X_train)), torch.tensor(y_train))\n    test = TensorDataset(to_t(scaler.transform(X_test)), torch.tensor(y_test))\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(train, batch_size=16, shuffle=True, generator=g), DataLoader(\n        test,\n        batch_size=64,\n    )\n\n\ndef train_wine(seed, epochs):\n    train_loader, test_loader = wine_loaders(seed)\n    torch.manual_seed(0)\n    model = nn.Sequential(nn.Linear(13, 32), nn.ReLU(), nn.Dropout(0.2), nn.Linear(32, 3))\n    optimizer = optim.Adam(model.parameters(), lr=0.01)\n    loss_fn = nn.CrossEntropyLoss()\n    for _ in range(epochs):\n        total, count = 0.0, 0\n        for xb, yb in train_loader:\n            loss = loss_fn(model(xb), yb)\n            optimizer.zero_grad()\n            loss.backward()\n            optimizer.step()\n            total += loss.item() * len(yb)\n            count += len(yb)\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in test_loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return [round(total / count, 4), round(correct / len(test_loader.dataset), 4)]\n",
+      "time_limit_sec": 90
+    },
+    {
+      "id": "d140_code_2",
+      "kind": "coding",
+      "title": "학습률 워밍업(도전)",
+      "prompt_md": "`optim.lr_scheduler.LambdaLR`로 처음 `warmup` 에폭 동안 배율을 `(에폭 + 1) / warmup`으로 키우고, 그 뒤로는 1을 유지하세요. 기본 학습률 `base_lr`인 SGD에서 에폭마다 시작할 때의 학습률을 소수 여섯째 자리로 기록한 리스트를 반환합니다.",
+      "concepts": [
+        "lr_schedule"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import torch\nfrom torch import optim\n\n\ndef warmup_lrs(base_lr, warmup, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "warmup_lrs"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0.1,
+              4,
+              6
+            ]
+          },
+          "expect": {
+            "return": [
+              0.025,
+              0.05,
+              0.075,
+              0.1,
+              0.1,
+              0.1
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-07
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1.0,
+              2,
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              0.5,
+              1.0,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-07
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.5,
+              1,
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              0.5,
+              0.5
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-07
+          }
+        }
+      ],
+      "hints": [
+        "LambdaLR의 두 번째 인자는 에폭 번호를 받아 배율을 돌려주는 함수입니다.",
+        "배율은 `min(1.0, (e + 1) / warmup)`처럼 1을 넘지 않게 하세요."
+      ],
+      "solution": "import torch\nfrom torch import optim\n\n\ndef warmup_lrs(base_lr, warmup, epochs):\n    w = torch.zeros(1, requires_grad=True)\n    opt = optim.SGD([w], lr=base_lr)\n    scheduler = optim.lr_scheduler.LambdaLR(opt, lambda e: min(1.0, (e + 1) / warmup))\n    history = []\n    for _ in range(epochs):\n        history.append(round(opt.param_groups[0][\"lr\"], 6))\n        opt.step()\n        scheduler.step()\n    return history\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "day": 136,
+  "title": "미니배치 학습",
+  "stage": "dl",
+  "week": 20,
+  "is_review": false,
+  "objectives": [
+    "DataLoader로 미니배치 학습 루프를 작성할 수 있다.",
+    "에폭과 스텝(배치)을 구분하고 에폭 평균 손실을 구할 수 있다."
+  ],
+  "concepts": [
+    "dataloader",
+    "training_loop"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 직접 만든 Dataset을 DataLoader로 읽었습니다. 이제 학습 루프에 넣어 봅시다.",
+      "quiz": [
+        {
+          "id": "d136_review_q1",
+          "question_md": "Dataset 클래스에 반드시 필요한 두 메서드는?",
+          "choices": [
+            "`__init__`, `forward`",
+            "`__len__`, `__getitem__`",
+            "`fit`, `transform`",
+            "`step`, `zero_grad`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "에폭과 배치",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "학습 루프가 두 겹이 됩니다. 바깥 루프는 **에폭**(데이터 전체를 한 번 보는 것), 안쪽 루프는 **배치**마다 한 번의 갱신(스텝)입니다.\n\n배치마다 손실이 다르므로 보통 에폭이 끝날 때 배치 손실에 배치 크기를 곱해 더한 뒤 전체 개수로 나눈 **에폭 평균 손실**을 기록합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\ntorch.manual_seed(0)\nX = torch.randn(64, 2)\ny = (2 * X[:, 0] - X[:, 1]).unsqueeze(1)\nloader = DataLoader(TensorDataset(X, y), batch_size=16, shuffle=True)\nmodel = nn.Linear(2, 1)\noptimizer = optim.SGD(model.parameters(), lr=0.1)\nfor epoch in range(3):\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.MSELoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(xb)\n    print(epoch, round(total / len(X), 4))\n",
+          "runnable": true,
+          "expected_output": "0 2.7648\n1 0.6892\n2 0.1594\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "배치가 작을수록 한 에폭에 갱신을 여러 번 해서 빨리 배우지만, 손실은 더 들쭉날쭉합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "배치 루프를 완성하세요.",
+      "exercise_ids": [
+        "d136_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "에폭마다 평균 손실을 기록하세요.",
+      "exercise_ids": [
+        "d136_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "에폭 = 전체 한 바퀴, 스텝 = 배치 하나.",
+        "안쪽 루프에서 배치마다 갱신.",
+        "에폭 평균 손실 = Σ(손실×배치 크기) / 전체 수.",
+        "배치 크기는 속도와 안정성의 균형."
+      ],
+      "quiz": [
+        {
+          "id": "d136_summary_q1",
+          "question_md": "샘플 64개, batch_size 16이면 한 에폭의 스텝 수는?",
+          "choices": [
+            "1",
+            "4",
+            "16",
+            "64"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d136_summary_q2",
+          "question_md": "에폭 평균 손실을 구할 때 배치 손실에 곱하는 것은?",
+          "choices": [
+            "학습률",
+            "배치 크기",
+            "에폭 번호",
+            "1"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d136_fill_1",
+      "kind": "fill_blank",
+      "title": "배치 루프",
+      "prompt_md": "주어진 데이터로 한 에폭 동안 배치마다 갱신하고, 수행한 스텝 수를 반환하세요.",
+      "concepts": [
+        "dataloader",
+        "training_loop"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef one_epoch(n, batch_size):\n    torch.manual_seed(0)\n    X, y = torch.randn(n, 2), torch.randn(n, 1)\n    loader = DataLoader(TensorDataset(X, y), batch_size=batch_size)\n    model = nn.Linear(2, 1)\n    optimizer = optim.SGD(model.parameters(), lr=0.1)\n    steps = 0\n    for ____:\n        loss = nn.MSELoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        ____\n    return steps\n",
+      "entry": {
+        "mode": "function",
+        "name": "one_epoch"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              64,
+              16
+            ]
+          },
+          "expect": {
+            "return": 4
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              10,
+              3
+            ]
+          },
+          "expect": {
+            "return": 4
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5,
+              8
+            ]
+          },
+          "expect": {
+            "return": 1
+          }
+        }
+      ],
+      "hints": [
+        "DataLoader에서 꺼내는 값은 입력 배치와 정답 배치 두 개입니다.",
+        "갱신 호출 뒤 스텝 수를 1 늘리세요."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef one_epoch(n, batch_size):\n    torch.manual_seed(0)\n    X, y = torch.randn(n, 2), torch.randn(n, 1)\n    loader = DataLoader(TensorDataset(X, y), batch_size=batch_size)\n    model = nn.Linear(2, 1)\n    optimizer = optim.SGD(model.parameters(), lr=0.1)\n    steps = 0\n    for xb, yb in loader:\n        loss = nn.MSELoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        steps += 1\n    return steps\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d136_code_1",
+      "kind": "coding",
+      "title": "에폭 평균 손실",
+      "prompt_md": "주어진 `make_data(seed)`로 데이터를 만든 뒤 `torch.manual_seed(0)` 후 `nn.Linear(2, 1)`과 `optim.SGD(lr=0.1)`을 만드세요. DataLoader는 `batch_size`, `shuffle=True`, `generator=torch.Generator().manual_seed(0)`으로 만듭니다. MSELoss로 `epochs`번 학습하며 에폭 평균 손실을 소수 넷째 자리로 기록한 리스트를 반환하세요.",
+      "concepts": [
+        "dataloader",
+        "training_loop"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef make_data(seed, n=64):\n    torch.manual_seed(seed)\n    X = torch.randn(n, 2)\n    y = (2 * X[:, 0] - X[:, 1] + 0.5).unsqueeze(1) + 0.1 * torch.randn(n, 1)\n    return X, y\n\n\ndef epoch_losses(seed, batch_size, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "epoch_losses"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              16,
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              3.7623,
+              0.9095,
+              0.2261
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              8,
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              2.6316,
+              0.0824,
+              0.0162,
+              0.013
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2,
+              64,
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              5.4096,
+              3.827
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        }
+      ],
+      "hints": [
+        "바깥 루프는 에폭, 안쪽 루프는 DataLoader입니다.",
+        "에폭이 끝날 때 합계를 `len(X)`로 나누어 기록합니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef make_data(seed, n=64):\n    torch.manual_seed(seed)\n    X = torch.randn(n, 2)\n    y = (2 * X[:, 0] - X[:, 1] + 0.5).unsqueeze(1) + 0.1 * torch.randn(n, 1)\n    return X, y\n\n\ndef epoch_losses(seed, batch_size, epochs):\n    X, y = make_data(seed)\n    torch.manual_seed(0)\n    model = nn.Linear(2, 1)\n    optimizer = optim.SGD(model.parameters(), lr=0.1)\n    g = torch.Generator().manual_seed(0)\n    loader = DataLoader(TensorDataset(X, y), batch_size=batch_size, shuffle=True, generator=g)\n    history = []\n    for _ in range(epochs):\n        total = 0.0\n        for xb, yb in loader:\n            loss = nn.MSELoss()(model(xb), yb)\n            optimizer.zero_grad()\n            loss.backward()\n            optimizer.step()\n            total += loss.item() * len(xb)\n        history.append(round(total / len(X), 4))\n    return history\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

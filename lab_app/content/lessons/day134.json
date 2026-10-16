@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "day": 134,
+  "title": "TensorDataset과 DataLoader",
+  "stage": "dl",
+  "week": 20,
+  "is_review": false,
+  "objectives": [
+    "TensorDataset으로 입력과 정답을 묶을 수 있다.",
+    "DataLoader로 미니배치를 만들고 섞을 수 있다."
+  ],
+  "concepts": [
+    "dataloader",
+    "tensor"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "지난주 돌아보기",
+      "content_md": "지난주에는 데이터 전체를 한 번에 모델에 넣었습니다. 데이터가 수만 개라면 한 번에 넣기 어렵겠죠.",
+      "quiz": [
+        {
+          "id": "d134_review_q1",
+          "question_md": "학습 루프의 네 단계 중 기울기를 지우는 호출은?",
+          "choices": [
+            "`optimizer.step()`",
+            "`optimizer.zero_grad()`",
+            "`loss.backward()`",
+            "`model.eval()`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "데이터를 조각내기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "- `TensorDataset(X, y)`: 입력과 정답을 짝지어 `ds[i]` → `(X[i], y[i])`\n- `DataLoader(ds, batch_size=32, shuffle=True)`: 반복할 때마다 **미니배치** `(xb, yb)`를 꺼내 줌\n\n`len(loader)`는 배치 개수입니다. 마지막 배치는 남은 개수만큼 작아질 수 있고, `drop_last=True`면 버립니다. 섞는 순서를 고정하려면 `generator=torch.Generator().manual_seed(값)`을 넘깁니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch.utils.data import DataLoader, TensorDataset\n\nX = torch.arange(20, dtype=torch.float32).reshape(10, 2)\ny = torch.arange(10)\nds = TensorDataset(X, y)\nprint(len(ds), ds[3])\nloader = DataLoader(ds, batch_size=4)\nprint(len(loader))\nfor xb, yb in loader:\n    print(xb.shape, yb.tolist())\n",
+          "runnable": true,
+          "expected_output": "10 (tensor([6., 7.]), tensor(3))\n3\ntorch.Size([4, 2]) [0, 1, 2, 3]\ntorch.Size([4, 2]) [4, 5, 6, 7]\ntorch.Size([2, 2]) [8, 9]\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "학습 데이터는 `shuffle=True`로 매 에폭 순서를 섞고, 평가 데이터는 섞을 필요가 없습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "배치 정보를 구하세요.",
+      "exercise_ids": [
+        "d134_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "섞인 배치를 확인하세요.",
+      "exercise_ids": [
+        "d134_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`TensorDataset(X, y)`로 짝짓기.",
+        "`DataLoader(ds, batch_size, shuffle)`로 미니배치.",
+        "`len(loader)` = 배치 수.",
+        "`generator`로 섞는 순서 고정, `drop_last`로 자투리 버리기."
+      ],
+      "quiz": [
+        {
+          "id": "d134_summary_q1",
+          "question_md": "샘플 10개를 batch_size 4로 나누면 배치 수는?",
+          "choices": [
+            "2",
+            "3",
+            "4",
+            "10"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d134_summary_q2",
+          "question_md": "학습용 DataLoader에 보통 주는 옵션은?",
+          "choices": [
+            "`shuffle=True`",
+            "`shuffle=False`",
+            "`drop_last=True`만",
+            "없음"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d134_fill_1",
+      "kind": "fill_blank",
+      "title": "배치 정보",
+      "prompt_md": "샘플 `n`개를 `batch_size`로 나눈 DataLoader의 `[배치 수, 배치마다의 크기 리스트]`를 반환하세요.",
+      "concepts": [
+        "dataloader"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef batch_info(n, batch_size):\n    X = torch.arange(n * 2, dtype=torch.float32).reshape(n, 2)\n    y = torch.arange(n)\n    loader = DataLoader(____, batch_size=batch_size)\n    sizes = [len(yb) for xb, yb in loader]\n    return [____, sizes]\n",
+      "entry": {
+        "mode": "function",
+        "name": "batch_info"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              10,
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              [
+                4,
+                4,
+                2
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              6,
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              2,
+              [
+                3,
+                3
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5,
+              10
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              [
+                5
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "입력과 정답을 짝짓는 데이터셋을 만드세요.",
+        "DataLoader에 len을 적용하면 배치 수입니다."
+      ],
+      "solution": "import torch\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef batch_info(n, batch_size):\n    X = torch.arange(n * 2, dtype=torch.float32).reshape(n, 2)\n    y = torch.arange(n)\n    loader = DataLoader(TensorDataset(X, y), batch_size=batch_size)\n    sizes = [len(yb) for xb, yb in loader]\n    return [len(loader), sizes]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d134_code_1",
+      "kind": "coding",
+      "title": "섞인 배치",
+      "prompt_md": "정답이 `0 ~ n-1`인 TensorDataset(입력은 `torch.zeros(n, 1)`)을 만들고, `torch.Generator().manual_seed(seed)`로 섞는 DataLoader(`shuffle=True`)의 첫 배치 정답 리스트와, `drop_last=True`일 때의 배치 수를 `[첫 배치 정답, 배치 수]`로 반환하세요.",
+      "concepts": [
+        "dataloader"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef shuffled(seed, n, batch_size):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "shuffled"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              10,
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                3,
+                7,
+                5,
+                2
+              ],
+              2
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              7,
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                4,
+                3,
+                5
+              ],
+              2
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              42,
+              5,
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                3
+              ],
+              2
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`next(iter(loader))`로 첫 배치를 꺼낼 수 있습니다.",
+        "배치 수 확인용 DataLoader는 `drop_last=True`로 따로 만드세요."
+      ],
+      "solution": "import torch\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef shuffled(seed, n, batch_size):\n    ds = TensorDataset(torch.zeros(n, 1), torch.arange(n))\n    g = torch.Generator().manual_seed(seed)\n    loader = DataLoader(ds, batch_size=batch_size, shuffle=True, generator=g)\n    xb, yb = next(iter(loader))\n    dropped = DataLoader(ds, batch_size=batch_size, drop_last=True)\n    return [yb.tolist(), len(dropped)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

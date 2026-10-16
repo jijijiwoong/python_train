@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "day": 42,
+  "title": "6주차 누적 복습",
+  "stage": "advanced_data",
+  "week": 6,
+  "is_review": true,
+  "objectives": [
+    "클래스·메서드·특수 메서드·상속·프로퍼티를 조합해 작은 시스템을 설계할 수 있다."
+  ],
+  "concepts": [
+    "class",
+    "method",
+    "dunder",
+    "inheritance",
+    "property",
+    "classmethod"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "| Day | 주제 | 핵심 |\n|---|---|---|\n| 36 | 클래스와 객체 | `class`, `__init__`, `self.속성` |\n| 37 | 메서드 | `def m(self, ...)`, `obj.m()` |\n| 38 | 특수 메서드 | `__str__`, `__repr__`, `__add__`, `__eq__`, `__len__` |\n| 39 | 상속 | `class B(A)`, 오버라이딩, `super()` |\n| 40 | 캡슐화 | `_속성`, `@property`, setter |\n| 41 | 클래스 수준 | 클래스 변수, `@classmethod`, `@staticmethod`, `@dataclass` |",
+      "quiz": [
+        {
+          "id": "d42_review_q1",
+          "question_md": "객체를 리스트에 넣고 출력할 때 보이는 모양을 정하는 메서드는?",
+          "choices": [
+            "`__str__`",
+            "`__repr__`",
+            "`__init__`",
+            "`__len__`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d42_review_q2",
+          "question_md": "\"관리자는 직원이다\" 관계를 코드로 표현하면?",
+          "choices": [
+            "`class Employee(Manager)`",
+            "`class Manager(Employee)`",
+            "`Manager = Employee`",
+            "`@dataclass`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "자식(Manager)이 부모(Employee)를 상속합니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "객체로 설계하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "객체지향 설계는 \"어떤 **물건**(명사)이 있고, 각각 **무엇을 할 수 있나**(동사)\"를 정하는 일입니다. 명사는 클래스, 동사는 메서드가 됩니다. 규칙에 어긋나는 요청은 예외로 알리고, 바깥(화면·입출력)은 그 예외를 받아 메시지로 바꿉니다."
+        },
+        {
+          "kind": "code",
+          "code": "class Stack:\n    def __init__(self):\n        self._items = []\n\n    def push(self, x):\n        self._items.append(x)\n\n    def pop(self):\n        if not self._items:\n            raise IndexError(\"빈 스택\")\n        return self._items.pop()\n\n    def __len__(self):\n        return len(self._items)\n\ns = Stack()\ns.push(1)\ns.push(2)\nprint(s.pop(), len(s))\n",
+          "runnable": true,
+          "expected_output": "2 1\n"
+        },
+        {
+          "kind": "tip",
+          "md": "오늘 도전 문제의 괄호 검사는 스택(나중에 넣은 것을 먼저 꺼내는 구조)의 대표적인 활용입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "스택 클래스의 빈칸을 채우세요.",
+      "exercise_ids": [
+        "d42_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d42_code_1",
+        "d42_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "6주차 마무리",
+      "points": [
+        "클래스 = 데이터(속성) + 동작(메서드).",
+        "특수 메서드로 파이썬 문법과 연결, 상속으로 재사용, property로 보호.",
+        "규칙 위반은 예외로, 메시지 출력은 바깥에서.",
+        "다음 주: 컴프리헨션·제너레이터·데코레이터로 더 파이썬다운 코드 쓰기."
+      ],
+      "quiz": [
+        {
+          "id": "d42_summary_q1",
+          "question_md": "스택에서 `push(1)`, `push(2)`, `push(3)` 후 `pop()`의 결과는?",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "오류"
+          ],
+          "answer_index": 2,
+          "explanation_md": "나중에 넣은 것이 먼저 나옵니다."
+        },
+        {
+          "id": "d42_summary_q2",
+          "question_md": "설계할 때 메서드가 되기 알맞은 것은?",
+          "choices": [
+            "명사",
+            "동사(할 수 있는 일)",
+            "숫자",
+            "모듈 이름"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d42_fill_1",
+      "kind": "fill_blank",
+      "title": "스택",
+      "prompt_md": "`Stack`의 `push`와 `peek`(꺼내지 않고 맨 위 값 보기)을 완성하세요. 빈 스택에서 `peek`하면 `IndexError`입니다.",
+      "concepts": [
+        "class",
+        "method",
+        "dunder"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "class Stack:\n    def __init__(self):\n        self._items = []\n\n    def push(self, x):\n        self._items.____(x)\n\n    def peek(self):\n        if not self._items:\n            raise IndexError(\"빈 스택\")\n        return self._items[____]\n\n    def __len__(self):\n        return len(self._items)\n\n\ndef check(values):\n    s = Stack()\n    for v in values:\n        s.push(v)\n    return [s.peek(), len(s)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "세 개",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              3
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "빈 스택",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "raises": "IndexError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                "a"
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "a",
+              1
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "리스트 끝에 추가하는 메서드입니다.",
+        "리스트의 마지막 원소를 가리키는 인덱스입니다."
+      ],
+      "solution": "class Stack:\n    def __init__(self):\n        self._items = []\n\n    def push(self, x):\n        self._items.append(x)\n\n    def peek(self):\n        if not self._items:\n            raise IndexError(\"빈 스택\")\n        return self._items[-1]\n\n    def __len__(self):\n        return len(self._items)\n\n\ndef check(values):\n    s = Stack()\n    for v in values:\n        s.push(v)\n    return [s.peek(), len(s)]\n"
+    },
+    {
+      "id": "d42_code_1",
+      "kind": "coding",
+      "title": "도서관 시스템",
+      "prompt_md": "`Library` 클래스를 작성하세요. 책 이름 → 빌린 사람(없으면 `None`)을 관리합니다.\n\n- `add(title)`: 이미 있으면 `ValueError(\"이미 있는 책: 제목\")`\n- `borrow(title, person)`: 없는 책이면 `KeyError(title)`, 대출 중이면 `ValueError(\"대출 중: 제목\")`\n- `return_book(title)`: 없는 책이면 `KeyError(title)`, 빌려 가지 않은 책이면 `ValueError(\"대출 기록 없음: 제목\")`\n\n`simulate`는 채점용이며 성공 메시지와 예외 메시지를 기록합니다.",
+      "concepts": [
+        "class",
+        "method",
+        "exception",
+        "dict"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "# 여기에 Library 클래스를 작성하세요\n\n\ndef simulate(commands):\n    lib = Library()\n    log = []\n    for c in commands:\n        try:\n            if c[0] == \"add\":\n                lib.add(c[1])\n                log.append(f\"추가: {c[1]}\")\n            elif c[0] == \"borrow\":\n                lib.borrow(c[1], c[2])\n                log.append(f\"대출: {c[1]} → {c[2]}\")\n            else:\n                lib.return_book(c[1])\n                log.append(f\"반납: {c[1]}\")\n        except KeyError as e:\n            log.append(f\"오류: 없는 책 {e.args[0]}\")\n        except ValueError as e:\n            log.append(f\"오류: {e}\")\n    return log\n",
+      "entry": {
+        "mode": "function",
+        "name": "simulate"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "여러 명령",
+          "call": {
+            "args": [
+              [
+                [
+                  "add",
+                  "파이썬"
+                ],
+                [
+                  "add",
+                  "자료구조"
+                ],
+                [
+                  "borrow",
+                  "파이썬",
+                  "민준"
+                ],
+                [
+                  "borrow",
+                  "파이썬",
+                  "서연"
+                ],
+                [
+                  "return",
+                  "자료구조"
+                ],
+                [
+                  "borrow",
+                  "C언어",
+                  "지호"
+                ],
+                [
+                  "return",
+                  "파이썬"
+                ],
+                [
+                  "add",
+                  "파이썬"
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "추가: 파이썬",
+              "추가: 자료구조",
+              "대출: 파이썬 → 민준",
+              "오류: 대출 중: 파이썬",
+              "오류: 대출 기록 없음: 자료구조",
+              "오류: 없는 책 C언어",
+              "반납: 파이썬",
+              "오류: 이미 있는 책: 파이썬"
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  "add",
+                  "a"
+                ],
+                [
+                  "return",
+                  "a"
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              "추가: a",
+              "오류: 대출 기록 없음: a"
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              []
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        }
+      ],
+      "hints": [
+        "`__init__`에서 `self.books = {}`로 시작합니다. 값이 `None`이면 대출 가능.",
+        "각 메서드는 검사 순서가 중요합니다: 먼저 책이 있는지(`KeyError`), 그다음 상태(`ValueError`).",
+        "`KeyError(title)`처럼 책 이름을 넘겨야 `simulate`가 메시지를 만들 수 있습니다."
+      ],
+      "solution": "class Library:\n    def __init__(self):\n        self.books = {}\n\n    def add(self, title):\n        if title in self.books:\n            raise ValueError(f\"이미 있는 책: {title}\")\n        self.books[title] = None\n\n    def borrow(self, title, person):\n        if title not in self.books:\n            raise KeyError(title)\n        if self.books[title] is not None:\n            raise ValueError(f\"대출 중: {title}\")\n        self.books[title] = person\n\n    def return_book(self, title):\n        if title not in self.books:\n            raise KeyError(title)\n        if self.books[title] is None:\n            raise ValueError(f\"대출 기록 없음: {title}\")\n        self.books[title] = None\n\n\ndef simulate(commands):\n    lib = Library()\n    log = []\n    for c in commands:\n        try:\n            if c[0] == \"add\":\n                lib.add(c[1])\n                log.append(f\"추가: {c[1]}\")\n            elif c[0] == \"borrow\":\n                lib.borrow(c[1], c[2])\n                log.append(f\"대출: {c[1]} → {c[2]}\")\n            else:\n                lib.return_book(c[1])\n                log.append(f\"반납: {c[1]}\")\n        except KeyError as e:\n            log.append(f\"오류: 없는 책 {e.args[0]}\")\n        except ValueError as e:\n            log.append(f\"오류: {e}\")\n    return log\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      }
+    },
+    {
+      "id": "d42_code_2",
+      "kind": "coding",
+      "title": "[도전] 괄호 짝 검사",
+      "prompt_md": "문자열의 괄호 `()`, `[]`, `{}`가 올바르게 짝지어져 있는지 **반환**하세요. 괄호가 아닌 문자는 무시합니다. 스택을 사용해 보세요.\n\n예: `balanced(\"(a[b]{c})\")` → `True`, `balanced(\"(]\")` → `False`",
+      "concepts": [
+        "class",
+        "list_method"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "def balanced(text):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "balanced"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "올바름",
+          "call": {
+            "args": [
+              "(a[b]{c})"
+            ]
+          },
+          "expect": {
+            "return": true
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "짝 안 맞음",
+          "call": {
+            "args": [
+              "(]"
+            ]
+          },
+          "expect": {
+            "return": false
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              ""
+            ]
+          },
+          "expect": {
+            "return": true
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "((()"
+            ]
+          },
+          "expect": {
+            "return": false
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "{[()()]}x"
+            ]
+          },
+          "expect": {
+            "return": true
+          }
+        },
+        {
+          "id": "h4",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              "}{"
+            ]
+          },
+          "expect": {
+            "return": false
+          }
+        }
+      ],
+      "hints": [
+        "여는 괄호를 만나면 스택에 넣고, 닫는 괄호를 만나면 맨 위의 여는 괄호와 짝이 맞는지 확인합니다.",
+        "닫는 괄호 → 여는 괄호 짝을 딕셔너리 `{\")\": \"(\", ...}`로 두면 편합니다.",
+        "마지막에 스택이 비어 있어야 모든 괄호가 닫힌 것입니다."
+      ],
+      "solution": "def balanced(text):\n    pairs = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n    stack = []\n    for ch in text:\n        if ch in \"([{\":\n            stack.append(ch)\n        elif ch in pairs:\n            if not stack or stack.pop() != pairs[ch]:\n                return False\n    return len(stack) == 0\n"
+    }
+  ]
+}

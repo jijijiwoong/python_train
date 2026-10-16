@@ -1,0 +1,430 @@
+{
+  "schema_version": 1,
+  "day": 63,
+  "title": "9주차 누적 복습",
+  "stage": "advanced_data",
+  "week": 9,
+  "is_review": true,
+  "objectives": [
+    "pandas의 선택·변환·결측치·그룹·합치기를 조합해 질문에 답할 수 있다."
+  ],
+  "concepts": [
+    "pandas_basics",
+    "pandas_select",
+    "pandas_transform",
+    "pandas_missing",
+    "pandas_groupby",
+    "pandas_merge"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "| Day | 주제 | 핵심 |\n|---|---|---|\n| 57 | 기본 | `pd.DataFrame`, `shape`, `columns` |\n| 58 | 선택 | `loc`, `iloc`, `df[조건]` |\n| 59 | 변환 | `sort_values`, 새 열, `apply`, `map` |\n| 60 | 결측치 | `isna`, `dropna`, `fillna` |\n| 61 | 그룹 | `groupby`, `agg`, `size` |\n| 62 | 합치기 | `merge`, `concat` |",
+      "quiz": [
+        {
+          "id": "d63_review_q1",
+          "question_md": "\"반별 평균 총점\"을 구하는 순서로 알맞은 것은?",
+          "choices": [
+            "groupby → 새 열",
+            "새 열(총점) → groupby → mean",
+            "merge → dropna",
+            "sort → head"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d63_review_q2",
+          "question_md": "`df[\"총점\"].idxmax()`가 돌려주는 것은?",
+          "choices": [
+            "가장 큰 총점",
+            "가장 큰 총점이 있는 행의 인덱스",
+            "열 이름",
+            "총점 개수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "질문 → 코드",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "데이터 분석은 **질문을 코드로 옮기는 일**입니다. \"누가 1등인가?\" → 새 열 + `idxmax`, \"반별로 어떤가?\" → `groupby`, \"몇 명인가?\" → 조건의 `sum()`."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\"이름\": [\"민준\", \"서연\", \"지호\"], \"반\": [\"A\", \"B\", \"A\"], \"국어\": [85, 92, 78], \"수학\": [70, 88, 95]})\ndf[\"총점\"] = df[\"국어\"] + df[\"수학\"]\nprint(df.loc[df[\"총점\"].idxmax(), \"이름\"])\nprint(df.groupby(\"반\")[\"총점\"].mean().to_dict())\nprint(int((df[\"총점\"] > 160).sum()))\n",
+          "runnable": true,
+          "expected_output": "서연\n{'A': 164.0, 'B': 180.0}\n2\n",
+          "time_limit_sec": 15
+        },
+        {
+          "kind": "tip",
+          "md": "`pivot_table(index=행, columns=열, values=값, aggfunc=\"mean\")`은 엑셀의 피벗 테이블처럼 두 기준으로 동시에 요약합니다(도전 문제)."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "가장 높은 값을 가진 행의 이름을 찾으세요.",
+      "exercise_ids": [
+        "d63_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d63_code_1",
+        "d63_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "9주차 마무리",
+      "points": [
+        "질문을 선택·변환·그룹 연산으로 번역한다.",
+        "`idxmax`로 최댓값 행 찾기, 조건의 `sum()`으로 개수 세기.",
+        "`pivot_table`로 두 기준 요약.",
+        "다음 주: 그래프로 데이터를 보고 탐색적 분석을 한다."
+      ],
+      "quiz": [
+        {
+          "id": "d63_summary_q1",
+          "question_md": "점수가 80 이상인 학생 수는?",
+          "choices": [
+            "`df[\"점수\"] >= 80`",
+            "`(df[\"점수\"] >= 80).sum()`",
+            "`df[\"점수\"].count()`",
+            "`len(df)`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d63_summary_q2",
+          "question_md": "행=반, 열=성별로 평균 점수 표를 만드는 것은?",
+          "choices": [
+            "`groupby`",
+            "`pivot_table`",
+            "`concat`",
+            "`merge`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d63_fill_1",
+      "kind": "fill_blank",
+      "title": "최고 점수의 주인",
+      "prompt_md": "`이름`과 `점수` 열이 있는 데이터에서 점수가 가장 높은 사람의 이름을 반환하세요.",
+      "concepts": [
+        "pandas_select",
+        "pandas_basics"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef top_name(data):\n    df = pd.DataFrame(data)\n    return df.loc[df[\"점수\"].____(), \"____\"]\n",
+      "entry": {
+        "mode": "function",
+        "name": "top_name"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "a",
+                  "b",
+                  "c"
+                ],
+                "점수": [
+                  3,
+                  9,
+                  1
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": "b"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "x"
+                ],
+                "점수": [
+                  0
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": "x"
+          }
+        }
+      ],
+      "hints": [
+        "가장 큰 값이 있는 **인덱스**를 돌려주는 메서드입니다.",
+        "꺼낼 열 이름입니다."
+      ],
+      "solution": "import pandas as pd\n\n\ndef top_name(data):\n    df = pd.DataFrame(data)\n    return df.loc[df[\"점수\"].idxmax(), \"이름\"]\n",
+      "time_limit_sec": 15
+    },
+    {
+      "id": "d63_code_1",
+      "kind": "coding",
+      "title": "성적 분석",
+      "prompt_md": "이름·반·국어·수학 데이터를 분석해 딕셔너리를 반환하세요.\n\n- `best`: 총점(국어+수학) 1등의 이름\n- `class_mean`: 반별 총점 평균(소수 첫째 자리 반올림) 딕셔너리\n- `over_150`: 총점이 150 초과인 학생 수",
+      "concepts": [
+        "pandas_select",
+        "pandas_transform",
+        "pandas_groupby"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef analyze(data):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "analyze"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "학생 표",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "민준",
+                  "서연",
+                  "지호",
+                  "하나",
+                  "도윤"
+                ],
+                "반": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A"
+                ],
+                "국어": [
+                  85,
+                  92,
+                  78,
+                  66,
+                  90
+                ],
+                "수학": [
+                  70,
+                  88,
+                  95,
+                  72,
+                  60
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "best": "서연",
+              "class_mean": {
+                "A": 159.3,
+                "B": 159.0
+              },
+              "over_150": 3
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "a",
+                  "b"
+                ],
+                "반": [
+                  "X",
+                  "X"
+                ],
+                "국어": [
+                  100,
+                  50
+                ],
+                "수학": [
+                  51,
+                  50
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "best": "a",
+              "class_mean": {
+                "X": 125.5
+              },
+              "over_150": 1
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "먼저 총점 열을 만드세요.",
+        "1등은 `idxmax`, 반별 평균은 `groupby(\"반\")[\"총점\"].mean().round(1).to_dict()`.",
+        "개수는 조건 마스크의 `sum()`을 `int()`로."
+      ],
+      "solution": "import pandas as pd\n\n\ndef analyze(data):\n    df = pd.DataFrame(data)\n    df[\"총점\"] = df[\"국어\"] + df[\"수학\"]\n    best = df.loc[df[\"총점\"].idxmax(), \"이름\"]\n    class_mean = df.groupby(\"반\")[\"총점\"].mean().round(1).to_dict()\n    return {\"best\": best, \"class_mean\": class_mean, \"over_150\": int((df[\"총점\"] > 150).sum())}\n",
+      "time_limit_sec": 15
+    },
+    {
+      "id": "d63_code_2",
+      "kind": "coding",
+      "title": "[도전] 피벗 테이블",
+      "prompt_md": "반·성별·점수 데이터로 행 = 반, 열 = 성별인 평균 점수 피벗 테이블(소수 첫째 자리 반올림)을 만들고 `{반: {성별: 평균}}` 딕셔너리로 반환하세요. 값이 없는 칸은 `None`입니다.",
+      "concepts": [
+        "pandas_groupby",
+        "pandas_missing"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import pandas as pd\n\n\ndef pivot(data):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "pivot"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "빈 칸 포함",
+          "call": {
+            "args": [
+              {
+                "반": [
+                  "A",
+                  "A",
+                  "B",
+                  "B",
+                  "A"
+                ],
+                "성별": [
+                  "남",
+                  "여",
+                  "여",
+                  "여",
+                  "남"
+                ],
+                "점수": [
+                  80,
+                  90,
+                  70,
+                  75,
+                  60
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "A": {
+                "남": 70.0,
+                "여": 90.0
+              },
+              "B": {
+                "남": null,
+                "여": 72.5
+              }
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "반": [
+                  "C",
+                  "C"
+                ],
+                "성별": [
+                  "남",
+                  "여"
+                ],
+                "점수": [
+                  10,
+                  20
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": {
+              "C": {
+                "남": 10.0,
+                "여": 20.0
+              }
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "`df.pivot_table(index=\"반\", columns=\"성별\", values=\"점수\", aggfunc=\"mean\").round(1)`.",
+        "행마다 `iterrows()`로 돌며 안쪽 딕셔너리를 만들고, `pd.isna(값)`이면 `None`을 넣으세요."
+      ],
+      "solution": "import pandas as pd\n\n\ndef pivot(data):\n    df = pd.DataFrame(data)\n    table = df.pivot_table(index=\"반\", columns=\"성별\", values=\"점수\", aggfunc=\"mean\").round(1)\n    result = {}\n    for cls, row in table.iterrows():\n        result[cls] = {col: (None if pd.isna(v) else float(v)) for col, v in row.items()}\n    return result\n",
+      "time_limit_sec": 15
+    }
+  ]
+}

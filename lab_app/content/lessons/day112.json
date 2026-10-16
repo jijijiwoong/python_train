@@ -1,0 +1,474 @@
+{
+  "schema_version": 1,
+  "day": 112,
+  "title": "16주차 누적 복습",
+  "stage": "ml",
+  "week": 16,
+  "is_review": true,
+  "objectives": [
+    "표준화 → 군집 → 평가 → 해석의 비지도 분석 흐름을 완성할 수 있다."
+  ],
+  "concepts": [
+    "kmeans",
+    "cluster_eval",
+    "pca",
+    "anomaly",
+    "hierarchical"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "| Day | 주제 | 핵심 |\n|---|---|---|\n| 106 | k-평균 | 배정·이동 반복, inertia |\n| 107 | k 고르기 | 엘보, 실루엣 |\n| 108 | 계층·DBSCAN | 합치기, 밀도, 잡음 −1 |\n| 109 | PCA | 분산 큰 방향, 설명 분산 |\n| 110 | PCA 활용 | 2D 시각화, 복원 오차 |\n| 111 | 이상치 | IsolationForest |",
+      "quiz": [
+        {
+          "id": "d112_review_q1",
+          "question_md": "고객 세분화 전에 특성 스케일을 맞춰야 하는 이유는?",
+          "choices": [
+            "k-평균이 거리를 쓰기 때문",
+            "레이블이 필요해서",
+            "속도",
+            "PCA 금지"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d112_review_q2",
+          "question_md": "군집 결과를 해석하는 좋은 방법은?",
+          "choices": [
+            "군집 번호 외우기",
+            "군집별 특성 평균 비교",
+            "정확도 계산",
+            "inertia만 보기"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "군집에 이름 붙이기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "군집을 만든 뒤에는 군집별 **원래 단위의 특성 평균**을 보고 \"젊고 적게 쓰는 고객\", \"자주 오는 고액 고객\"처럼 이름을 붙입니다. 계산은 표준화 데이터로, 해석은 원래 데이터로 합니다."
+        },
+        {
+          "kind": "tip",
+          "md": "도전 문제에서는 k-평균의 한 단계(배정 → 중심 이동)를 NumPy로 직접 구현합니다. `P[:, None, :] - C[None, :, :]`처럼 축을 추가하면 모든 점과 모든 중심의 차이를 한 번에 계산할 수 있어요(브로드캐스팅)."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "표준화 공식을 완성하세요.",
+      "exercise_ids": [
+        "d112_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d112_code_1",
+        "d112_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "16주차 마무리",
+      "points": [
+        "비지도 흐름: 표준화 → 군집/차원 축소 → 평가 → 해석.",
+        "번호는 의미 없음, 크기·평균으로 설명.",
+        "PCA로 보고, 이상치는 따로 검토.",
+        "다음 주: 전처리와 파이프라인으로 3단계 마무리."
+      ],
+      "quiz": [
+        {
+          "id": "d112_summary_q1",
+          "question_md": "k-평균 한 단계의 순서는?",
+          "choices": [
+            "중심 이동 → 배정",
+            "배정 → 중심 이동",
+            "PCA → 배정",
+            "정렬 → 배정"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d112_summary_q2",
+          "question_md": "군집 해석에 쓰는 데이터는?",
+          "choices": [
+            "표준화된 데이터",
+            "원래 단위 데이터",
+            "레이블",
+            "PCA 축만"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d112_fill_1",
+      "kind": "fill_blank",
+      "title": "표준화",
+      "prompt_md": "2차원 배열(리스트)을 열마다 표준화해 소수 넷째 자리로 반환하세요.",
+      "concepts": [
+        "scaling",
+        "numpy_aggregate"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\n\n\ndef standardize(X):\n    X = np.array(X, dtype=float)\n    return np.round((X - X.mean(axis=____)) / X.____(axis=0), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "standardize"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "두 행",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  10
+                ],
+                [
+                  3,
+                  30
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -1.0,
+                -1.0
+              ],
+              [
+                1.0,
+                1.0
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  0,
+                  5
+                ],
+                [
+                  2,
+                  5
+                ],
+                [
+                  4,
+                  8
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -1.2247,
+                -0.7071
+              ],
+              [
+                0.0,
+                -0.7071
+              ],
+              [
+                1.2247,
+                1.4142
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "열마다(세로 방향) 평균을 구하는 축 번호입니다.",
+        "표준편차 메서드입니다."
+      ],
+      "solution": "import numpy as np\n\n\ndef standardize(X):\n    X = np.array(X, dtype=float)\n    return np.round((X - X.mean(axis=0)) / X.std(axis=0), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d112_code_1",
+      "kind": "coding",
+      "title": "고객 세분화",
+      "prompt_md": "주어진 `customer_data()`(나이, 월 방문 수, 월 구매액)를 표준화해 `KMeans(n_clusters=k, n_init=10, random_state=0)`로 묶으세요. 반환값:\n\n- `sizes`: 군집 크기(큰 순)\n- `means`: 같은 순서로, 각 군집의 **원래 단위** 특성 평균(소수 첫째 자리)\n- `silhouette`: 표준화 데이터 기준 실루엣(소수 넷째 자리)",
+      "concepts": [
+        "kmeans",
+        "cluster_eval",
+        "scaling"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.cluster import KMeans\nfrom sklearn.metrics import silhouette_score\n\ndef customer_data():\n    rng = np.random.default_rng(7)\n    a = rng.normal([20, 30, 2], [3, 5, 1], size=(60, 3))\n    b = rng.normal([45, 80, 10], [5, 8, 2], size=(40, 3))\n    c = rng.normal([35, 50, 25], [4, 6, 3], size=(30, 3))\n    return np.vstack([a, b, c])\n\n\ndef segment(k):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "segment"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "k=3",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": {
+              "sizes": [
+                60,
+                40,
+                30
+              ],
+              "means": [
+                [
+                  18.9,
+                  29.6,
+                  1.9
+                ],
+                [
+                  44.9,
+                  78.8,
+                  9.9
+                ],
+                [
+                  35.2,
+                  49.7,
+                  25.1
+                ]
+              ],
+              "silhouette": 0.7704
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": {
+              "sizes": [
+                70,
+                60
+              ],
+              "means": [
+                [
+                  40.8,
+                  66.3,
+                  16.4
+                ],
+                [
+                  18.9,
+                  29.6,
+                  1.9
+                ]
+              ],
+              "silhouette": 0.6773
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "표준화 데이터로 군집, 원래 데이터로 평균을 계산합니다.",
+        "크기 `np.bincount(labels)`를 큰 순으로 정렬한 위치(`np.argsort(...)[::-1]`)를 구하세요.",
+        "그 순서대로 `X[labels == c].mean(axis=0)`."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.cluster import KMeans\nfrom sklearn.metrics import silhouette_score\n\ndef customer_data():\n    rng = np.random.default_rng(7)\n    a = rng.normal([20, 30, 2], [3, 5, 1], size=(60, 3))\n    b = rng.normal([45, 80, 10], [5, 8, 2], size=(40, 3))\n    c = rng.normal([35, 50, 25], [4, 6, 3], size=(30, 3))\n    return np.vstack([a, b, c])\n\n\ndef segment(k):\n    X = customer_data()\n    Xs = (X - X.mean(axis=0)) / X.std(axis=0)\n    labels = KMeans(n_clusters=k, n_init=10, random_state=0).fit_predict(Xs)\n    sizes = np.bincount(labels)\n    order = np.argsort(sizes)[::-1]\n    means = [np.round(X[labels == c].mean(axis=0), 1).tolist() for c in order]\n    return {\n        \"sizes\": sizes[order].tolist(),\n        \"means\": means,\n        \"silhouette\": round(float(silhouette_score(Xs, labels)), 4),\n    }\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d112_code_2",
+      "kind": "coding",
+      "title": "[도전] k-평균 한 단계",
+      "prompt_md": "점 목록과 중심 목록을 받아 k-평균 한 단계를 수행하세요. ① 각 점을 거리 제곱이 가장 작은 중심에 배정 ② 중심을 배정된 점들의 평균으로 이동(배정된 점이 없으면 그대로). `[배정 리스트, 새 중심(소수 셋째 자리)]`를 반환합니다.",
+      "concepts": [
+        "kmeans",
+        "numpy_ops",
+        "numpy_aggregate"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import numpy as np\n\n\ndef kmeans_step(points, centers):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "kmeans_step"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "두 군집",
+          "call": {
+            "args": [
+              [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1
+                ],
+                [
+                  5,
+                  5
+                ],
+                [
+                  6,
+                  5
+                ]
+              ],
+              [
+                [
+                  0,
+                  0
+                ],
+                [
+                  5,
+                  5
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0,
+                0,
+                1,
+                1
+              ],
+              [
+                [
+                  0.0,
+                  0.5
+                ],
+                [
+                  5.5,
+                  5.0
+                ]
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  1
+                ],
+                [
+                  2,
+                  2
+                ],
+                [
+                  9,
+                  9
+                ]
+              ],
+              [
+                [
+                  0,
+                  0
+                ],
+                [
+                  10,
+                  10
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0,
+                0,
+                1
+              ],
+              [
+                [
+                  1.5,
+                  1.5
+                ],
+                [
+                  9.0,
+                  9.0
+                ]
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`((P[:, None, :] - C[None, :, :]) ** 2).sum(axis=2)`는 (점 수, 중심 수) 거리 행렬입니다.",
+        "`argmin(axis=1)`로 배정, 중심 j는 `P[labels == j].mean(axis=0)`."
+      ],
+      "solution": "import numpy as np\n\n\ndef kmeans_step(points, centers):\n    P = np.array(points, dtype=float)\n    C = np.array(centers, dtype=float)\n    distances = ((P[:, None, :] - C[None, :, :]) ** 2).sum(axis=2)\n    labels = distances.argmin(axis=1)\n    new_centers = []\n    for j in range(len(C)):\n        members = P[labels == j]\n        new_centers.append(members.mean(axis=0) if len(members) else C[j])\n    return [labels.tolist(), np.round(np.array(new_centers), 3).tolist()]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

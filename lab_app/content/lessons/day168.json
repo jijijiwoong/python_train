@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "day": 168,
+  "title": "4단계 마무리 누적 복습",
+  "stage": "dl",
+  "week": 24,
+  "is_review": true,
+  "objectives": [
+    "데이터 준비부터 학습·조기 종료·평가·저장·추론까지 딥러닝 프로젝트 전체를 수행할 수 있다."
+  ],
+  "concepts": [
+    "dl_project",
+    "early_stopping",
+    "state_dict",
+    "cnn",
+    "inference"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "168일 돌아보기",
+      "content_md": "168일 과정의 마지막 날입니다.\n\n| 단계 | 기간 | 핵심 |\n|---|---|---|\n| 1 | Day 1~35 | Python 기초 |\n| 2 | Day 36~70 | 객체지향, NumPy, pandas, 시각화 |\n| 3 | Day 71~119 | scikit-learn 머신러닝 |\n| 4 | Day 120~168 | PyTorch 딥러닝 |\n\n오늘은 4단계 전체를 하나의 함수로 묶습니다.",
+      "quiz": [
+        {
+          "id": "d168_review_q1",
+          "question_md": "딥러닝 학습 루프의 순서는?",
+          "choices": [
+            "zero_grad → backward → step",
+            "step → backward → zero_grad",
+            "backward → step → zero_grad",
+            "순서 무관"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d168_review_q2",
+          "question_md": "모델을 저장할 때 권장하는 것은?",
+          "choices": [
+            "모델 객체 전체",
+            "`state_dict()`",
+            "옵티마이저만",
+            "손실 값"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "전체 파이프라인",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "한 프로젝트의 흐름을 정리하면 다음과 같습니다.\n\n1. 데이터 분할(학습·검증·테스트)과 DataLoader\n2. 모델 정의(nn.Module)\n3. 에폭마다 학습 → 검증, 최고 검증 점수일 때 체크포인트\n4. 조기 종료 후 최고 가중치 복원\n5. 테스트 1회 평가\n6. state_dict 저장 → 불러와 추론\n\n여기까지 왔다면 다음 공부로 torchvision의 사전 학습 모델, 더 큰 데이터셋, GPU 학습을 추천합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import copy\nimport torch\nfrom torch import nn\n\nmodel = nn.Linear(2, 1)\nbest_state = copy.deepcopy(model.state_dict())\nwith torch.no_grad():\n    model.weight.fill_(5.0)\nmodel.load_state_dict(best_state)\nprint(model.weight.tolist() != [[5.0, 5.0]])\n",
+          "runnable": true,
+          "expected_output": "True\n",
+          "time_limit_sec": 60
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "softmax 성질을 확인하세요.",
+      "exercise_ids": [
+        "d168_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d168_code_1",
+        "d168_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "마무리",
+      "points": [
+        "데이터 → 모델 → 학습·검증 → 조기 종료 → 테스트 → 저장·추론.",
+        "평가는 eval + no_grad.",
+        "설정은 검증으로, 최종 성능은 테스트로.",
+        "168일 완주를 축하합니다!"
+      ],
+      "quiz": [
+        {
+          "id": "d168_summary_q1",
+          "question_md": "최고 검증 점수일 때 가중치를 복사하는 방법은?",
+          "choices": [
+            "`copy.deepcopy(model.state_dict())`",
+            "`model.state_dict()` 그대로",
+            "`model.copy()`",
+            "`torch.save`만"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d168_summary_q2",
+          "question_md": "최종 성능 보고에 쓰는 데이터는?",
+          "choices": [
+            "학습",
+            "검증",
+            "테스트",
+            "학습+검증"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d168_fill_1",
+      "kind": "fill_blank",
+      "title": "softmax 성질",
+      "prompt_md": "로짓 목록에 같은 상수 `shift`를 더해도 softmax 확률이 같은지 확인해 `[확률(소수 넷째 자리), 같은지]`를 반환하세요.",
+      "concepts": [
+        "inference"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\n\n\ndef _____shift(logits, shift):\n    x = torch.tensor(logits, dtype=torch.float32)\n    p = torch.softmax(x, dim=0)\n    q = torch.softmax(x + shift, dim=0)\n    return [[round(v, 4) for v in p.tolist()], torch.____(p, q, atol=1e-6)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "softmax_shift"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              10
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.09,
+                0.2447,
+                0.6652
+              ],
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0.5,
+                -0.5
+              ],
+              -3
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.7311,
+                0.2689
+              ],
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "확률로 바꾸는 함수입니다.",
+        "두 텐서가 거의 같은지 비교하는 함수입니다."
+      ],
+      "solution": "import torch\n\n\ndef softmax_shift(logits, shift):\n    x = torch.tensor(logits, dtype=torch.float32)\n    p = torch.softmax(x, dim=0)\n    q = torch.softmax(x + shift, dim=0)\n    return [[round(v, 4) for v in p.tolist()], torch.allclose(p, q, atol=1e-6)]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d168_code_1",
+      "kind": "coding",
+      "title": "최종 파이프라인",
+      "prompt_md": "`split_data(seed)`로 데이터를 준비하고 `torch.manual_seed(0)` 후 `CNN()`과 `optim.Adam(lr=0.01)`을 만드세요. 최대 `max_epochs` 에폭 동안 `train_one_epoch` 후 검증 정확도를 구해, **더 높을 때만** 최고 기록과 `copy.deepcopy(model.state_dict())`를 저장하고, `patience`번 연속 나아지지 않으면 멈춥니다. 최고 가중치를 되돌린 뒤 `{\"best_epoch\": 최고 에폭(0부터), \"epochs_run\": 실제 학습한 에폭 수, \"val\": 최고 검증 정확도, \"test\": 테스트 정확도}`(정확도는 소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "dl_project",
+        "early_stopping",
+        "state_dict"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import copy\nimport torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef final_pipeline(seed, max_epochs, patience):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "final_pipeline"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              12,
+              2
+            ]
+          },
+          "expect": {
+            "return": {
+              "best_epoch": 6,
+              "epochs_run": 9,
+              "val": 0.9667,
+              "test": 0.9472
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              8,
+              3
+            ]
+          },
+          "expect": {
+            "return": {
+              "best_epoch": 5,
+              "epochs_run": 8,
+              "val": 0.9694,
+              "test": 0.9444
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "학습한 에폭 수는 break 전에 세어 두세요.",
+        "반복이 끝나면 저장해 둔 최고 가중치를 모델에 다시 넣고 테스트합니다."
+      ],
+      "solution": "import copy\nimport torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef final_pipeline(seed, max_epochs, patience):\n    train, val, test = split_data(seed)\n    train_loader, val_loader = make_loader(train, shuffle=True), make_loader(val)\n    torch.manual_seed(0)\n    model = CNN()\n    optimizer = optim.Adam(model.parameters(), lr=0.01)\n    best, best_epoch, best_state, wait, epochs_run = -1.0, -1, None, 0, 0\n    for epoch in range(max_epochs):\n        train_one_epoch(model, train_loader, optimizer)\n        epochs_run += 1\n        acc = evaluate(model, val_loader)\n        if acc > best:\n            best, best_epoch, wait = acc, epoch, 0\n            best_state = copy.deepcopy(model.state_dict())\n        else:\n            wait += 1\n            if wait >= patience:\n                break\n    model.load_state_dict(best_state)\n    return {\n        \"best_epoch\": best_epoch,\n        \"epochs_run\": epochs_run,\n        \"val\": round(best, 4),\n        \"test\": round(evaluate(model, make_loader(test)), 4),\n    }\n",
+      "time_limit_sec": 150
+    },
+    {
+      "id": "d168_code_2",
+      "kind": "coding",
+      "title": "저장한 모델로 추론(도전)",
+      "prompt_md": "`split_data(seed)`로 준비한 학습 데이터로 `torch.manual_seed(0)` 후 `fit(CNN(), 학습 DataLoader(섞기), 3)`을 하세요. state_dict를 `io.BytesIO`에 저장하고, `torch.manual_seed(1)` 후 새 `CNN()`에 불러온 뒤 두 모델의 테스트 예측(argmax)이 모두 같은지 확인합니다. `[예측이 모두 같은지, 불러온 모델의 테스트 정확도(소수 넷째 자리), 저장된 키 개수]`를 반환하세요.",
+      "concepts": [
+        "state_dict",
+        "inference"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import io\nimport torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef reload_and_predict(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "reload_and_predict"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              true,
+              0.9111,
+              6
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              true,
+              0.9083,
+              6
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "저장 뒤 `seek(0)`으로 처음으로 돌아가야 읽을 수 있습니다.",
+        "두 모델 모두 eval 모드에서 예측을 비교하세요."
+      ],
+      "solution": "import io\nimport torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef reload_and_predict(seed):\n    train, _, test = split_data(seed)\n    torch.manual_seed(0)\n    model = fit(CNN(), make_loader(train, shuffle=True), 3)\n    buffer = io.BytesIO()\n    torch.save(model.state_dict(), buffer)\n    buffer.seek(0)\n    torch.manual_seed(1)\n    loaded = CNN()\n    state = torch.load(buffer)\n    loaded.load_state_dict(state)\n    model.eval()\n    loaded.eval()\n    with torch.no_grad():\n        same = torch.equal(model(test[0]).argmax(dim=1), loaded(test[0]).argmax(dim=1))\n    return [same, round(evaluate(loaded, make_loader(test)), 4), len(state)]\n",
+      "time_limit_sec": 90
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "day": 116,
+  "title": "ColumnTransformer와 Pipeline",
+  "stage": "ml",
+  "week": 17,
+  "is_review": false,
+  "objectives": [
+    "열 종류별로 다른 전처리를 ColumnTransformer로 묶을 수 있다.",
+    "전처리와 모델을 Pipeline으로 묶어 누수 없이 학습·평가할 수 있다."
+  ],
+  "concepts": [
+    "pipeline",
+    "scaling",
+    "encoding",
+    "imputation"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "이번 주 배운 스케일링·인코딩·결측치 대체를 이제 한 번에 묶습니다.",
+      "quiz": [
+        {
+          "id": "d116_review_q1",
+          "question_md": "전처리 도구들의 공통 사용법은?",
+          "choices": [
+            "fit → transform",
+            "predict → score",
+            "fit → predict",
+            "load → split"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "전처리 + 모델 = 하나",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**Pipeline**은 여러 단계를 이어 하나의 추정기로 만듭니다. `fit`하면 각 전처리를 학습 데이터로만 학습하고 모델까지 학습합니다. **ColumnTransformer**는 숫자 열과 범주 열에 서로 다른 전처리를 적용합니다. 이렇게 묶으면 교차 검증·그리드 탐색에서도 누수가 생기지 않습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nimport pandas as pd\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.pipeline import Pipeline, make_pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\n\ndf = pd.DataFrame(\n    {\n        \"age\": [25, np.nan, 47, 33],\n        \"plan\": [\"basic\", \"premium\", \"basic\", \"standard\"],\n        \"churn\": [0, 0, 1, 1],\n    }\n)\npre = ColumnTransformer([\n    (\"num\", make_pipeline(SimpleImputer(strategy=\"median\"), StandardScaler()), [\"age\"]),\n    (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"plan\"]),\n])\npipe = Pipeline([(\"prep\", pre), (\"model\", LogisticRegression())])\npipe.fit(df[[\"age\", \"plan\"]], df[\"churn\"])\nprint(pipe.named_steps[\"prep\"].transform(df[[\"age\", \"plan\"]]).shape)\nprint(pipe.predict(pd.DataFrame({\"age\": [60], \"plan\": [\"gold\"]})))\n",
+          "runnable": true,
+          "expected_output": "(4, 4)\n[1]\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "파이프라인 단계의 설정은 `단계이름__매개변수` 형식으로 부릅니다. 예: 그리드 탐색에서 `{\"model__C\": [0.1, 1]}`(Day 118)."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "숫자 열용 전처리 파이프라인을 만드세요.",
+      "exercise_ids": [
+        "d116_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "고객 이탈 데이터로 전체 파이프라인을 만드세요.",
+      "exercise_ids": [
+        "d116_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`Pipeline([(이름, 단계), …])` 또는 `make_pipeline(…)`.",
+        "`ColumnTransformer([(이름, 변환기, 열 목록), …])`.",
+        "fit 한 번으로 전처리·모델 모두 학습 데이터 기준.",
+        "설정 접근: `단계이름__매개변수`."
+      ],
+      "quiz": [
+        {
+          "id": "d116_summary_q1",
+          "question_md": "파이프라인의 가장 큰 장점은?",
+          "choices": [
+            "빠르다",
+            "전처리 누수를 막고 코드를 하나로 묶는다",
+            "정확도 100%",
+            "GPU 사용"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d116_summary_q2",
+          "question_md": "숫자 열과 범주 열에 다른 처리를 하는 도구는?",
+          "choices": [
+            "Pipeline",
+            "ColumnTransformer",
+            "GridSearchCV",
+            "PCA"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d116_fill_1",
+      "kind": "fill_blank",
+      "title": "숫자 전처리 파이프라인",
+      "prompt_md": "중앙값 대체 → 표준화 파이프라인을 만들어 데이터를 변환한 결과(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "pipeline",
+        "imputation",
+        "scaling"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import ____\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef numeric_prep(rows):\n    X = np.array(rows, dtype=float)\n    pipe = make_pipeline(SimpleImputer(strategy=\"median\"), ____())\n    return np.round(pipe.fit_transform(X), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "numeric_prep"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  1
+                ],
+                [
+                  null
+                ],
+                [
+                  3
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -1.2247
+              ],
+              [
+                0.0
+              ],
+              [
+                1.2247
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  2,
+                  5
+                ],
+                [
+                  4,
+                  null
+                ],
+                [
+                  null,
+                  1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -1.2247,
+                1.2247
+              ],
+              [
+                1.2247,
+                0.0
+              ],
+              [
+                0.0,
+                -1.2247
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "단계들을 이어 파이프라인을 만드는 함수 이름입니다(make_…).",
+        "표준화 스케일러 클래스 이름입니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef numeric_prep(rows):\n    X = np.array(rows, dtype=float)\n    pipe = make_pipeline(SimpleImputer(strategy=\"median\"), StandardScaler())\n    return np.round(pipe.fit_transform(X), 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d116_code_1",
+      "kind": "coding",
+      "title": "이탈 예측 파이프라인",
+      "prompt_md": "주어진 `churn_data(400, seed)`로 X(`churn` 제외)와 y(`churn`)를 만들고 `test_size=0.25, random_state=seed, stratify=y`로 나누세요. 파이프라인:\n\n- 숫자 열 `age, monthly, complaints`: 중앙값 대체 → 표준화\n- 범주 열 `plan, region`: `OneHotEncoder(handle_unknown=\"ignore\")`\n- 모델: `LogisticRegression()`\n\n`[전처리 후 특성 수, 테스트 정확도(소수 넷째 자리)]`를 반환하세요. 전처리 단계 이름은 `prep`, 모델 단계는 `model`.",
+      "concepts": [
+        "pipeline",
+        "scaling",
+        "encoding",
+        "imputation"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import numpy as np\nimport pandas as pd\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import Pipeline, make_pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\n\ndef churn_data(n, seed):\n    rng = np.random.default_rng(seed)\n    age = rng.integers(18, 70, n).astype(float)\n    monthly = rng.normal(50, 20, n).round(1)\n    plan = rng.choice([\"basic\", \"standard\", \"premium\"], n)\n    region = rng.choice([\"서울\", \"부산\", \"대구\"], n)\n    complaints = rng.poisson(1.0, n)\n    score = 0.04 * (age - 40) - 0.03 * (monthly - 50) + 0.8 * complaints - 0.6 * (plan == \"premium\")\n    churn = (score + rng.normal(0, 0.8, n) > 0.8).astype(int)\n    age[rng.random(n) < 0.08] = np.nan\n    monthly[rng.random(n) < 0.05] = np.nan\n    return pd.DataFrame({\"age\": age, \"monthly\": monthly, \"plan\": plan, \"region\": region,\n                         \"complaints\": complaints, \"churn\": churn})\n\n\ndef churn_model(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "churn_model"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              9,
+              0.84
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              9,
+              0.8
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`df.drop(columns=\"churn\")`, `df[\"churn\"]`로 X, y를 나누세요.",
+        "개념 설명의 ColumnTransformer 구조를 그대로 쓰되 열 목록만 바꾸면 됩니다.",
+        "특성 수는 `pipe.named_steps[\"prep\"].transform(X_test).shape[1]`."
+      ],
+      "solution": "import numpy as np\nimport pandas as pd\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import Pipeline, make_pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\n\ndef churn_data(n, seed):\n    rng = np.random.default_rng(seed)\n    age = rng.integers(18, 70, n).astype(float)\n    monthly = rng.normal(50, 20, n).round(1)\n    plan = rng.choice([\"basic\", \"standard\", \"premium\"], n)\n    region = rng.choice([\"서울\", \"부산\", \"대구\"], n)\n    complaints = rng.poisson(1.0, n)\n    score = 0.04 * (age - 40) - 0.03 * (monthly - 50) + 0.8 * complaints - 0.6 * (plan == \"premium\")\n    churn = (score + rng.normal(0, 0.8, n) > 0.8).astype(int)\n    age[rng.random(n) < 0.08] = np.nan\n    monthly[rng.random(n) < 0.05] = np.nan\n    return pd.DataFrame({\"age\": age, \"monthly\": monthly, \"plan\": plan, \"region\": region,\n                         \"complaints\": complaints, \"churn\": churn})\n\n\ndef churn_model(seed):\n    df = churn_data(400, seed)\n    X, y = df.drop(columns=\"churn\"), df[\"churn\"]\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.25,\n        random_state=seed,\n        stratify=y,\n    )\n    pre = ColumnTransformer([\n        (\"num\", make_pipeline(SimpleImputer(strategy=\"median\"), StandardScaler()),\n         [\"age\", \"monthly\", \"complaints\"]),\n        (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"plan\", \"region\"]),\n    ])\n    pipe = Pipeline([(\"prep\", pre), (\"model\", LogisticRegression())]).fit(X_train, y_train)\n    n_features = pipe.named_steps[\"prep\"].transform(X_test).shape[1]\n    return [int(n_features), round(pipe.score(X_test, y_test), 4)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "day": 90,
+  "title": "다중 분류",
+  "stage": "ml",
+  "week": 13,
+  "is_review": false,
+  "objectives": [
+    "클래스가 3개 이상인 문제를 학습하고 클래스별 성능을 확인할 수 있다.",
+    "손글씨 숫자(digits) 이미지를 특성 벡터로 다룰 수 있다."
+  ],
+  "concepts": [
+    "multiclass",
+    "knn",
+    "dataset"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 텍스트를 벡터로 바꿔 나이브 베이즈로 분류했습니다.",
+      "quiz": [
+        {
+          "id": "d90_review_q1",
+          "question_md": "새 문장을 벡터로 바꿀 때 쓰는 메서드는?",
+          "choices": [
+            "`fit`",
+            "`fit_transform`",
+            "`transform`",
+            "`predict`"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "0~9 손글씨 숫자",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**digits** 데이터는 8×8 픽셀 흑백 손글씨 숫자 1797장입니다. 이미지 한 장을 픽셀 64개짜리 벡터로 펼쳐 특성으로 씁니다. 정답은 0~9 열 가지(다중 분류)입니다."
+        },
+        {
+          "kind": "code",
+          "code": "import matplotlib.pyplot as plt\nfrom sklearn.datasets import load_digits\n\ndigits = load_digits()\nprint(digits.images.shape, digits.data.shape)\nprint(digits.images[0].astype(int))\nfig, axes = plt.subplots(1, 5, figsize=(8, 2))\nfor ax, img, label in zip(axes, digits.images, digits.target):\n    ax.imshow(img, cmap=\"gray_r\")\n    ax.set_title(label)\n    ax.axis(\"off\")\n",
+          "runnable": true,
+          "expected_output": "(1797, 8, 8) (1797, 64)\n[[ 0  0  5 13  9  1  0  0]\n [ 0  0 13 15 10 15  5  0]\n [ 0  3 15  2  0 11  8  0]\n [ 0  4 12  0  0  8  8  0]\n [ 0  5  8  0  0  9  8  0]\n [ 0  4 11  0  1 12  7  0]\n [ 0  2 14  5 10 12  0  0]\n [ 0  0  6 13 10  0  0  0]]\n",
+          "time_limit_sec": 40
+        },
+        {
+          "kind": "text",
+          "md": "scikit-learn 분류 모델은 다중 분류를 자동으로 지원합니다. 전체 정확도와 함께 **어떤 숫자를 자주 틀리는지** 보면 모델을 이해하는 데 도움이 됩니다."
+        },
+        {
+          "kind": "tip",
+          "md": "다중 분류의 혼동 행렬(다음 주)을 보면 \"8을 3으로 착각\" 같은 패턴이 드러납니다. 4단계에서는 같은 문제를 CNN으로 풉니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "digits 데이터의 구조를 확인하세요.",
+      "exercise_ids": [
+        "d90_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "KNN으로 숫자를 분류하고 가장 약한 숫자를 찾으세요.",
+      "exercise_ids": [
+        "d90_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "이미지 → 픽셀 벡터로 펼쳐 특성으로.",
+        "`load_digits()`: 8×8 이미지, 64 특성, 10 클래스.",
+        "분류 모델은 다중 분류를 자동 지원.",
+        "클래스별 정확도로 약점을 찾는다."
+      ],
+      "quiz": [
+        {
+          "id": "d90_summary_q1",
+          "question_md": "8×8 이미지를 펼친 특성 수는?",
+          "choices": [
+            "8",
+            "16",
+            "64",
+            "10"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d90_summary_q2",
+          "question_md": "digits의 클래스 수는?",
+          "choices": [
+            "2",
+            "8",
+            "10",
+            "64"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d90_fill_1",
+      "kind": "fill_blank",
+      "title": "digits 구조",
+      "prompt_md": "digits 데이터의 `[이미지 모양 리스트(전체), 특성 수, 클래스 수]`를 반환하세요.",
+      "concepts": [
+        "multiclass",
+        "dataset"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_digits\n\n\ndef digits_info():\n    d = ____()\n    return [list(d.images.shape), d.data.shape[1], len(d.____)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "digits_info"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "digits",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "return": [
+              [
+                1797,
+                8,
+                8
+              ],
+              64,
+              10
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "digits 데이터셋을 불러오는 함수입니다.",
+        "클래스 이름 목록이 담긴 속성입니다(target_…)."
+      ],
+      "solution": "from sklearn.datasets import load_digits\n\n\ndef digits_info():\n    d = load_digits()\n    return [list(d.images.shape), d.data.shape[1], len(d.target_names)]\n",
+      "time_limit_sec": 40
+    },
+    {
+      "id": "d90_code_1",
+      "kind": "coding",
+      "title": "가장 약한 숫자",
+      "prompt_md": "digits를 `test_size=0.25, random_state=seed, stratify=y`로 나누고 KNN(이웃 `k`개)을 학습하세요. `[테스트 정확도(소수 넷째 자리), 클래스별 정확도가 가장 낮은 숫자]`를 반환합니다(동률이면 작은 숫자).",
+      "concepts": [
+        "multiclass",
+        "knn",
+        "numpy_indexing"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef weakest_digit(k, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "weakest_digit"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "k=3",
+          "call": {
+            "args": [
+              3,
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9867,
+              8
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9911,
+              8
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "예측 `pred`를 구한 뒤 숫자 d마다 `(pred[y_test == d] == d).mean()`.",
+        "가장 낮은 위치는 `np.argmin(목록)`."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef weakest_digit(k, seed):\n    X, y = load_digits(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.25, random_state=seed, stratify=y\n    )\n    pred = KNeighborsClassifier(n_neighbors=k).fit(X_train, y_train).predict(X_test)\n    per_digit = [float((pred[y_test == d] == d).mean()) for d in range(10)]\n    return [round(float((pred == y_test).mean()), 4), int(np.argmin(per_digit))]\n",
+      "time_limit_sec": 40
+    }
+  ]
+}

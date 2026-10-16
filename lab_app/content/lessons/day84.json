@@ -1,0 +1,375 @@
+{
+  "schema_version": 1,
+  "day": 84,
+  "title": "12주차 누적 복습",
+  "stage": "ml",
+  "week": 12,
+  "is_review": true,
+  "objectives": [
+    "여러 회귀 모델을 같은 기준으로 비교하고 결과를 해석할 수 있다."
+  ],
+  "concepts": [
+    "linear_regression",
+    "regression_metrics",
+    "polynomial",
+    "regularization",
+    "gradient_descent"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "| Day | 주제 | 핵심 |\n|---|---|---|\n| 78 | 원리 | 최소제곱, `polyfit` |\n| 79 | sklearn | `LinearRegression`, `coef_`, `intercept_` |\n| 80 | 평가 | MSE, RMSE, MAE, R² |\n| 81 | 다항 | `PolynomialFeatures`, 과적합 |\n| 82 | 규제 | Ridge, Lasso, `alpha` |\n| 83 | 경사하강법 | `w -= lr·dw` |",
+      "quiz": [
+        {
+          "id": "d84_review_q1",
+          "question_md": "여러 회귀 모델을 공정하게 비교하려면?",
+          "choices": [
+            "모델마다 다른 테스트 데이터",
+            "같은 테스트 데이터와 같은 지표",
+            "학습 점수만 비교",
+            "가장 복잡한 모델 선택"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d84_review_q2",
+          "question_md": "경사하강법 전에 특성을 표준화하면 좋은 이유는?",
+          "choices": [
+            "특성 크기가 비슷해져 학습이 안정적",
+            "정확도가 항상 100%",
+            "규제가 필요 없어짐",
+            "데이터가 줄어듦"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "모델 비교 표 만들기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "같은 데이터 분할에서 여러 모델을 학습해 같은 지표로 비교하면, 무엇이 나은지 공정하게 판단할 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import Lasso, LinearRegression, Ridge\nfrom sklearn.model_selection import train_test_split\n\nX, y = load_diabetes(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)\nmodels = {\"linear\": LinearRegression(), \"ridge\": Ridge(alpha=1.0), \"lasso\": Lasso(alpha=0.1)}\nfor name, model in models.items():\n    print(name, round(model.fit(X_train, y_train).score(X_test, y_test), 4))\n",
+          "runnable": true,
+          "expected_output": "linear 0.3594\nridge 0.357\nlasso 0.355\n",
+          "time_limit_sec": 30
+        },
+        {
+          "kind": "tip",
+          "md": "도전 문제는 특성 10개짜리 경사하강법입니다. 행렬 곱 `X @ w`(Day 54)로 모든 샘플의 예측을 한 번에 계산하고, 기울기는 `X.T @ 오차 / n`입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "RMSE를 구하세요.",
+      "exercise_ids": [
+        "d84_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d84_code_1",
+        "d84_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "12주차 마무리",
+      "points": [
+        "회귀 = 숫자 예측, 기본은 선형 회귀.",
+        "평가는 같은 데이터·같은 지표로.",
+        "다항 특성은 표현력을, 규제는 안정성을 준다.",
+        "다음 주: 분류 모델(로지스틱 회귀, SVM, 나이브 베이즈)."
+      ],
+      "quiz": [
+        {
+          "id": "d84_summary_q1",
+          "question_md": "R²가 음수라면?",
+          "choices": [
+            "완벽",
+            "평균만 찍는 것보다 못함",
+            "계산 오류",
+            "과소적합 아님"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d84_summary_q2",
+          "question_md": "다음 주 배울 로지스틱 회귀는 어떤 문제용?",
+          "choices": [
+            "회귀",
+            "분류",
+            "군집",
+            "차원 축소"
+          ],
+          "answer_index": 1,
+          "explanation_md": "이름과 달리 분류 모델입니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d84_fill_1",
+      "kind": "fill_blank",
+      "title": "RMSE",
+      "prompt_md": "실제값·예측값의 RMSE(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "regression_metrics"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.metrics import mean_squared_error\n\n\ndef rmse(y_true, y_pred):\n    return round(____(y_true, y_pred) ** ____, 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "rmse"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                3,
+                5,
+                7,
+                9
+              ],
+              [
+                2.5,
+                5.5,
+                7,
+                8
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.6124
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "완벽",
+          "call": {
+            "args": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "expect": {
+            "return": 0.0
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                10,
+                20,
+                30,
+                40
+              ],
+              [
+                25,
+                25,
+                25,
+                25
+              ]
+            ]
+          },
+          "expect": {
+            "return": 11.1803
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "MSE를 구하는 함수입니다.",
+        "제곱근은 0.5 제곱입니다."
+      ],
+      "solution": "from sklearn.metrics import mean_squared_error\n\n\ndef rmse(y_true, y_pred):\n    return round(mean_squared_error(y_true, y_pred) ** 0.5, 4)\n",
+      "time_limit_sec": 30
+    },
+    {
+      "id": "d84_code_1",
+      "kind": "coding",
+      "title": "회귀 모델 비교",
+      "prompt_md": "당뇨병 데이터를 `test_size=0.25, random_state=seed`로 나누고, `LinearRegression()`, `Ridge(alpha=1.0)`, `Lasso(alpha=0.1)`의 테스트 R²(소수 넷째 자리)를 `{\"linear\": …, \"ridge\": …, \"lasso\": …}`로 반환하세요.",
+      "concepts": [
+        "linear_regression",
+        "regularization",
+        "regression_metrics"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import Lasso, LinearRegression, Ridge\nfrom sklearn.model_selection import train_test_split\n\n\ndef compare_models(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "compare_models"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": {
+              "linear": 0.3594,
+              "ridge": 0.357,
+              "lasso": 0.355
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              7
+            ]
+          },
+          "expect": {
+            "return": {
+              "linear": 0.5028,
+              "ridge": 0.457,
+              "lasso": 0.5122
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "이름 → 모델 딕셔너리를 만들고 `items()`로 돌며 학습·평가하세요.",
+        "`model.fit(...).score(...)`처럼 이어 쓸 수 있습니다."
+      ],
+      "solution": "from sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import Lasso, LinearRegression, Ridge\nfrom sklearn.model_selection import train_test_split\n\n\ndef compare_models(seed):\n    X, y = load_diabetes(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=seed)\n    models = {\"linear\": LinearRegression(), \"ridge\": Ridge(alpha=1.0), \"lasso\": Lasso(alpha=0.1)}\n    scores = {}\n    for name, model in models.items():\n        scores[name] = round(model.fit(X_train, y_train).score(X_test, y_test), 4)\n    return scores\n",
+      "time_limit_sec": 30
+    },
+    {
+      "id": "d84_code_2",
+      "kind": "coding",
+      "title": "[도전] 다변수 경사하강법",
+      "prompt_md": "당뇨병 데이터 전체(X는 열마다 `(X - 평균) / 표준편차`로 표준화)에 대해 w = 0 벡터, b = 0에서 시작해 `epochs`번 경사하강법을 하세요. 기울기: `dw = 2 · Xᵀ(ŷ − y) / n`, `db = 2 · 평균(ŷ − y)`.\n\n`[내 모델의 R², LinearRegression의 R²]`(같은 표준화 데이터로 학습·평가, 소수 셋째 자리)를 반환하세요.",
+      "concepts": [
+        "gradient_descent",
+        "numpy_reshape",
+        "linear_regression"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.metrics import r2_score\n\n\ndef multi_gd(lr, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "multi_gd"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "lr 0.1",
+          "call": {
+            "args": [
+              0.1,
+              500
+            ]
+          },
+          "expect": {
+            "return": [
+              0.517,
+              0.518
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.05,
+              300
+            ]
+          },
+          "expect": {
+            "return": [
+              0.515,
+              0.518
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "표준화는 열마다 평균을 빼고 표준편차로 나누는 것입니다(`axis=0`).",
+        "반복마다 `err = Xs @ w + b - y`, `w -= lr * 2 * Xs.T @ err / n`.",
+        "비교 모델은 `LinearRegression().fit(Xs, y).score(Xs, y)`."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import load_diabetes\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.metrics import r2_score\n\n\ndef multi_gd(lr, epochs):\n    X, y = load_diabetes(return_X_y=True)\n    Xs = (X - X.mean(axis=0)) / X.std(axis=0)\n    w = np.zeros(Xs.shape[1])\n    b = 0.0\n    for _ in range(epochs):\n        err = Xs @ w + b - y\n        w -= lr * 2 * Xs.T @ err / len(y)\n        b -= lr * 2 * err.mean()\n    mine = r2_score(y, Xs @ w + b)\n    sk = LinearRegression().fit(Xs, y).score(Xs, y)\n    return [round(float(mine), 3), round(float(sk), 3)]\n",
+      "time_limit_sec": 30
+    }
+  ]
+}

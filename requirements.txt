@@ -4,3 +4,12 @@ streamlit>=1.40,<2
 streamlit-code-editor==0.1.22
 pytest>=8
 pytest-cov>=6
+
+# 수업 실습용 라이브러리 (사용자 코드가 실행되는 같은 .venv에 있어야 함)
+numpy>=2
+pandas>=2
+matplotlib>=3.8          # Day 64~ (그래프는 PNG로 저장해 화면에 표시)
+scikit-learn>=1.5        # Day 71~ (3단계 머신러닝)
+# Day 120~ (4단계 딥러닝). GPU가 필요 없으므로 CPU 빌드를 권장합니다(용량 절약):
+#   .venv\Scripts\python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+torch>=2.4

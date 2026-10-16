@@ -18,12 +18,16 @@ from lab_app.core.errors import ErrorType
 from lab_app.core.models import ExceptionInfo, ExecutionReport, Exercise, RunResult, TestOutcome
 
 HARNESS_PATH = Path(__file__).with_name("harness.py")
+MATPLOTLIBRC_PATH = Path(__file__).with_name("matplotlibrc")
 IS_WINDOWS = os.name == "nt"
 
 
 def _child_env() -> dict[str, str]:
     # -I already ignores PYTHON* variables; drop them anyway, plus Streamlit's own settings.
-    return {k: v for k, v in os.environ.items() if not k.upper().startswith(("PYTHON", "STREAMLIT"))}
+    env = {k: v for k, v in os.environ.items() if not k.upper().startswith(("PYTHON", "STREAMLIT"))}
+    env["MPLBACKEND"] = "Agg"  # matplotlib must never open a window from the child process
+    env["MATPLOTLIBRC"] = str(MATPLOTLIBRC_PATH)  # Korean font for plots
+    return env
 
 
 def _kill_tree(proc: subprocess.Popen) -> None:
@@ -56,8 +60,8 @@ def _read_text(path: Path, limit: int) -> str:
     return data.decode("utf-8", errors="replace")
 
 
-def _execute(code: str, job: dict, timeout: float) -> tuple[list[dict], bool, str, int, str]:
-    """Run one harness job. Returns (events, timed_out, raw_stderr, duration_ms, partial_stdout)."""
+def _execute(code: str, job: dict, timeout: float) -> tuple[list[dict], bool, str, int, str, list[bytes]]:
+    """Run one harness job. Returns (events, timed_out, raw_stderr, duration_ms, partial_stdout, figure_pngs)."""
     job = {"max_stdout": config.MAX_STDOUT_CHARS, "max_stderr": config.MAX_STDERR_CHARS, **job}
     with tempfile.TemporaryDirectory(prefix="pylab_", ignore_cleanup_errors=True) as tmp:
         job_dir = Path(tmp)
@@ -92,7 +96,14 @@ def _execute(code: str, job: dict, timeout: float) -> tuple[list[dict], bool, st
                 break  # a line cut off by the kill; everything after it is unreliable
         raw_stderr = _read_text(err_path, config.MAX_READ_BYTES)
         partial = _read_text(job_dir / "partial_stdout.txt", config.MAX_READ_BYTES) if timed_out else ""
-    return events, timed_out, raw_stderr, duration_ms, partial
+        images = []
+        for ev in events:
+            if ev.get("event") == "figures":
+                for name in ev.get("files", []):
+                    path = job_dir / Path(name).name
+                    if path.is_file() and path.stat().st_size <= config.MAX_FIGURE_BYTES:
+                        images.append(path.read_bytes())
+    return events, timed_out, raw_stderr, duration_ms, partial, images
 
 
 def _to_report(events: list[dict], test_ids: list[str], timed_out: bool, raw_stderr: str,
@@ -132,32 +143,38 @@ def run_tests(code: str, exercise: Exercise, timeout: float | None = None) -> Ex
     tests = [{"id": t.id, "stdin": t.stdin, "args": t.args, "kwargs": t.kwargs} for t in exercise.tests]
     job = {"mode": exercise.entry_mode, "function_name": exercise.function_name, "tests": tests}
     limit = timeout or exercise.time_limit_sec or config.RUN_TIMEOUT_SEC
-    events, timed_out, raw_stderr, duration_ms, _ = _execute(code, job, limit)
+    events, timed_out, raw_stderr, duration_ms, _, _ = _execute(code, job, limit)
     return _to_report(events, [t["id"] for t in tests], timed_out, raw_stderr, duration_ms)
 
 
 def run_program(code: str, stdin: str = "", timeout: float | None = None) -> RunResult:
-    """Free run ("실행" button): execute the code once with the given stdin."""
+    """Free run ("실행" button): execute the code once with the given stdin. Open figures come back as PNGs."""
+    result, images = _run_program(code, stdin, timeout)
+    result.images = images
+    return result
+
+
+def _run_program(code: str, stdin: str, timeout: float | None) -> tuple[RunResult, list[bytes]]:
     job = {"mode": "run", "function_name": None, "tests": [{"id": "run", "stdin": stdin}]}
-    events, timed_out, raw_stderr, duration_ms, partial = _execute(code, job, timeout or config.RUN_TIMEOUT_SEC)
+    events, timed_out, raw_stderr, duration_ms, partial, images = _execute(code, job, timeout or config.RUN_TIMEOUT_SEC)
     report = _to_report(events, ["run"], timed_out, raw_stderr, duration_ms)
 
     if report.compile_error:
         exc = report.compile_error
-        return RunResult("error", "", exc.traceback, exc.error_type, exc, duration_ms)
+        return RunResult("error", "", exc.traceback, exc.error_type, exc, duration_ms), images
     if report.internal_error:
-        return RunResult("internal_error", "", report.internal_error, ErrorType.INTERNAL_ERROR, None, duration_ms)
+        return RunResult("internal_error", "", report.internal_error, ErrorType.INTERNAL_ERROR, None, duration_ms), images
     out = report.outcomes["run"]
     if out.status == "timeout":
         return RunResult("timeout", partial, f"시간 제한({timeout or config.RUN_TIMEOUT_SEC:g}초)을 넘어 실행을 중단했습니다.",
-                         ErrorType.TIMEOUT, None, duration_ms)
+                         ErrorType.TIMEOUT, None, duration_ms), images
     if out.status == "output_limit":
         return RunResult("output_limit", out.stdout, out.stderr + f"\n출력이 {config.MAX_STDOUT_CHARS:,}자를 넘어 실행을 중단했습니다.",
-                         ErrorType.OUTPUT_LIMIT, None, duration_ms)
+                         ErrorType.OUTPUT_LIMIT, None, duration_ms), images
     if out.status == "crashed":
         return RunResult("error", out.stdout, (out.stderr + "\n").lstrip() + "프로그램이 비정상적으로 종료되었습니다.",
-                         ErrorType.RUNTIME_ERROR, None, duration_ms)
+                         ErrorType.RUNTIME_ERROR, None, duration_ms), images
     if out.status == "exception" and out.exception:
         stderr = (out.stderr + "\n" if out.stderr else "") + out.exception.traceback
-        return RunResult("error", out.stdout, stderr, out.exception.error_type, out.exception, duration_ms)
-    return RunResult("ok", out.stdout, out.stderr, ErrorType.NONE, None, duration_ms)
+        return RunResult("error", out.stdout, stderr, out.exception.error_type, out.exception, duration_ms), images
+    return RunResult("ok", out.stdout, out.stderr, ErrorType.NONE, None, duration_ms), images

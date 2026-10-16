@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "day": 36,
+  "title": "클래스와 객체",
+  "stage": "advanced_data",
+  "week": 6,
+  "is_review": false,
+  "objectives": [
+    "class로 나만의 자료형을 정의하고 객체(인스턴스)를 만들 수 있다.",
+    "__init__과 self로 객체마다 다른 속성을 저장할 수 있다."
+  ],
+  "concepts": [
+    "class"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "2단계 시작",
+      "content_md": "1단계에서 Python 기초를 모두 마쳤습니다. **2단계**(Python 심화와 데이터 분석)는 객체지향으로 시작합니다.\n\n지금까지는 데이터(딕셔너리·리스트)와 그 데이터를 다루는 함수를 따로 만들었습니다. **클래스**는 이 둘을 하나로 묶는 방법입니다.",
+      "quiz": [
+        {
+          "id": "d36_review_q1",
+          "question_md": "학생 한 명의 이름·점수를 묶어 표현하던 1단계 방식으로 가장 알맞은 것은?",
+          "choices": [
+            "`(\"민준\", 90)` 튜플이나 `{\"name\": \"민준\", \"score\": 90}` 딕셔너리",
+            "집합",
+            "문자열 하나",
+            "`range`"
+          ],
+          "answer_index": 0,
+          "explanation_md": "오늘은 같은 일을 클래스로 표현합니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "나만의 자료형 만들기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`class 이름:`으로 **설계도**(클래스)를 만들고, `이름(...)`을 호출해 **객체**(인스턴스)를 찍어 냅니다. `__init__`은 객체가 만들어질 때 자동으로 실행되는 초기화 메서드이고, 첫 매개변수 `self`는 지금 만들어지는 그 객체 자신입니다."
+        },
+        {
+          "kind": "code",
+          "code": "class Dog:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\na = Dog(\"초코\", 3)\nb = Dog(\"보리\", 5)\nprint(a.name, a.age)\nprint(b.name)\nb.age += 1\nprint(b.age)\nprint(type(a).__name__)\n",
+          "runnable": true,
+          "expected_output": "초코 3\n보리\n6\nDog\n"
+        },
+        {
+          "kind": "text",
+          "md": "`self.이름 = 값`으로 저장한 값을 **속성**이라고 합니다. 객체마다 따로 저장되므로 `a`의 나이를 바꿔도 `b`는 그대로입니다."
+        },
+        {
+          "kind": "tip",
+          "md": "클래스 이름은 관례적으로 `Dog`, `BankAccount`처럼 단어 첫 글자를 대문자로 씁니다. `__init__`의 밑줄은 양쪽에 **두 개씩**입니다. `_init_`으로 쓰면 초기화가 실행되지 않아요."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "`__init__`과 `self`를 채워 좌표 클래스를 완성하세요. 아래 `check` 함수는 채점용이니 고치지 마세요.",
+      "exercise_ids": [
+        "d36_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "클래스를 직접 정의합니다. 잘못된 값이면 객체를 만들 때 예외를 발생시키세요.",
+      "exercise_ids": [
+        "d36_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`class 이름:` → 설계도, `이름(인자)` → 객체 생성.",
+        "`__init__(self, ...)`은 생성될 때 자동 실행, `self`는 그 객체 자신.",
+        "`self.속성 = 값`으로 객체마다 데이터를 저장한다.",
+        "`객체.속성`으로 읽고 바꾼다."
+      ],
+      "quiz": [
+        {
+          "id": "d36_summary_q1",
+          "question_md": "`p = Point(1, 2)`를 실행할 때 자동으로 호출되는 메서드는?",
+          "choices": [
+            "`Point()`",
+            "`__init__`",
+            "`__new_point__`",
+            "`self`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "객체 생성 시 `__init__`이 실행됩니다."
+        },
+        {
+          "id": "d36_summary_q2",
+          "question_md": "`self`가 가리키는 것은?",
+          "choices": [
+            "클래스 이름",
+            "지금 다루는 객체 자신",
+            "첫 번째 인자 값",
+            "모듈"
+          ],
+          "answer_index": 1,
+          "explanation_md": "메서드가 어떤 객체에서 불렸는지를 알려 줍니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d36_fill_1",
+      "kind": "fill_blank",
+      "title": "좌표 클래스",
+      "prompt_md": "x, y 좌표를 저장하는 `Point` 클래스를 완성하세요.",
+      "concepts": [
+        "class"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "class Point:\n    def __init__(____, x, y):\n        self.x = x\n        self.____ = y\n\n\ndef check(x, y):\n    p = Point(x, y)\n    return [p.x, p.y]\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "(1, 2)",
+          "call": {
+            "args": [
+              1,
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              2
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0,
+              -5
+            ]
+          },
+          "expect": {
+            "return": [
+              0,
+              -5
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              3.5,
+              7
+            ]
+          },
+          "expect": {
+            "return": [
+              3.5,
+              7
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "메서드의 첫 매개변수는 항상 객체 자신을 받습니다. 관례적인 이름이 있어요.",
+        "`p.y`로 읽을 수 있도록 속성 이름을 정하세요."
+      ],
+      "solution": "class Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n\ndef check(x, y):\n    p = Point(x, y)\n    return [p.x, p.y]\n"
+    },
+    {
+      "id": "d36_code_1",
+      "kind": "coding",
+      "title": "직사각형 클래스",
+      "prompt_md": "`Rectangle(width, height)` 클래스를 정의하세요.\n\n- 속성 `width`, `height`, 그리고 넓이를 미리 계산한 `area`를 저장합니다.\n- 너비나 높이가 0 이하이면 `ValueError`를 발생시킵니다.\n\n아래 `describe` 함수는 채점용이니 그대로 두세요.",
+      "concepts": [
+        "class",
+        "exception"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "# 여기에 Rectangle 클래스를 작성하세요\n\n\ndef describe(width, height):\n    r = Rectangle(width, height)\n    return [r.width, r.height, r.area]\n",
+      "entry": {
+        "mode": "function",
+        "name": "describe"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3×4",
+          "call": {
+            "args": [
+              3,
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              4,
+              12
+            ]
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "너비 0",
+          "call": {
+            "args": [
+              0,
+              4
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2.5,
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              2.5,
+              2,
+              5.0
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5,
+              -1
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`class Rectangle:` 안에 `__init__(self, width, height)`를 만드세요.",
+        "값 검사를 먼저 하고, 통과하면 `self.width`, `self.height`, `self.area`를 저장합니다."
+      ],
+      "solution": "class Rectangle:\n    def __init__(self, width, height):\n        if width <= 0 or height <= 0:\n            raise ValueError(\"너비와 높이는 양수여야 합니다\")\n        self.width = width\n        self.height = height\n        self.area = width * height\n\n\ndef describe(width, height):\n    r = Rectangle(width, height)\n    return [r.width, r.height, r.area]\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      }
+    }
+  ]
+}

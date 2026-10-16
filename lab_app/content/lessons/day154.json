@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "day": 154,
+  "title": "22주차 누적 복습",
+  "stage": "dl",
+  "week": 22,
+  "is_review": true,
+  "objectives": [
+    "LSTM으로 시퀀스 분류 모델을 학습하고, LSTM 셀의 계산을 설명할 수 있다."
+  ],
+  "concepts": [
+    "sequence",
+    "rnn",
+    "lstm",
+    "embedding"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "22주차 돌아보기",
+      "content_md": "| 날 | 주제 | 핵심 |\n|---|---|---|\n| 148 | 윈도우 | (N, 길이, 특성), 시간 순서 분할 |\n| 149 | RNN | 은닉 상태, `out`, `h_n` |\n| 150 | 예측 | `out[:, -1]` → 선형 층 |\n| 151 | LSTM | 셀 상태, 게이트, `out, (h, c)` |\n| 152 | 임베딩 | 사전, 패딩, `nn.Embedding` |\n| 153 | 텍스트 분류 | 마스크 평균 |",
+      "quiz": [
+        {
+          "id": "d154_review_q1",
+          "question_md": "시계열을 학습·테스트로 나누는 올바른 방법은?",
+          "choices": [
+            "무작위로 섞어서",
+            "앞부분과 뒷부분으로",
+            "홀짝으로",
+            "나누지 않는다"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d154_review_q2",
+          "question_md": "문장 길이를 맞추기 위해 채우는 번호는?",
+          "choices": [
+            "0(`<pad>`)",
+            "1(`<unk>`)",
+            "-1",
+            "사전 크기"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "시퀀스 분류와 패딩 도구",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "다음 값 예측(회귀)뿐 아니라 시퀀스 전체에 레이블을 붙이는 **시퀀스 분류**도 같은 구조입니다. 마지막 출력 → 선형 층 → 클래스 로짓.\n\n길이가 다른 텐서 목록은 `nn.utils.rnn.pad_sequence(목록, batch_first=True)`로 한 번에 0을 채워 묶을 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nseqs = [torch.tensor([3, 4, 5]), torch.tensor([6]), torch.tensor([7, 8])]\nprint(nn.utils.rnn.pad_sequence(seqs, batch_first=True))\ncell = nn.LSTMCell(1, 2)\nprint(cell.weight_ih.shape, cell.weight_hh.shape)\n",
+          "runnable": true,
+          "expected_output": "tensor([[3, 4, 5],\n        [6, 0, 0],\n        [7, 8, 0]])\ntorch.Size([8, 1]) torch.Size([8, 2])\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "도전 문제의 `nn.LSTMCell`은 한 시점만 계산하는 LSTM입니다. 가중치는 입력·망각·후보(g)·출력 게이트 순서로 4묶음이 세로로 붙어 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "길이가 다른 시퀀스를 패딩하세요.",
+      "exercise_ids": [
+        "d154_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d154_code_1",
+        "d154_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "마무리",
+      "points": [
+        "시퀀스 = 윈도우 → RNN/LSTM → 마지막 출력 → 선형 층.",
+        "LSTM은 긴 의존성에 강하다.",
+        "텍스트 = 사전 → 패딩 → 임베딩.",
+        "다음 주: 학습된 모델을 저장하고 재사용하는 전이 학습."
+      ],
+      "quiz": [
+        {
+          "id": "d154_summary_q1",
+          "question_md": "`pad_sequence`가 채우는 기본값은?",
+          "choices": [
+            "0",
+            "1",
+            "-1",
+            "평균"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d154_summary_q2",
+          "question_md": "LSTMCell의 `weight_ih` 행 수가 은닉 크기의 4배인 이유는?",
+          "choices": [
+            "게이트·후보 4묶음",
+            "층이 4개",
+            "배치 4",
+            "우연"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d154_fill_1",
+      "kind": "fill_blank",
+      "title": "패딩 묶기",
+      "prompt_md": "정수 목록들을 텐서로 바꿔 `pad_sequence`로 묶은 결과를 반환하세요(배치 차원이 앞).",
+      "concepts": [
+        "sequence"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef pad(lists):\n    seqs = [torch.tensor(x) for x in lists]\n    return nn.utils.rnn.____(seqs, ____)\n",
+      "entry": {
+        "mode": "function",
+        "name": "pad"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  6
+                ],
+                [
+                  7,
+                  8
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                3,
+                4,
+                5
+              ],
+              [
+                6,
+                0,
+                0
+              ],
+              [
+                7,
+                8,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  1
+                ],
+                [
+                  2,
+                  2,
+                  2,
+                  2
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                2,
+                2,
+                2
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "길이가 다른 시퀀스를 0으로 채워 묶는 함수입니다.",
+        "배치 차원을 앞에 두는 옵션입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef pad(lists):\n    seqs = [torch.tensor(x) for x in lists]\n    return nn.utils.rnn.pad_sequence(seqs, batch_first=True)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d154_code_1",
+      "kind": "coding",
+      "title": "추세 분류 LSTM",
+      "prompt_md": "주어진 `trend_data(seed)`는 오르는 추세(1)와 내리는 추세(0)의 시퀀스 200개입니다. 앞 150개로 학습, 뒤 50개로 평가하세요. `torch.manual_seed(0)` 후 `TrendLSTM`과 `optim.Adam(lr=0.01)`, CrossEntropyLoss로 전체 배치를 `epochs`번 학습하고 `[마지막 학습 손실, 테스트 정확도]`(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "lstm",
+        "sequence",
+        "training_loop"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn, optim\n\n\ndef trend_data(seed, n=200, length=12):\n    g = torch.Generator().manual_seed(seed)\n    slope = torch.rand(n, 1, generator=g) * 2 - 1\n    t = torch.arange(length, dtype=torch.float32)\n    X = (slope * t / length + 0.3 * torch.randn(n, length, generator=g)).unsqueeze(-1)\n    y = (slope.squeeze(1) > 0).long()\n    return X, y\n\n\nclass TrendLSTM(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.lstm = nn.LSTM(1, 16, batch_first=True)\n        self.fc = nn.Linear(16, 2)\n\n    def forward(self, x):\n        out, _ = self.lstm(x)\n        return self.fc(out[:, -1])\n\n\ndef train_trend(seed, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "train_trend"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              60
+            ]
+          },
+          "expect": {
+            "return": [
+              0.1598,
+              0.96
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              40
+            ]
+          },
+          "expect": {
+            "return": [
+              0.1419,
+              0.86
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.002
+          }
+        }
+      ],
+      "hints": [
+        "학습은 `X[:150]`, 평가는 `X[150:]`입니다.",
+        "정확도는 `torch.no_grad()` 안에서 argmax를 비교해 구합니다."
+      ],
+      "solution": "import torch\nfrom torch import nn, optim\n\n\ndef trend_data(seed, n=200, length=12):\n    g = torch.Generator().manual_seed(seed)\n    slope = torch.rand(n, 1, generator=g) * 2 - 1\n    t = torch.arange(length, dtype=torch.float32)\n    X = (slope * t / length + 0.3 * torch.randn(n, length, generator=g)).unsqueeze(-1)\n    y = (slope.squeeze(1) > 0).long()\n    return X, y\n\n\nclass TrendLSTM(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.lstm = nn.LSTM(1, 16, batch_first=True)\n        self.fc = nn.Linear(16, 2)\n\n    def forward(self, x):\n        out, _ = self.lstm(x)\n        return self.fc(out[:, -1])\n\n\ndef train_trend(seed, epochs):\n    X, y = trend_data(seed)\n    torch.manual_seed(0)\n    model = TrendLSTM()\n    optimizer = optim.Adam(model.parameters(), lr=0.01)\n    for _ in range(epochs):\n        loss = nn.CrossEntropyLoss()(model(X[:150]), y[:150])\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    with torch.no_grad():\n        acc = (model(X[150:]).argmax(dim=1) == y[150:]).float().mean()\n    return [round(loss.item(), 4), round(acc.item(), 4)]\n",
+      "time_limit_sec": 90
+    },
+    {
+      "id": "d154_code_2",
+      "kind": "coding",
+      "title": "LSTM 셀 직접 계산(도전)",
+      "prompt_md": "`torch.manual_seed(seed)` 후 `nn.LSTMCell(1, 2)`를 만들고, 입력 `x`(값 하나)와 h = c = 0에서 한 시점을 직접 계산하세요. `gates = x @ W_ih.T + b_ih + h @ W_hh.T + b_hh`를 4등분(`chunk(4, dim=1)`)해 i, f, g, o로 쓰고, `c = σ(f)·c + σ(i)·tanh(g)`, `h = σ(o)·tanh(c)`입니다. `[h(소수 넷째 자리 리스트), LSTMCell 결과와 같은지]`를 반환하세요.",
+      "concepts": [
+        "lstm"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import torch\nfrom torch import nn\n\n\ndef lstm_step(seed, x):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "lstm_step"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              1.0
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -0.1436,
+                0.2333
+              ],
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2,
+              -0.5
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                -0.0379,
+                -0.1406
+              ],
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "입력은 (1, 1) 모양 텐서로 만드세요.",
+        "`cell(inp)`은 h와 c를 돌려주니 첫 번째 값과 비교합니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\ndef lstm_step(seed, x):\n    torch.manual_seed(seed)\n    cell = nn.LSTMCell(1, 2)\n    inp = torch.tensor([[float(x)]])\n    h = c = torch.zeros(1, 2)\n    with torch.no_grad():\n        gates = inp @ cell.weight_ih.T + cell.bias_ih + h @ cell.weight_hh.T + cell.bias_hh\n        i, f, g, o = gates.chunk(4, dim=1)\n        c = torch.sigmoid(f) * c + torch.sigmoid(i) * torch.tanh(g)\n        h = torch.sigmoid(o) * torch.tanh(c)\n        h_ref, _ = cell(inp)\n    return [[round(v, 4) for v in h[0].tolist()], torch.allclose(h, h_ref, atol=1e-6)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

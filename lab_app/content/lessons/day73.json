@@ -1,0 +1,263 @@
+{
+  "schema_version": 1,
+  "day": 73,
+  "title": "학습 데이터와 테스트 데이터",
+  "stage": "ml",
+  "week": 11,
+  "is_review": false,
+  "objectives": [
+    "모델 평가를 위해 데이터를 학습용과 테스트용으로 나누는 이유를 설명할 수 있다.",
+    "train_test_split의 test_size, random_state, stratify를 쓸 수 있다."
+  ],
+  "concepts": [
+    "train_test",
+    "dataset"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 iris 데이터셋의 구조를 살펴봤습니다.",
+      "quiz": [
+        {
+          "id": "d73_review_q1",
+          "question_md": "`load_iris().target`에 담긴 것은?",
+          "choices": [
+            "특성 값",
+            "정답(품종 번호)",
+            "특성 이름",
+            "그래프"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "시험 문제는 미리 보여 주지 않는다",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "모델이 학습에 쓴 데이터로 평가하면 \"답을 외운\" 모델도 좋아 보입니다. 그래서 일부(보통 20~30%)를 **테스트 데이터**로 떼어 두고, 학습이 끝난 뒤 한 번만 평가합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import numpy as np\nfrom sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\n\nX, y = load_iris(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=0, stratify=y\n)\nprint(X_train.shape, X_test.shape)\nprint(np.bincount(y_train), np.bincount(y_test))\n",
+          "runnable": true,
+          "expected_output": "(120, 4) (30, 4)\n[40 40 40] [10 10 10]\n",
+          "time_limit_sec": 30
+        },
+        {
+          "kind": "tip",
+          "md": "`random_state`를 고정하면 매번 같은 방식으로 나뉘어 결과를 재현할 수 있습니다. `stratify=y`는 클래스 비율을 학습·테스트에서 똑같이 유지해 줍니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "데이터를 나누고 크기를 확인하세요.",
+      "exercise_ids": [
+        "d73_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "층화(stratify) 분할 후 테스트 데이터의 클래스 분포를 보고하세요.",
+      "exercise_ids": [
+        "d73_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "평가는 학습에 쓰지 않은 테스트 데이터로.",
+        "`train_test_split(X, y, test_size=, random_state=, stratify=)`.",
+        "반환 순서: `X_train, X_test, y_train, y_test`.",
+        "`stratify=y`로 클래스 비율 유지."
+      ],
+      "quiz": [
+        {
+          "id": "d73_summary_q1",
+          "question_md": "150개 데이터를 `test_size=0.2`로 나누면 테스트 개수는?",
+          "choices": [
+            "20",
+            "30",
+            "120",
+            "15"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d73_summary_q2",
+          "question_md": "`random_state`를 고정하는 이유는?",
+          "choices": [
+            "정확도 향상",
+            "결과 재현",
+            "속도 향상",
+            "결측치 제거"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d73_fill_1",
+      "kind": "fill_blank",
+      "title": "나누기",
+      "prompt_md": "iris를 `test_size`, `random_state=0`으로 나눠 `[학습 개수, 테스트 개수]`를 반환하세요.",
+      "concepts": [
+        "train_test"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import ____\n\n\ndef split_sizes(test_size):\n    X, y = load_iris(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=____, random_state=0)\n    return [len(X_train), len(X_test)]\n",
+      "entry": {
+        "mode": "function",
+        "name": "split_sizes"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "20%",
+          "call": {
+            "args": [
+              0.2
+            ]
+          },
+          "expect": {
+            "return": [
+              120,
+              30
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.5
+            ]
+          },
+          "expect": {
+            "return": [
+              75,
+              75
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "데이터를 나누는 함수 이름입니다.",
+        "테스트 비율로 쓸 매개변수입니다."
+      ],
+      "solution": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\n\n\ndef split_sizes(test_size):\n    X, y = load_iris(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=0)\n    return [len(X_train), len(X_test)]\n",
+      "time_limit_sec": 30
+    },
+    {
+      "id": "d73_code_1",
+      "kind": "coding",
+      "title": "층화 분할 보고",
+      "prompt_md": "iris를 `test_size`, `random_state=seed`, **클래스 비율을 유지**하도록 나눈 뒤 `[학습 개수, 테스트 개수, 테스트의 클래스별 개수 리스트]`를 반환하세요.",
+      "concepts": [
+        "train_test"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\n\n\ndef stratified_report(test_size, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "stratified_report"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "20%",
+          "call": {
+            "args": [
+              0.2,
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              120,
+              30,
+              [
+                10,
+                10,
+                10
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.3,
+              42
+            ]
+          },
+          "expect": {
+            "return": [
+              105,
+              45,
+              [
+                15,
+                15,
+                15
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0.5,
+              7
+            ]
+          },
+          "expect": {
+            "return": [
+              75,
+              75,
+              [
+                25,
+                25,
+                25
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`stratify=y`를 넘기세요.",
+        "클래스별 개수는 `np.bincount(y_test)`."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\n\n\ndef stratified_report(test_size, seed):\n    X, y = load_iris(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=test_size, random_state=seed, stratify=y\n    )\n    return [len(X_train), len(X_test), np.bincount(y_test)]\n",
+      "time_limit_sec": 30
+    }
+  ]
+}

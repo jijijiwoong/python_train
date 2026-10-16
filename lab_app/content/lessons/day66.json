@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "day": 66,
+  "title": "pandas 그래프와 여러 그래프",
+  "stage": "advanced_data",
+  "week": 10,
+  "is_review": false,
+  "objectives": [
+    "pandas의 plot으로 표에서 바로 그래프를 그릴 수 있다.",
+    "subplots로 여러 그래프를 한 그림에 배치할 수 있다."
+  ],
+  "concepts": [
+    "matplotlib",
+    "pandas_groupby",
+    "plot_types"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 막대·히스토그램·산점도를 목적에 맞게 골랐습니다.",
+      "quiz": [
+        {
+          "id": "d66_review_q1",
+          "question_md": "`ax.hist`가 돌려주는 첫 번째 값은?",
+          "choices": [
+            "구간 경계",
+            "구간별 개수",
+            "막대 객체",
+            "평균"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "표에서 바로 그리기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "pandas의 Series·DataFrame은 `.plot(kind=종류, ax=축)`으로 바로 그릴 수 있습니다. 인덱스가 x축, 값이 y축이 됩니다. groupby 결과를 그대로 그리면 편합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import matplotlib.pyplot as plt\nimport pandas as pd\n\ndf = pd.DataFrame({\"분류\": [\"문구\", \"식품\", \"문구\", \"식품\"], \"매출\": [3000, 4000, 2000, 2500]})\ntotals = df.groupby(\"분류\")[\"매출\"].sum()\nfig, axes = plt.subplots(1, 2, figsize=(9, 3.5))\ntotals.plot(kind=\"bar\", ax=axes[0], title=\"분류별 매출\")\ndf[\"매출\"].cumsum().plot(ax=axes[1], marker=\"o\", title=\"누적 매출\")\nfig.tight_layout()\nprint(totals.to_dict())\n",
+          "runnable": true,
+          "expected_output": "{'문구': 5000, '식품': 6500}\n",
+          "time_limit_sec": 20
+        },
+        {
+          "kind": "tip",
+          "md": "`plt.subplots(행, 열)`의 `axes`는 배열입니다. 1행 2열이면 `axes[0]`, `axes[1]`, 2행 2열이면 `axes[0, 1]`처럼 씁니다. `fig.tight_layout()`은 제목이 겹치지 않게 간격을 맞춥니다."
+        },
+        {
+          "kind": "tip",
+          "md": "이 앱에서는 코드 실행이 끝날 때 열려 있는 그래프가 **이미지로 실행 결과 아래에 표시**됩니다. `plt.show()`는 쓰지 않아도 됩니다(써도 괜찮아요). 한글 글꼴은 앱이 자동으로 설정합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "1행 2열 그래프 판을 만드세요.",
+      "exercise_ids": [
+        "d66_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "두 그래프로 이루어진 작은 대시보드를 만드세요.",
+      "exercise_ids": [
+        "d66_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`series.plot(kind=\"bar\", ax=ax)`처럼 pandas에서 바로 그리기.",
+        "`plt.subplots(행, 열)` → `axes` 배열.",
+        "`fig.tight_layout()`으로 간격 정리.",
+        "groupby 결과는 바로 그래프로 그리기 좋다."
+      ],
+      "quiz": [
+        {
+          "id": "d66_summary_q1",
+          "question_md": "2행 2열 subplots에서 오른쪽 위 그래프는?",
+          "choices": [
+            "`axes[0, 1]`",
+            "`axes[1, 0]`",
+            "`axes[1]`",
+            "`axes[2]`"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d66_summary_q2",
+          "question_md": "Series를 막대 그래프로 그리는 코드는?",
+          "choices": [
+            "`s.bar()`",
+            "`s.plot(kind=\"bar\")`",
+            "`plt.series(s)`",
+            "`s.hist(kind=\"bar\")`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d66_fill_1",
+      "kind": "fill_blank",
+      "title": "그래프 판 나누기",
+      "prompt_md": "1행 `n`열짜리 그래프 판을 만들어 Axes 개수와 그림 크기 정보를 반환하세요.",
+      "concepts": [
+        "matplotlib"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import matplotlib.pyplot as plt\n\n\ndef make_panels(n):\n    fig, axes = plt.____(1, ____)\n    return len(axes)\n",
+      "entry": {
+        "mode": "function",
+        "name": "make_panels"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "2개",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": 2
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": 3
+          }
+        }
+      ],
+      "hints": [
+        "그림판과 Axes를 함께 만드는 함수입니다.",
+        "열 개수로 쓸 매개변수입니다."
+      ],
+      "solution": "import matplotlib.pyplot as plt\n\n\ndef make_panels(n):\n    fig, axes = plt.subplots(1, n)\n    return len(axes)\n",
+      "time_limit_sec": 20
+    },
+    {
+      "id": "d66_code_1",
+      "kind": "coding",
+      "title": "매출 대시보드",
+      "prompt_md": "`dashboard(data)`를 작성하세요(`data`: 분류·매출 열). 1행 2열 그래프를 만들어\n\n- 왼쪽: 분류별 매출 합계 막대 그래프, 제목 `\"분류별 매출\"`\n- 오른쪽: 매출 누적 합 선 그래프, 제목 `\"누적 매출\"`\n\n`fig, axes`를 반환하세요. `check`는 채점용입니다.",
+      "concepts": [
+        "matplotlib",
+        "pandas_groupby",
+        "plot_types"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import matplotlib.pyplot as plt\nimport pandas as pd\n\n\ndef dashboard(data):\n    # 여기에 코드를 작성하세요\n    pass\n\n\ndef check(data):\n    fig, axes = dashboard(data)\n    left, right = axes[0], axes[1]\n    return [left.get_title(), [p.get_height() for p in left.patches],\n            right.get_title(), right.lines[0].get_ydata().tolist()]\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "분류": [
+                  "문구",
+                  "식품",
+                  "문구"
+                ],
+                "매출": [
+                  3000,
+                  4000,
+                  2000
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              "분류별 매출",
+              [
+                5000,
+                4000
+              ],
+              "누적 매출",
+              [
+                3000,
+                7000,
+                9000
+              ]
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "분류": [
+                  "b",
+                  "a"
+                ],
+                "매출": [
+                  1,
+                  2
+                ]
+              }
+            ]
+          },
+          "expect": {
+            "return": [
+              "분류별 매출",
+              [
+                2,
+                1
+              ],
+              "누적 매출",
+              [
+                1,
+                3
+              ]
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "`df.groupby(\"분류\")[\"매출\"].sum()`을 `.plot(kind=\"bar\", ax=axes[0])`으로 그리세요(분류 이름 순으로 정렬됩니다).",
+        "누적 합은 `df[\"매출\"].cumsum()`, 오른쪽 Axes에 선으로 그립니다.",
+        "제목은 `ax.set_title`이나 `plot(title=...)`으로 붙입니다."
+      ],
+      "solution": "import matplotlib.pyplot as plt\nimport pandas as pd\n\n\ndef dashboard(data):\n    df = pd.DataFrame(data)\n    fig, axes = plt.subplots(1, 2, figsize=(9, 3.5))\n    df.groupby(\"분류\")[\"매출\"].sum().plot(kind=\"bar\", ax=axes[0])\n    axes[0].set_title(\"분류별 매출\")\n    df[\"매출\"].cumsum().plot(ax=axes[1], marker=\"o\")\n    axes[1].set_title(\"누적 매출\")\n    fig.tight_layout()\n    return fig, axes\n\n\ndef check(data):\n    fig, axes = dashboard(data)\n    left, right = axes[0], axes[1]\n    return [left.get_title(), [p.get_height() for p in left.patches],\n            right.get_title(), right.lines[0].get_ydata().tolist()]\n",
+      "time_limit_sec": 20
+    }
+  ]
+}

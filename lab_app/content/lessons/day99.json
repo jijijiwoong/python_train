@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "day": 99,
+  "title": "결정 트리",
+  "stage": "ml",
+  "week": 15,
+  "is_review": false,
+  "objectives": [
+    "결정 트리가 \"질문\"을 반복해 데이터를 나누는 모델임을 설명할 수 있다.",
+    "트리의 깊이·잎 수·첫 질문을 확인하고 export_text로 규칙을 읽을 수 있다."
+  ],
+  "concepts": [
+    "decision_tree",
+    "sklearn_api"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "지난주 돌아보기",
+      "content_md": "14주차에는 모델을 제대로 평가하는 법을 배웠습니다. 이번 주는 실무에서 가장 많이 쓰이는 모델 계열인 **트리와 앙상블**입니다. 결정 트리는 Day 96에서 잠깐 써 봤죠.",
+      "quiz": [
+        {
+          "id": "d99_review_q1",
+          "question_md": "결정 트리의 깊이를 제한하지 않으면 생기기 쉬운 문제는?",
+          "choices": [
+            "과소적합",
+            "과적합",
+            "학습 불가",
+            "정확도 0"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "스무고개처럼 나누기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "결정 트리는 \"꽃잎 길이 ≤ 2.45cm?\" 같은 **예/아니오 질문**으로 데이터를 둘씩 나누는 일을 반복합니다. 더 나눌 필요가 없는 끝 칸(**잎**)에 도달하면 그 칸의 다수 클래스로 예측합니다. 규칙을 사람이 그대로 읽을 수 있다는 것이 큰 장점입니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_iris\nfrom sklearn.tree import DecisionTreeClassifier, export_text\n\niris = load_iris()\nmodel = DecisionTreeClassifier(max_depth=2, random_state=0).fit(iris.data, iris.target)\nprint(export_text(model, feature_names=iris.feature_names))\nprint(model.get_depth(), model.get_n_leaves())\n",
+          "runnable": true,
+          "expected_output": "|--- petal width (cm) <= 0.80\n|   |--- class: 0\n|--- petal width (cm) >  0.80\n|   |--- petal width (cm) <= 1.75\n|   |   |--- class: 1\n|   |--- petal width (cm) >  1.75\n|   |   |--- class: 2\n\n2 3\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "트리는 특성의 크기(단위)에 영향을 받지 않아 **스케일링이 필요 없습니다**. 대신 깊어질수록 과적합되기 쉬워 `max_depth`, `min_samples_leaf` 등으로 제한합니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "깊이를 제한한 트리를 학습하세요.",
+      "exercise_ids": [
+        "d99_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "트리의 구조와 첫 질문을 확인하세요.",
+      "exercise_ids": [
+        "d99_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "결정 트리 = 예/아니오 질문의 연속, 잎에서 다수결.",
+        "`export_text`로 규칙을 글로 읽기.",
+        "`get_depth()`, `get_n_leaves()`로 구조 확인.",
+        "스케일링 불필요, 깊이 제한으로 과적합 방지."
+      ],
+      "quiz": [
+        {
+          "id": "d99_summary_q1",
+          "question_md": "깊이 2인 이진 트리의 잎은 최대 몇 개?",
+          "choices": [
+            "2",
+            "3",
+            "4",
+            "8"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d99_summary_q2",
+          "question_md": "결정 트리의 장점은?",
+          "choices": [
+            "스케일링 필수",
+            "규칙을 사람이 읽을 수 있다",
+            "항상 가장 정확하다",
+            "과적합이 없다"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d99_fill_1",
+      "kind": "fill_blank",
+      "title": "깊이 제한 트리",
+      "prompt_md": "iris 전체로 `max_depth=depth`, `random_state=0` 결정 트리를 학습해 `[깊이, 잎 수]`를 반환하세요.",
+      "concepts": [
+        "decision_tree"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_iris\nfrom sklearn.tree import ____\n\n\ndef tree_shape(depth):\n    X, y = load_iris(return_X_y=True)\n    model = DecisionTreeClassifier(max_depth=____, random_state=0).fit(X, y)\n    return [int(model.get_depth()), int(model.get_n_leaves())]\n",
+      "entry": {
+        "mode": "function",
+        "name": "tree_shape"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "깊이 2",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              2,
+              3
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              1,
+              2
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "결정 트리 분류기 클래스 이름입니다.",
+        "깊이 제한으로 쓸 매개변수입니다."
+      ],
+      "solution": "from sklearn.datasets import load_iris\nfrom sklearn.tree import DecisionTreeClassifier\n\n\ndef tree_shape(depth):\n    X, y = load_iris(return_X_y=True)\n    model = DecisionTreeClassifier(max_depth=depth, random_state=0).fit(X, y)\n    return [int(model.get_depth()), int(model.get_n_leaves())]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d99_code_1",
+      "kind": "coding",
+      "title": "트리 해부",
+      "prompt_md": "iris를 `test_size=0.3, random_state=seed, stratify=y`로 나누고 `max_depth=depth`, `random_state=0` 트리를 학습하세요. `[깊이, 잎 수, 테스트 정확도(소수 넷째 자리), 첫 질문(뿌리)에 쓰인 특성 이름]`을 반환합니다. 뿌리 특성 번호는 `model.tree_.feature[0]`입니다.",
+      "concepts": [
+        "decision_tree",
+        "dataset"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier\n\n\ndef inspect_tree(depth, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "inspect_tree"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "깊이 3",
+          "call": {
+            "args": [
+              3,
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              3,
+              5,
+              0.9556,
+              "petal width (cm)"
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              null,
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              6,
+              10,
+              0.9778,
+              "petal width (cm)"
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`iris = load_iris()`로 특성 이름까지 받아 두세요.",
+        "특성 이름은 `iris.feature_names[번호]`."
+      ],
+      "solution": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier\n\n\ndef inspect_tree(depth, seed):\n    iris = load_iris()\n    X_train, X_test, y_train, y_test = train_test_split(\n        iris.data, iris.target, test_size=0.3, random_state=seed, stratify=iris.target\n    )\n    model = DecisionTreeClassifier(max_depth=depth, random_state=0).fit(X_train, y_train)\n    root = iris.feature_names[model.tree_.feature[0]]\n    return [\n        int(model.get_depth()),\n        int(model.get_n_leaves()),\n        round(model.score(X_test, y_test), 4),\n        root,\n    ]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

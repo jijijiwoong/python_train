@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "day": 74,
+  "title": "첫 모델: k-최근접 이웃",
+  "stage": "ml",
+  "week": 11,
+  "is_review": false,
+  "objectives": [
+    "KNeighborsClassifier로 모델을 만들고 fit, predict, score를 쓸 수 있다.",
+    "k(이웃 수)의 의미를 설명할 수 있다."
+  ],
+  "concepts": [
+    "knn",
+    "sklearn_api",
+    "train_test"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 학습·테스트 데이터를 나눴습니다.",
+      "quiz": [
+        {
+          "id": "d74_review_q1",
+          "question_md": "`train_test_split`의 반환 순서는?",
+          "choices": [
+            "X_train, y_train, X_test, y_test",
+            "X_train, X_test, y_train, y_test",
+            "X, y",
+            "train, test"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "fit → predict → score",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "**k-최근접 이웃**(KNN)은 Day 71의 아이디어를 넓힌 것입니다. 가장 가까운 **k개** 이웃의 다수결로 정답을 정합니다. scikit-learn 모델은 모두 같은 3단계로 씁니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\nX, y = load_iris(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)\nmodel = KNeighborsClassifier(n_neighbors=3)\nmodel.fit(X_train, y_train)\nprint(model.predict(X_test[:5]))\nprint(y_test[:5])\nprint(round(model.score(X_test, y_test), 3))\n",
+          "runnable": true,
+          "expected_output": "[2 2 0 0 1]\n[2 2 0 0 1]\n1.0\n",
+          "time_limit_sec": 30
+        },
+        {
+          "kind": "tip",
+          "md": "`score`는 분류 모델에서 **정확도**(맞힌 비율)입니다. k가 너무 작으면 잡음에 휘둘리고, 너무 크면 경계가 뭉개집니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "KNN 모델을 학습시키세요.",
+      "exercise_ids": [
+        "d74_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "k와 시드를 바꿔 가며 테스트 정확도를 구하세요.",
+      "exercise_ids": [
+        "d74_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`model = KNeighborsClassifier(n_neighbors=k)`.",
+        "`fit(X_train, y_train)` → 학습, `predict(X)` → 예측.",
+        "`score(X_test, y_test)` → 정확도.",
+        "k: 다수결에 참여하는 이웃 수."
+      ],
+      "quiz": [
+        {
+          "id": "d74_summary_q1",
+          "question_md": "모델을 학습시키는 메서드는?",
+          "choices": [
+            "`train`",
+            "`fit`",
+            "`learn`",
+            "`score`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d74_summary_q2",
+          "question_md": "이웃 5개 중 A가 3개, B가 2개면 KNN(k=5)의 예측은?",
+          "choices": [
+            "A",
+            "B",
+            "무승부",
+            "오류"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d74_fill_1",
+      "kind": "fill_blank",
+      "title": "학습과 평가",
+      "prompt_md": "iris를 `test_size=0.3, random_state=0, stratify=y`로 나눈 뒤 k=5 KNN을 학습시키고 테스트 정확도(소수 넷째 자리)를 반환하세요.",
+      "concepts": [
+        "knn",
+        "sklearn_api"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef knn5():\n    X, y = load_iris(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.3, random_state=0, stratify=y\n    )\n    model = KNeighborsClassifier(n_neighbors=5)\n    model.____(X_train, y_train)\n    return round(model.____(X_test, y_test), 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "knn5"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "k=5",
+          "call": {
+            "args": []
+          },
+          "expect": {
+            "return": 1.0
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "학습시키는 메서드입니다.",
+        "정확도를 계산하는 메서드입니다."
+      ],
+      "solution": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef knn5():\n    X, y = load_iris(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.3, random_state=0, stratify=y\n    )\n    model = KNeighborsClassifier(n_neighbors=5)\n    model.fit(X_train, y_train)\n    return round(model.score(X_test, y_test), 4)\n",
+      "time_limit_sec": 30
+    },
+    {
+      "id": "d74_code_1",
+      "kind": "coding",
+      "title": "KNN 정확도",
+      "prompt_md": "iris를 `test_size=0.3, random_state=seed, stratify=y`로 나누고, 이웃 수 `k`인 KNN의 테스트 정확도를 소수 넷째 자리까지 반환하세요.",
+      "concepts": [
+        "knn",
+        "sklearn_api",
+        "train_test"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef knn_accuracy(k, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "knn_accuracy"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "k=3",
+          "call": {
+            "args": [
+              3,
+              0
+            ]
+          },
+          "expect": {
+            "return": 1.0
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              1
+            ]
+          },
+          "expect": {
+            "return": 0.9778
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              15,
+              2
+            ]
+          },
+          "expect": {
+            "return": 1.0
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-09
+          }
+        }
+      ],
+      "hints": [
+        "`load_iris(return_X_y=True)` → 나누기 → 모델 만들기 → `fit` → `score` 순서입니다.",
+        "반올림은 `round(값, 4)`."
+      ],
+      "solution": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef knn_accuracy(k, seed):\n    X, y = load_iris(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X, y, test_size=0.3, random_state=seed, stratify=y\n    )\n    model = KNeighborsClassifier(n_neighbors=k).fit(X_train, y_train)\n    return round(model.score(X_test, y_test), 4)\n",
+      "time_limit_sec": 30
+    }
+  ]
+}

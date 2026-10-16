@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "day": 117,
+  "title": "특성 선택",
+  "stage": "ml",
+  "week": 17,
+  "is_review": false,
+  "objectives": [
+    "통계 점수로 유용한 특성 k개를 고르는 SelectKBest를 쓸 수 있다.",
+    "특성 수에 따른 성능 변화를 파이프라인으로 비교할 수 있다."
+  ],
+  "concepts": [
+    "feature_selection",
+    "pipeline"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 전처리와 모델을 파이프라인으로 묶었습니다.",
+      "quiz": [
+        {
+          "id": "d117_review_q1",
+          "question_md": "파이프라인 단계의 매개변수 이름 형식은?",
+          "choices": [
+            "`단계.매개변수`",
+            "`단계__매개변수`",
+            "`매개변수_단계`",
+            "`단계:매개변수`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "꼭 필요한 특성만",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "특성이 많다고 항상 좋은 것은 아닙니다. 쓸모없는 특성은 잡음이 되고 계산만 늘립니다. **SelectKBest**는 특성마다 정답과의 관련성 점수(분류는 `f_classif`)를 매겨 상위 k개만 남깁니다. Lasso(Day 82)나 트리 중요도(Day 103)도 특성 선택에 쓸 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.feature_selection import SelectKBest, f_classif\n\ndata = load_breast_cancer()\nselector = SelectKBest(f_classif, k=3).fit(data.data, data.target)\nprint(data.feature_names[selector.get_support()])\nprint(selector.transform(data.data).shape)\n",
+          "runnable": true,
+          "expected_output": "['mean concave points' 'worst perimeter' 'worst concave points']\n(569, 3)\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "특성 선택도 학습 데이터로만 해야 합니다. 전체 데이터로 고른 뒤 교차 검증하면 누수가 생겨 점수가 부풀려집니다. 파이프라인에 넣으면 자동으로 지켜집니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "상위 k개 특성을 고르세요.",
+      "exercise_ids": [
+        "d117_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "특성 수별 정확도와 상위 3개 특성을 확인하세요.",
+      "exercise_ids": [
+        "d117_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`SelectKBest(f_classif, k)`: 점수 상위 k개 특성.",
+        "`get_support()`로 선택된 특성 확인.",
+        "특성 선택도 학습 데이터로만 → 파이프라인에 넣기.",
+        "Lasso·트리 중요도도 선택에 쓸 수 있다."
+      ],
+      "quiz": [
+        {
+          "id": "d117_summary_q1",
+          "question_md": "`get_support()`가 돌려주는 것은?",
+          "choices": [
+            "점수",
+            "선택 여부(불리언) 배열",
+            "정확도",
+            "특성 이름"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d117_summary_q2",
+          "question_md": "특성 선택을 전체 데이터로 하면 생기는 문제는?",
+          "choices": [
+            "속도 저하",
+            "데이터 누수",
+            "과소적합",
+            "결측치"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d117_fill_1",
+      "kind": "fill_blank",
+      "title": "상위 k개",
+      "prompt_md": "유방암 데이터 전체에서 `f_classif` 기준 상위 `k`개 특성을 고른 뒤의 데이터 모양을 반환하세요.",
+      "concepts": [
+        "feature_selection"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.feature_selection import ____, f_classif\n\n\ndef selected_shape(k):\n    X, y = load_breast_cancer(return_X_y=True)\n    return list(SelectKBest(f_classif, k=____).fit_transform(X, y).shape)\n",
+      "entry": {
+        "mode": "function",
+        "name": "selected_shape"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "5개",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              569,
+              5
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              569,
+              1
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "상위 k개를 고르는 클래스 이름입니다.",
+        "고를 개수로 쓸 매개변수입니다."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.feature_selection import SelectKBest, f_classif\n\n\ndef selected_shape(k):\n    X, y = load_breast_cancer(return_X_y=True)\n    return list(SelectKBest(f_classif, k=k).fit_transform(X, y).shape)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d117_code_1",
+      "kind": "coding",
+      "title": "특성 수 실험",
+      "prompt_md": "유방암 데이터를 `test_size=0.3, random_state=seed, stratify=y`로 나누고, `ks`의 각 k마다 `make_pipeline(StandardScaler(), SelectKBest(f_classif, k=k), LogisticRegression())`의 테스트 정확도(소수 넷째 자리)를 구하세요. 또 학습 데이터로 고른 상위 3개 특성 이름을 구해 `[정확도 리스트, 이름 리스트]`를 반환합니다.",
+      "concepts": [
+        "feature_selection",
+        "pipeline"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.feature_selection import SelectKBest, f_classif\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef k_experiment(ks, seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "k_experiment"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "1·5·30",
+          "call": {
+            "args": [
+              [
+                1,
+                5,
+                30
+              ],
+              0
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.8889,
+                0.9357,
+                0.9591
+              ],
+              [
+                "mean concave points",
+                "worst perimeter",
+                "worst concave points"
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                10
+              ],
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                0.9591
+              ],
+              [
+                "worst radius",
+                "worst perimeter",
+                "worst concave points"
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "k마다 파이프라인을 새로 만들어 학습·평가하세요.",
+        "이름은 `SelectKBest(f_classif, k=3).fit(X_train, y_train)`의 `get_support()`로 `feature_names`를 거릅니다."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.feature_selection import SelectKBest, f_classif\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef k_experiment(ks, seed):\n    data = load_breast_cancer()\n    X_train, X_test, y_train, y_test = train_test_split(\n        data.data, data.target, test_size=0.3, random_state=seed, stratify=data.target\n    )\n    scores = []\n    for k in ks:\n        pipe = make_pipeline(StandardScaler(), SelectKBest(f_classif, k=k), LogisticRegression())\n        scores.append(round(pipe.fit(X_train, y_train).score(X_test, y_test), 4))\n    selector = SelectKBest(f_classif, k=3).fit(X_train, y_train)\n    return [scores, [str(name) for name in data.feature_names[selector.get_support()]]]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

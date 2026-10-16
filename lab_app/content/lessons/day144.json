@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "day": 144,
+  "title": "CNN 모델 구성",
+  "stage": "dl",
+  "week": 21,
+  "is_review": false,
+  "objectives": [
+    "합성곱·풀링·선형 층으로 CNN 클래스를 만들 수 있다.",
+    "CNN과 MLP의 매개변수 수를 비교할 수 있다."
+  ],
+  "concepts": [
+    "cnn",
+    "nn_module",
+    "conv",
+    "pooling"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 합성곱과 풀링을 지난 특성 맵의 모양을 따라가 보았습니다. 오늘은 이것을 모델 클래스로 묶습니다.",
+      "quiz": [
+        {
+          "id": "d144_review_q1",
+          "question_md": "선형 층의 입력 수를 정하는 가장 확실한 방법은?",
+          "choices": [
+            "추측",
+            "가짜 입력을 통과시켜 모양 확인",
+            "항상 64",
+            "이미지 개수"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "CNN 클래스",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "이번 주에 쓸 기본 CNN입니다. 8×8 이미지가 [합성곱(8채널) → 풀링] 후 4×4, [합성곱(16채널) → 풀링] 후 2×2가 되어 16×2×2 = 64개로 펼쳐집니다.\n\n같은 크기의 MLP(64 → 64 → 10)와 비교하면 CNN은 매개변수가 훨씬 적으면서도 이미지에서 더 좋은 성능을 냅니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nclass SmallCNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.conv1 = nn.Conv2d(1, 8, 3, padding=1)\n        self.conv2 = nn.Conv2d(8, 16, 3, padding=1)\n        self.pool = nn.MaxPool2d(2)\n        self.fc = nn.Linear(16 * 2 * 2, 10)\n\n    def forward(self, x):\n        x = self.pool(torch.relu(self.conv1(x)))\n        x = self.pool(torch.relu(self.conv2(x)))\n        return self.fc(x.flatten(1))\n\ncount = lambda m: sum(p.numel() for p in m.parameters())\nmlp = nn.Sequential(nn.Flatten(), nn.Linear(64, 64), nn.ReLU(), nn.Linear(64, 10))\nprint(SmallCNN()(torch.zeros(3, 1, 8, 8)).shape, count(SmallCNN()), count(mlp))\n",
+          "runnable": true,
+          "expected_output": "torch.Size([3, 10]) 1898 4810\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "`nn.Flatten()`은 `flatten(1)`의 층 버전이라 Sequential 안에 넣을 수 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "CNN의 펼치기 부분을 완성하세요.",
+      "exercise_ids": [
+        "d144_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "작은 CNN 클래스를 직접 작성하세요.",
+      "exercise_ids": [
+        "d144_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "CNN = [합성곱 → ReLU → 풀링] × 몇 번 + 선형 층.",
+        "펼친 크기 = 채널 × 높이 × 너비.",
+        "CNN은 가중치 공유로 매개변수가 적다.",
+        "`nn.Flatten()`은 Sequential용 펼치기."
+      ],
+      "quiz": [
+        {
+          "id": "d144_summary_q1",
+          "question_md": "16채널 2×2 특성 맵을 펼친 크기는?",
+          "choices": [
+            "16",
+            "32",
+            "64",
+            "4"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d144_summary_q2",
+          "question_md": "CNN의 매개변수가 적은 이유는?",
+          "choices": [
+            "커널을 모든 위치에서 공유",
+            "층이 적어서",
+            "풀링 때문만",
+            "활성화 함수 때문"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d144_fill_1",
+      "kind": "fill_blank",
+      "title": "펼치기",
+      "prompt_md": "SmallCNN의 빈칸을 채우고 `n`장 입력의 출력 모양과 매개변수 수를 `[모양, 매개변수 수]`로 반환하세요.",
+      "concepts": [
+        "cnn"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\nclass SmallCNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.conv1 = nn.Conv2d(1, 8, 3, padding=1)\n        self.conv2 = nn.Conv2d(8, 16, 3, padding=1)\n        self.pool = nn.MaxPool2d(2)\n        self.fc = nn.Linear(____, 10)\n\n    def forward(self, x):\n        x = self.pool(torch.relu(self.conv1(x)))\n        x = self.pool(torch.relu(self.conv2(x)))\n        return self.fc(x.____)\n\n\ndef small_cnn_info(n):\n    model = SmallCNN()\n    return [list(model(torch.zeros(n, 1, 8, 8)).shape), sum(p.numel() for p in model.parameters())]\n",
+      "entry": {
+        "mode": "function",
+        "name": "small_cnn_info"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                2,
+                10
+              ],
+              1898
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                5,
+                10
+              ],
+              1898
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "16채널 × 2 × 2입니다.",
+        "배치 차원(0번)은 남기고 1번부터 펼칩니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\nclass SmallCNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.conv1 = nn.Conv2d(1, 8, 3, padding=1)\n        self.conv2 = nn.Conv2d(8, 16, 3, padding=1)\n        self.pool = nn.MaxPool2d(2)\n        self.fc = nn.Linear(16 * 2 * 2, 10)\n\n    def forward(self, x):\n        x = self.pool(torch.relu(self.conv1(x)))\n        x = self.pool(torch.relu(self.conv2(x)))\n        return self.fc(x.flatten(1))\n\n\ndef small_cnn_info(n):\n    model = SmallCNN()\n    return [list(model(torch.zeros(n, 1, 8, 8)).shape), sum(p.numel() for p in model.parameters())]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d144_code_1",
+      "kind": "coding",
+      "title": "TinyCNN",
+      "prompt_md": "`TinyCNN`을 완성하세요. `__init__`에서 `self.conv = nn.Conv2d(1, 4, 3, padding=1)`, `self.pool = nn.MaxPool2d(2)`, `self.fc = nn.Linear(4 * 4 * 4, 10)`을 **이 순서로** 만들고, `forward`는 conv → ReLU → pool → `flatten(1)` → fc를 계산합니다. `cnn_info`는 이미 작성되어 있습니다.",
+      "concepts": [
+        "cnn",
+        "nn_module"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\nclass TinyCNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        # self.conv, self.pool, self.fc를 만드세요\n        pass\n\n    def forward(self, x):\n        # conv → ReLU → pool → flatten → fc\n        pass\n\n\ndef cnn_info(seed, n):\n    torch.manual_seed(seed)\n    model = TinyCNN()\n    with torch.no_grad():\n        out = model(torch.ones(n, 1, 8, 8))\n    n_params = sum(p.numel() for p in model.parameters())\n    return [list(out.shape), n_params, [round(v, 4) for v in out[0].tolist()]]\n",
+      "entry": {
+        "mode": "function",
+        "name": "cnn_info"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              2
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                2,
+                10
+              ],
+              690,
+              [
+                0.2983,
+                -0.1095,
+                -0.0346,
+                -0.1401,
+                0.3235,
+                0.2523,
+                -0.2147,
+                -0.2263,
+                0.3451,
+                -0.126
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              3,
+              1
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                1,
+                10
+              ],
+              690,
+              [
+                -0.1581,
+                0.168,
+                -0.03,
+                -0.0725,
+                -0.0117,
+                0.0825,
+                -0.1095,
+                0.1083,
+                0.1991,
+                0.057
+              ]
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "8×8에 padding 1 합성곱은 크기 유지, 풀링 후 4×4입니다.",
+        "forward 마지막은 펼친 뒤 `self.fc`에 넣습니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\nclass TinyCNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.conv = nn.Conv2d(1, 4, 3, padding=1)\n        self.pool = nn.MaxPool2d(2)\n        self.fc = nn.Linear(4 * 4 * 4, 10)\n\n    def forward(self, x):\n        x = self.pool(torch.relu(self.conv(x)))\n        return self.fc(x.flatten(1))\n\n\ndef cnn_info(seed, n):\n    torch.manual_seed(seed)\n    model = TinyCNN()\n    with torch.no_grad():\n        out = model(torch.ones(n, 1, 8, 8))\n    n_params = sum(p.numel() for p in model.parameters())\n    return [list(out.shape), n_params, [round(v, 4) for v in out[0].tolist()]]\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      },
+      "time_limit_sec": 60
+    }
+  ]
+}

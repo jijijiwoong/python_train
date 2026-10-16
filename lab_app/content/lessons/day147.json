@@ -1,0 +1,436 @@
+{
+  "schema_version": 1,
+  "day": 147,
+  "title": "21주차 누적 복습",
+  "stage": "dl",
+  "week": 21,
+  "is_review": true,
+  "objectives": [
+    "배치 정규화와 드롭아웃이 들어간 CNN을 학습·평가하고, 틀린 예측을 분석할 수 있다."
+  ],
+  "concepts": [
+    "cnn",
+    "conv",
+    "pooling",
+    "batchnorm",
+    "image_tensor"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "21주차 돌아보기",
+      "content_md": "| 날 | 주제 | 핵심 |\n|---|---|---|\n| 141 | 이미지 텐서 | (N, C, H, W), 0~1 정규화 |\n| 142 | 합성곱 | 커널, (H + 2p - k) // s + 1 |\n| 143 | 풀링 | MaxPool2d, flatten(1) |\n| 144 | CNN 클래스 | 합성곱 블록 + 선형 층 |\n| 145 | 학습·평가 | eval, no_grad, argmax |\n| 146 | 배치 정규화 | 학습=배치 통계, 평가=이동 평균 |",
+      "quiz": [
+        {
+          "id": "d147_review_q1",
+          "question_md": "28×28 입력에 kernel 5, padding 0 합성곱을 하면?",
+          "choices": [
+            "28",
+            "24",
+            "23",
+            "14"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d147_review_q2",
+          "question_md": "배치 정규화가 들어간 모델을 평가할 때 꼭 필요한 것은?",
+          "choices": [
+            "`model.eval()`",
+            "학습률 감소",
+            "`shuffle=False`",
+            "드롭아웃 제거"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "블록으로 정리한 CNN",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "층이 많아지면 `nn.Sequential`로 **특성 추출부**(features)와 **분류부**(classifier)를 나누어 정리합니다. 다음 다음 주 전이 학습에서 이 구분이 중요해집니다.\n\n도전 문제에서는 합성곱을 반복문으로 직접 구현해 `F.conv2d`와 같은지 확인합니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nfeatures = nn.Sequential(\n    nn.Conv2d(1, 8, 3, padding=1),\n    nn.BatchNorm2d(8),\n    nn.ReLU(),\n    nn.MaxPool2d(2),\n)\nclassifier = nn.Sequential(nn.Flatten(), nn.Linear(8 * 4 * 4, 10))\nx = torch.zeros(2, 1, 8, 8)\nprint(features(x).shape, classifier(features(x)).shape)\n",
+          "runnable": true,
+          "expected_output": "torch.Size([2, 8, 4, 4]) torch.Size([2, 10])\n",
+          "time_limit_sec": 60
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "합성곱 출력 크기 공식을 쓰세요.",
+      "exercise_ids": [
+        "d147_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d147_code_1",
+        "d147_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "마무리",
+      "points": [
+        "이미지 = (N, C, H, W) 텐서.",
+        "CNN = 합성곱·배치 정규화·ReLU·풀링 블록 + 분류부.",
+        "평가 땐 eval + no_grad.",
+        "다음 주: 순서가 있는 데이터를 위한 RNN."
+      ],
+      "quiz": [
+        {
+          "id": "d147_summary_q1",
+          "question_md": "특성 추출부와 분류부를 나누면 좋은 점은?",
+          "choices": [
+            "구조가 읽기 쉽고 부분 재사용이 쉽다",
+            "학습이 필요 없다",
+            "정확도가 항상 오른다",
+            "매개변수가 0이 된다"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        },
+        {
+          "id": "d147_summary_q2",
+          "question_md": "합성곱 커널 3×3, 입력 채널 8, 출력 채널 16의 가중치 수(편향 제외)는?",
+          "choices": [
+            "144",
+            "1152",
+            "72",
+            "384"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d147_fill_1",
+      "kind": "fill_blank",
+      "title": "출력 크기 공식",
+      "prompt_md": "입력 크기 h, 커널 k, stride s, padding p로 합성곱 출력 크기를 공식으로 계산해 반환하세요.",
+      "concepts": [
+        "conv"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "def out_size(h, k, s, p):\n    return (h + ____ - k) ____ s + 1\n",
+      "entry": {
+        "mode": "function",
+        "name": "out_size"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              8,
+              3,
+              1,
+              0
+            ]
+          },
+          "expect": {
+            "return": 6
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              28,
+              5,
+              1,
+              2
+            ]
+          },
+          "expect": {
+            "return": 28
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              32,
+              3,
+              2,
+              1
+            ]
+          },
+          "expect": {
+            "return": 16
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              7,
+              2,
+              2,
+              0
+            ]
+          },
+          "expect": {
+            "return": 3
+          }
+        }
+      ],
+      "hints": [
+        "패딩은 양쪽에 붙으므로 2배를 더합니다.",
+        "나눗셈은 버림(몫)입니다."
+      ],
+      "solution": "def out_size(h, k, s, p):\n    return (h + 2 * p - k) // s + 1\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d147_code_1",
+      "kind": "coding",
+      "title": "BN-CNN 학습과 오답 분석",
+      "prompt_md": "주어진 `digit_loaders(seed)`, `BNCNN`, `evaluate`를 사용하세요. `torch.manual_seed(0)` 후 BNCNN과 `optim.Adam(lr=0.01)`으로 `epochs` 에폭 학습한 뒤, `model.eval()` 상태에서 테스트 데이터를 예측해 `{\"accuracy\": 테스트 정확도(소수 넷째 자리), \"wrong\": 틀린 개수, \"most_missed\": 가장 많이 틀린 정답 숫자}`를 반환하세요. 가장 많이 틀린 숫자가 여럿이면 작은 숫자를 고릅니다.",
+      "concepts": [
+        "cnn",
+        "batchnorm",
+        "confusion_matrix"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef digit_loaders(seed):\n    digits = load_digits()\n    X_train, X_test, y_train, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.3, random_state=seed, stratify=digits.target)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    train = TensorDataset(to_x(X_train), torch.tensor(y_train))\n    test = TensorDataset(to_x(X_test), torch.tensor(y_test))\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(train, batch_size=64, shuffle=True, generator=g), DataLoader(\n        test,\n        batch_size=256,\n    )\n\n\nclass BNCNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.BatchNorm2d(8), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.BatchNorm2d(16), nn.ReLU(), nn.MaxPool2d(2),\n        )\n        self.classifier = nn.Sequential(nn.Flatten(), nn.Dropout(0.2), nn.Linear(64, 10))\n\n    def forward(self, x):\n        return self.classifier(self.features(x))\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    model.train()\n    return correct / len(loader.dataset)\n\n\ndef analyze(seed, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "analyze"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              3
+            ]
+          },
+          "expect": {
+            "return": {
+              "accuracy": 0.9537,
+              "wrong": 25,
+              "most_missed": 8
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2,
+              2
+            ]
+          },
+          "expect": {
+            "return": {
+              "accuracy": 0.9222,
+              "wrong": 42,
+              "most_missed": 8
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "틀린 위치의 정답만 골라 `torch.bincount(..., minlength=10)`로 세면 숫자별 오답 수가 됩니다.",
+        "`argmax()`는 같은 값이면 앞쪽(작은 숫자)을 고릅니다."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef digit_loaders(seed):\n    digits = load_digits()\n    X_train, X_test, y_train, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.3, random_state=seed, stratify=digits.target)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    train = TensorDataset(to_x(X_train), torch.tensor(y_train))\n    test = TensorDataset(to_x(X_test), torch.tensor(y_test))\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(train, batch_size=64, shuffle=True, generator=g), DataLoader(\n        test,\n        batch_size=256,\n    )\n\n\nclass BNCNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, 8, 3, padding=1), nn.BatchNorm2d(8), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(8, 16, 3, padding=1), nn.BatchNorm2d(16), nn.ReLU(), nn.MaxPool2d(2),\n        )\n        self.classifier = nn.Sequential(nn.Flatten(), nn.Dropout(0.2), nn.Linear(64, 10))\n\n    def forward(self, x):\n        return self.classifier(self.features(x))\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    model.train()\n    return correct / len(loader.dataset)\n\n\ndef analyze(seed, epochs):\n    train_loader, test_loader = digit_loaders(seed)\n    torch.manual_seed(0)\n    model = BNCNN()\n    optimizer = optim.Adam(model.parameters(), lr=0.01)\n    for _ in range(epochs):\n        for xb, yb in train_loader:\n            loss = nn.CrossEntropyLoss()(model(xb), yb)\n            optimizer.zero_grad()\n            loss.backward()\n            optimizer.step()\n    accuracy = evaluate(model, test_loader)\n    model.eval()\n    missed = torch.zeros(10, dtype=torch.long)\n    with torch.no_grad():\n        for xb, yb in test_loader:\n            wrong = model(xb).argmax(dim=1) != yb\n            missed += torch.bincount(yb[wrong], minlength=10)\n    return {\n        \"accuracy\": round(accuracy, 4),\n        \"wrong\": missed.sum().item(),\n        \"most_missed\": missed.argmax().item(),\n    }\n",
+      "time_limit_sec": 90
+    },
+    {
+      "id": "d147_code_2",
+      "kind": "coding",
+      "title": "합성곱 직접 구현(도전)",
+      "prompt_md": "반복문으로 합성곱(stride 1, padding 0)을 직접 계산해 2차원 리스트로 만들고, `F.conv2d` 결과와 같은지(`torch.allclose`) 비교해 `[직접 계산 결과, 같은지]`를 반환하세요. 각 위치의 값은 겹친 부분을 원소별로 곱해 더한 값입니다.",
+      "concepts": [
+        "conv"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import torch\nimport torch.nn.functional as F\n\n\ndef manual_conv(image, kernel):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "manual_conv"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8,
+                  9
+                ]
+              ],
+              [
+                [
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  -1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                [
+                  -4.0,
+                  -4.0
+                ],
+                [
+                  -4.0,
+                  -4.0
+                ]
+              ],
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                [
+                  0,
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  3,
+                  0,
+                  1,
+                  1
+                ],
+                [
+                  2,
+                  2,
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              [
+                [
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  -1,
+                  -1,
+                  -1
+                ]
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              [
+                [
+                  -3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0
+                ]
+              ],
+              true
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.0001
+          }
+        }
+      ],
+      "hints": [
+        "출력 크기는 입력 크기 - 커널 크기 + 1입니다.",
+        "`x[i:i + kh, j:j + kw]`로 겹친 부분을 잘라 커널과 곱해 더하세요."
+      ],
+      "solution": "import torch\nimport torch.nn.functional as F\n\n\ndef manual_conv(image, kernel):\n    x = torch.tensor(image, dtype=torch.float32)\n    k = torch.tensor(kernel, dtype=torch.float32)\n    kh, kw = k.shape\n    out_h, out_w = x.shape[0] - kh + 1, x.shape[1] - kw + 1\n    out = torch.zeros(out_h, out_w)\n    for i in range(out_h):\n        for j in range(out_w):\n            out[i, j] = (x[i:i + kh, j:j + kw] * k).sum()\n    ref = F.conv2d(x.reshape(1, 1, *x.shape), k.reshape(1, 1, kh, kw))[0, 0]\n    return [out.tolist(), torch.allclose(out, ref)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

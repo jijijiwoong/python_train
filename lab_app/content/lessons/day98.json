@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "day": 98,
+  "title": "14주차 누적 복습",
+  "stage": "ml",
+  "week": 14,
+  "is_review": true,
+  "objectives": [
+    "지표 선택 → 교차 검증 탐색 → 테스트 확인 → 오류 분석의 평가 흐름을 완성할 수 있다."
+  ],
+  "concepts": [
+    "confusion_matrix",
+    "precision_recall",
+    "roc_auc",
+    "cross_validation",
+    "hyperparameter"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "한 주 돌아보기",
+      "content_md": "| Day | 주제 | 핵심 |\n|---|---|---|\n| 92 | 혼동 행렬 | TP·FP·FN·TN |\n| 93 | 정밀도·재현율 | F1, 임계값 균형 |\n| 94 | ROC·AUC | 확률 점수로 평가 |\n| 95 | 교차 검증 | `cross_val_score`, `KFold` |\n| 96 | 과적합 | 학습 vs 검증 점수 |\n| 97 | 그리드 탐색 | `GridSearchCV` |",
+      "quiz": [
+        {
+          "id": "d98_review_q1",
+          "question_md": "불균형 이진 분류에서 모델을 고를 때 정확도보다 나은 기준은?",
+          "choices": [
+            "학습 시간",
+            "F1 또는 AUC",
+            "특성 수",
+            "트리 깊이"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d98_review_q2",
+          "question_md": "최종 성능 보고에 쓰는 데이터는?",
+          "choices": [
+            "교차 검증",
+            "학습",
+            "한 번도 안 쓴 테스트",
+            "전체"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "평가 보고서의 구성",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "좋은 평가 보고서는 ① 어떤 지표를 왜 골랐는지 ② 교차 검증으로 고른 설정 ③ 테스트 점수 ④ 혼동 행렬로 본 오류 유형을 담습니다."
+        },
+        {
+          "kind": "code",
+          "code": "from sklearn.metrics import classification_report\n\ny_true = [1, 0, 1, 1, 0, 0, 1, 0]\ny_pred = [1, 0, 0, 1, 1, 0, 1, 0]\nprint(classification_report(y_true, y_pred, digits=3))\n",
+          "runnable": true,
+          "expected_output": "              precision    recall  f1-score   support\n\n           0      0.750     0.750     0.750         4\n           1      0.750     0.750     0.750         4\n\n    accuracy                          0.750         8\n   macro avg      0.750     0.750     0.750         8\nweighted avg      0.750     0.750     0.750         8\n\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "`classification_report`는 클래스별 정밀도·재현율·F1과 표본 수(support)를 한 번에 보여 줍니다. 도전 문제는 KFold를 직접 돌리는 교차 검증입니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "클래스별 F1을 구하세요.",
+      "exercise_ids": [
+        "d98_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "첫 번째 문제는 필수, 두 번째 문제는 **도전 문제**(선택)입니다.",
+      "exercise_ids": [
+        "d98_code_1",
+        "d98_code_2"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "14주차 마무리",
+      "points": [
+        "지표는 문제의 비용에 맞게(정밀도·재현율·F1·AUC).",
+        "설정은 교차 검증으로, 최종 확인은 테스트로.",
+        "혼동 행렬로 오류 유형을 해석한다.",
+        "다음 주: 결정 트리와 앙상블."
+      ],
+      "quiz": [
+        {
+          "id": "d98_summary_q1",
+          "question_md": "`classification_report`의 support는?",
+          "choices": [
+            "정확도",
+            "클래스별 실제 샘플 수",
+            "F1",
+            "임계값"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d98_summary_q2",
+          "question_md": "다음 주 배울 \"여러 트리를 합치는\" 모델은?",
+          "choices": [
+            "KNN",
+            "랜덤 포레스트",
+            "SVM",
+            "PCA"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d98_fill_1",
+      "kind": "fill_blank",
+      "title": "클래스별 F1",
+      "prompt_md": "다중 분류 실제값·예측값으로 클래스별 F1(소수 넷째 자리) 리스트를 반환하세요.",
+      "concepts": [
+        "precision_recall"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import numpy as np\nfrom sklearn.metrics import ____\n\n\ndef per_class_f1(y_true, y_pred):\n    scores = f1_score(y_true, y_pred, average=____)\n    return np.round(scores, 4)\n",
+      "entry": {
+        "mode": "function",
+        "name": "per_class_f1"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "3클래스",
+          "call": {
+            "args": [
+              [
+                0,
+                1,
+                2,
+                2,
+                1,
+                0
+              ],
+              [
+                0,
+                2,
+                2,
+                2,
+                1,
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              1.0,
+              0.6667,
+              0.8
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ]
+            ]
+          },
+          "expect": {
+            "return": [
+              1.0,
+              1.0
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "F1 점수 함수 이름입니다.",
+        "클래스별 점수를 그대로 받으려면 평균 방식을 \"없음\"으로 줍니다(파이썬 값)."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.metrics import f1_score\n\n\ndef per_class_f1(y_true, y_pred):\n    scores = f1_score(y_true, y_pred, average=None)\n    return np.round(scores, 4)\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d98_code_1",
+      "kind": "coding",
+      "title": "모델 선택 보고서",
+      "prompt_md": "주어진 `cancer_split(seed)`의 학습 데이터로 `SVC`의 `{\"C\": [0.1, 1, 10], \"kernel\": [\"linear\", \"rbf\"]}`를 **F1 기준**(`scoring=\"f1\"`) 5-겹 그리드 탐색하세요. 반환값:\n\n- `best`: `{\"C\": 실수, \"kernel\": 문자열}`\n- `cv_f1`: 교차 검증 최고 F1, `test_f1`: 테스트 F1 (소수 넷째 자리)\n- `matrix`: 테스트 혼동 행렬(리스트)",
+      "concepts": [
+        "hyperparameter",
+        "precision_recall",
+        "confusion_matrix",
+        "svm"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.metrics import confusion_matrix, f1_score\nfrom sklearn.model_selection import GridSearchCV, train_test_split\nfrom sklearn.svm import SVC\n\ndef cancer_split(seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.25,\n        random_state=seed,\n        stratify=y,\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef selection_report(seed):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "selection_report"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "시드 0",
+          "call": {
+            "args": [
+              0
+            ]
+          },
+          "expect": {
+            "return": {
+              "best": {
+                "C": 0.1,
+                "kernel": "linear"
+              },
+              "cv_f1": 0.9926,
+              "test_f1": 0.9674,
+              "matrix": [
+                [
+                  48,
+                  5
+                ],
+                [
+                  1,
+                  89
+                ]
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              2
+            ]
+          },
+          "expect": {
+            "return": {
+              "best": {
+                "C": 1.0,
+                "kernel": "rbf"
+              },
+              "cv_f1": 0.9775,
+              "test_f1": 0.9727,
+              "matrix": [
+                [
+                  49,
+                  4
+                ],
+                [
+                  1,
+                  89
+                ]
+              ]
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`GridSearchCV(SVC(), 후보, cv=5, scoring=\"f1\").fit(X_train, y_train)`.",
+        "테스트 예측은 `grid.predict(X_test)`.",
+        "`float(grid.best_params_[\"C\"])`처럼 자료형을 맞추세요."
+      ],
+      "solution": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.metrics import confusion_matrix, f1_score\nfrom sklearn.model_selection import GridSearchCV, train_test_split\nfrom sklearn.svm import SVC\n\ndef cancer_split(seed):\n    X, y = load_breast_cancer(return_X_y=True)\n    X_train, X_test, y_train, y_test = train_test_split(\n        X,\n        y,\n        test_size=0.25,\n        random_state=seed,\n        stratify=y,\n    )\n    mean, std = X_train.mean(axis=0), X_train.std(axis=0)\n    return (X_train - mean) / std, (X_test - mean) / std, y_train, y_test\n\n\ndef selection_report(seed):\n    X_train, X_test, y_train, y_test = cancer_split(seed)\n    params = {\"C\": [0.1, 1, 10], \"kernel\": [\"linear\", \"rbf\"]}\n    grid = GridSearchCV(SVC(), params, cv=5, scoring=\"f1\").fit(X_train, y_train)\n    pred = grid.predict(X_test)\n    best = {\"C\": float(grid.best_params_[\"C\"]), \"kernel\": grid.best_params_[\"kernel\"]}\n    return {\n        \"best\": best,\n        \"cv_f1\": round(float(grid.best_score_), 4),\n        \"test_f1\": round(float(f1_score(y_test, pred)), 4),\n        \"matrix\": confusion_matrix(y_test, pred).tolist(),\n    }\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d98_code_2",
+      "kind": "coding",
+      "title": "[도전] 교차 검증 직접 구현",
+      "prompt_md": "iris에 대해 `KFold(n_splits=k, shuffle=True, random_state=0).split(X)`가 주는 인덱스로 직접 반복하며 KNN(기본 설정)을 학습·평가하세요. `[내 평균 정확도, 같은 KFold를 cv로 준 cross_val_score 평균]`(소수 넷째 자리)를 반환합니다.",
+      "concepts": [
+        "cross_validation",
+        "knn",
+        "numpy_indexing"
+      ],
+      "difficulty": 3,
+      "required": false,
+      "starter_code": "import numpy as np\nfrom sklearn.datasets import load_iris\nfrom sklearn.model_selection import KFold, cross_val_score\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef manual_cv(k):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "manual_cv"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "5겹",
+          "call": {
+            "args": [
+              5
+            ]
+          },
+          "expect": {
+            "return": [
+              0.96,
+              0.96
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              3
+            ]
+          },
+          "expect": {
+            "return": [
+              0.9667,
+              0.9667
+            ]
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 1e-06
+          }
+        }
+      ],
+      "hints": [
+        "`for train_idx, test_idx in KFold(...).split(X):` 안에서 `X[train_idx]`로 고르세요.",
+        "점수 목록의 평균과 `cross_val_score(..., cv=KFold(...))`의 평균을 비교합니다."
+      ],
+      "solution": "import numpy as np\nfrom sklearn.datasets import load_iris\nfrom sklearn.model_selection import KFold, cross_val_score\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\ndef manual_cv(k):\n    X, y = load_iris(return_X_y=True)\n    kfold = KFold(n_splits=k, shuffle=True, random_state=0)\n    scores = []\n    for train_idx, test_idx in kfold.split(X):\n        model = KNeighborsClassifier().fit(X[train_idx], y[train_idx])\n        scores.append(model.score(X[test_idx], y[test_idx]))\n    sk = cross_val_score(KNeighborsClassifier(), X, y, cv=kfold)\n    return [round(float(np.mean(scores)), 4), round(float(sk.mean()), 4)]\n",
+      "time_limit_sec": 60
+    }
+  ]
+}

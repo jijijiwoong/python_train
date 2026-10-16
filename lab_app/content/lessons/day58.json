@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "day": 58,
+  "title": "데이터 선택과 필터",
+  "stage": "advanced_data",
+  "week": 9,
+  "is_review": false,
+  "objectives": [
+    "열 선택, loc/iloc로 원하는 행·열을 꺼낼 수 있다.",
+    "조건(불리언 마스크)으로 행을 거를 수 있다."
+  ],
+  "concepts": [
+    "pandas_select",
+    "pandas_basics"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 Series와 DataFrame을 만들고 구조를 확인했습니다.",
+      "quiz": [
+        {
+          "id": "d58_review_q1",
+          "question_md": "DataFrame의 열 이름 목록을 얻는 속성은?",
+          "choices": [
+            "`df.index`",
+            "`df.columns`",
+            "`df.shape`",
+            "`df.names`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "원하는 부분만 꺼내기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "`df[\"열\"]`은 한 열(Series), `df[[\"열1\", \"열2\"]]`는 여러 열(DataFrame)입니다. 행은 `loc[인덱스 이름, 열 이름]`(이름 기준) 또는 `iloc[번호, 번호]`(위치 기준)로 꺼냅니다."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\"이름\": [\"민준\", \"서연\", \"지호\"], \"국어\": [85, 92, 78], \"수학\": [70, 88, 95]})\nprint(df[\"국어\"].tolist())\nprint(df[[\"이름\", \"수학\"]])\nprint(df.loc[1, \"이름\"])\nprint(df.iloc[2].tolist())\n",
+          "runnable": true,
+          "expected_output": "[85, 92, 78]\n   이름  수학\n0  민준  70\n1  서연  88\n2  지호  95\n서연\n['지호', np.int64(78), np.int64(95)]\n",
+          "time_limit_sec": 15
+        },
+        {
+          "kind": "text",
+          "md": "NumPy처럼 조건으로 만든 마스크로 행을 거릅니다. 조건은 `&`, `|`와 괄호로 묶고, `loc[조건, 열]`로 거른 행의 특정 열만 꺼낼 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\"이름\": [\"민준\", \"서연\", \"지호\"], \"국어\": [85, 92, 78], \"수학\": [70, 88, 95]})\nprint(df[df[\"수학\"] >= 80])\nprint(df[(df[\"국어\"] > 80) & (df[\"수학\"] > 80)][\"이름\"].tolist())\nprint(df.loc[df[\"국어\"] < 90, \"이름\"].tolist())\n",
+          "runnable": true,
+          "expected_output": "   이름  국어  수학\n1  서연  92  88\n2  지호  78  95\n['서연']\n['민준', '지호']\n",
+          "time_limit_sec": 15
+        },
+        {
+          "kind": "tip",
+          "md": "`df[조건]`의 결과도 DataFrame이라 이어서 열을 고를 수 있습니다. 거른 결과의 인덱스는 원래 번호를 유지합니다(0, 2처럼 건너뛸 수 있음)."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "기준 이상인 학생 이름을 꺼내세요.",
+      "exercise_ids": [
+        "d58_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "여러 조건으로 거르고 정렬해 이름 목록을 만드세요.",
+      "exercise_ids": [
+        "d58_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`df[\"열\"]`, `df[[\"열1\", \"열2\"]]`.",
+        "`loc[행 이름, 열 이름]`, `iloc[행 번호, 열 번호]`.",
+        "`df[조건]`, 여러 조건은 `&`/`|`와 괄호.",
+        "`loc[조건, \"열\"]`로 거른 행의 열만."
+      ],
+      "quiz": [
+        {
+          "id": "d58_summary_q1",
+          "question_md": "위치(번호) 기준으로 행을 꺼내는 것은?",
+          "choices": [
+            "`loc`",
+            "`iloc`",
+            "`at`",
+            "`df[0]`"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        },
+        {
+          "id": "d58_summary_q2",
+          "question_md": "`df[df[\"점수\"] > 90]`의 결과는?",
+          "choices": [
+            "불리언 Series",
+            "점수가 90 초과인 행들",
+            "점수 열",
+            "오류"
+          ],
+          "answer_index": 1,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d58_fill_1",
+      "kind": "fill_blank",
+      "title": "기준 이상 이름",
+      "prompt_md": "`{\"이름\": [...], \"점수\": [...]}` 데이터에서 점수가 `cut` 이상인 학생의 이름 리스트를 반환하세요.",
+      "concepts": [
+        "pandas_select"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef names_over(data, cut):\n    df = pd.DataFrame(data)\n    return df.____[df[\"점수\"] >= cut, \"____\"].tolist()\n",
+      "entry": {
+        "mode": "function",
+        "name": "names_over"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "a",
+                  "b",
+                  "c"
+                ],
+                "점수": [
+                  50,
+                  80,
+                  90
+                ]
+              },
+              80
+            ]
+          },
+          "expect": {
+            "return": [
+              "b",
+              "c"
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "x"
+                ],
+                "점수": [
+                  1
+                ]
+              },
+              2
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        }
+      ],
+      "hints": [
+        "조건과 열 이름을 함께 쓰는 이름 기준 접근자입니다.",
+        "꺼낼 열 이름입니다."
+      ],
+      "solution": "import pandas as pd\n\n\ndef names_over(data, cut):\n    df = pd.DataFrame(data)\n    return df.loc[df[\"점수\"] >= cut, \"이름\"].tolist()\n",
+      "time_limit_sec": 15
+    },
+    {
+      "id": "d58_code_1",
+      "kind": "coding",
+      "title": "반별 우수 학생",
+      "prompt_md": "학생 데이터(이름·반·국어·수학 열)에서 반이 `class_name`이고 `subject` 점수가 `cut` 이상인 학생 이름을 **그 과목 점수 높은 순**으로 반환하세요.\n\n예: `(학생표, \"국어\", 80, \"A\")` → `[\"도윤\", \"민준\"]`",
+      "concepts": [
+        "pandas_select",
+        "pandas_basics"
+      ],
+      "difficulty": 2,
+      "required": true,
+      "starter_code": "import pandas as pd\n\n\ndef top_in_class(data, subject, cut, class_name):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "top_in_class"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "A반 국어",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "민준",
+                  "서연",
+                  "지호",
+                  "하나",
+                  "도윤"
+                ],
+                "반": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A"
+                ],
+                "국어": [
+                  85,
+                  92,
+                  78,
+                  66,
+                  90
+                ],
+                "수학": [
+                  70,
+                  88,
+                  95,
+                  72,
+                  60
+                ]
+              },
+              "국어",
+              80,
+              "A"
+            ]
+          },
+          "expect": {
+            "return": [
+              "도윤",
+              "민준"
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "민준",
+                  "서연",
+                  "지호",
+                  "하나",
+                  "도윤"
+                ],
+                "반": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A"
+                ],
+                "국어": [
+                  85,
+                  92,
+                  78,
+                  66,
+                  90
+                ],
+                "수학": [
+                  70,
+                  88,
+                  95,
+                  72,
+                  60
+                ]
+              },
+              "수학",
+              70,
+              "B"
+            ]
+          },
+          "expect": {
+            "return": [
+              "서연",
+              "하나"
+            ]
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              {
+                "이름": [
+                  "민준",
+                  "서연",
+                  "지호",
+                  "하나",
+                  "도윤"
+                ],
+                "반": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A"
+                ],
+                "국어": [
+                  85,
+                  92,
+                  78,
+                  66,
+                  90
+                ],
+                "수학": [
+                  70,
+                  88,
+                  95,
+                  72,
+                  60
+                ]
+              },
+              "수학",
+              100,
+              "A"
+            ]
+          },
+          "expect": {
+            "return": []
+          }
+        }
+      ],
+      "hints": [
+        "두 조건을 `&`로 묶은 마스크로 거르세요(각 조건은 괄호로).",
+        "정렬은 `sort_values(열, ascending=False)`입니다(Day 59에서 자세히).",
+        "마지막에 `[\"이름\"].tolist()`."
+      ],
+      "solution": "import pandas as pd\n\n\ndef top_in_class(data, subject, cut, class_name):\n    df = pd.DataFrame(data)\n    selected = df[(df[subject] >= cut) & (df[\"반\"] == class_name)]\n    return selected.sort_values(subject, ascending=False)[\"이름\"].tolist()\n",
+      "time_limit_sec": 15
+    }
+  ]
+}

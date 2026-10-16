@@ -1,0 +1,333 @@
+{
+  "schema_version": 1,
+  "day": 38,
+  "title": "특수 메서드",
+  "stage": "advanced_data",
+  "week": 6,
+  "is_review": false,
+  "objectives": [
+    "__str__, __repr__으로 객체의 출력 모양을 정할 수 있다.",
+    "__add__, __eq__, __len__ 등으로 연산자와 내장 함수를 지원할 수 있다."
+  ],
+  "concepts": [
+    "dunder",
+    "class",
+    "method"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 메서드로 객체의 상태를 바꾸고 값을 계산했습니다.",
+      "quiz": [
+        {
+          "id": "d38_review_q1",
+          "question_md": "메서드 정의에 `self`를 빠뜨리면?",
+          "choices": [
+            "정상 동작",
+            "호출할 때 `TypeError`",
+            "`None` 반환",
+            "속성이 사라짐"
+          ],
+          "answer_index": 1,
+          "explanation_md": "파이썬이 객체를 첫 인자로 자동 전달하기 때문입니다."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "파이썬 문법과 연결하기",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "이름이 `__이름__` 형태인 **특수 메서드**를 정의하면 `print()`, `+`, `==`, `len()` 같은 문법이 내 객체에서도 동작합니다. `__str__`은 `print()`·`str()`용, `__repr__`은 리스트 안 표시·디버깅용입니다."
+        },
+        {
+          "kind": "code",
+          "code": "class Money:\n    def __init__(self, amount):\n        self.amount = amount\n\n    def __str__(self):\n        return f\"{self.amount:,}원\"\n\n    def __repr__(self):\n        return f\"Money({self.amount})\"\n\n    def __add__(self, other):\n        return Money(self.amount + other.amount)\n\n    def __eq__(self, other):\n        return self.amount == other.amount\n\na = Money(1500)\nb = Money(2500)\nprint(a)\nprint([a, b])\nprint(a + b)\nprint(a == Money(1500))\n",
+          "runnable": true,
+          "expected_output": "1,500원\n[Money(1500), Money(2500)]\n4,000원\nTrue\n"
+        },
+        {
+          "kind": "code",
+          "code": "class Playlist:\n    def __init__(self, songs):\n        self.songs = songs\n\n    def __len__(self):\n        return len(self.songs)\n\nprint(len(Playlist([\"a\", \"b\", \"c\"])))\n",
+          "runnable": true,
+          "expected_output": "3\n"
+        },
+        {
+          "kind": "tip",
+          "md": "`__eq__`를 정의하지 않으면 `==`는 **같은 객체인지**(메모리 위치)만 비교해서, 내용이 같아도 `False`가 나옵니다. 그 밖에 `__lt__`(<), `__sub__`(-), `__mul__`(*) 등이 있습니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "벡터 덧셈과 문자열 표현을 완성하세요.",
+      "exercise_ids": [
+        "d38_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "분수 클래스를 만들어 덧셈과 약분을 지원하세요. `add_fractions`는 채점용입니다.",
+      "exercise_ids": [
+        "d38_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "`__str__` → `print`/`str`, `__repr__` → 리스트 안·디버깅 표시.",
+        "`__add__` → `+`, `__eq__` → `==`, `__len__` → `len()`.",
+        "특수 메서드는 직접 부르지 않고 문법이 대신 호출한다.",
+        "`__eq__`가 없으면 `==`는 같은 객체인지만 본다."
+      ],
+      "quiz": [
+        {
+          "id": "d38_summary_q1",
+          "question_md": "`a + b`를 계산할 때 호출되는 것은?",
+          "choices": [
+            "`a.__plus__(b)`",
+            "`a.__add__(b)`",
+            "`b.__add__(a)`",
+            "`add(a, b)`"
+          ],
+          "answer_index": 1,
+          "explanation_md": "왼쪽 객체의 `__add__`가 호출됩니다."
+        },
+        {
+          "id": "d38_summary_q2",
+          "question_md": "`print(obj)`의 출력을 정하는 메서드는?",
+          "choices": [
+            "`__init__`",
+            "`__print__`",
+            "`__str__`",
+            "`__len__`"
+          ],
+          "answer_index": 2,
+          "explanation_md": "`print`는 `str()`을 거칩니다."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d38_fill_1",
+      "kind": "fill_blank",
+      "title": "벡터 덧셈",
+      "prompt_md": "`Vector`끼리 `+`로 더할 수 있게 하고, 결과를 문자열로 반환하세요.\n\n예: `check([1, 2], [3, 4])` → `\"(4, 6)\"`",
+      "concepts": [
+        "dunder"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "class Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def ____(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n\n    def __str__(self):\n        return f\"({self.x}, {self.y})\"\n\n\ndef check(a, b):\n    return ____(Vector(*a) + Vector(*b))\n",
+      "entry": {
+        "mode": "function",
+        "name": "check"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              [
+                1,
+                2
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          "expect": {
+            "return": "(4, 6)"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "expect": {
+            "return": "(0, 0)"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              [
+                -1,
+                5
+              ],
+              [
+                1,
+                -5
+              ]
+            ]
+          },
+          "expect": {
+            "return": "(0, 0)"
+          }
+        }
+      ],
+      "hints": [
+        "`+` 연산자에 대응하는 특수 메서드 이름입니다(양쪽 밑줄 두 개).",
+        "객체를 문자열로 바꾸는 내장 함수는 `__str__`을 호출합니다."
+      ],
+      "solution": "class Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n\n    def __str__(self):\n        return f\"({self.x}, {self.y})\"\n\n\ndef check(a, b):\n    return str(Vector(*a) + Vector(*b))\n"
+    },
+    {
+      "id": "d38_code_1",
+      "kind": "coding",
+      "title": "분수 클래스",
+      "prompt_md": "`Fraction(numerator, denominator)` 클래스를 작성하세요.\n\n- 분모가 0이면 `ValueError`.\n- 만들 때 **기약분수**로 약분하고, 분모는 항상 양수로 둡니다(`math.gcd` 사용 가능).\n- `__add__`로 더하기, `__str__`은 `\"분자/분모\"`.\n\n예: `add_fractions(1, 2, 1, 3)` → `\"5/6\"`, `add_fractions(1, 4, 1, 4)` → `\"1/2\"`",
+      "concepts": [
+        "dunder",
+        "class",
+        "module"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import math\n\n# 여기에 Fraction 클래스를 작성하세요\n\n\ndef add_fractions(a, b, c, d):\n    return str(Fraction(a, b) + Fraction(c, d))\n",
+      "entry": {
+        "mode": "function",
+        "name": "add_fractions"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "1/2 + 1/3",
+          "call": {
+            "args": [
+              1,
+              2,
+              1,
+              3
+            ]
+          },
+          "expect": {
+            "return": "5/6"
+          }
+        },
+        {
+          "id": "t2",
+          "hidden": false,
+          "description": "약분",
+          "call": {
+            "args": [
+              1,
+              4,
+              1,
+              4
+            ]
+          },
+          "expect": {
+            "return": "1/2"
+          }
+        },
+        {
+          "id": "t3",
+          "hidden": false,
+          "description": "분모 0",
+          "call": {
+            "args": [
+              1,
+              0,
+              1,
+              2
+            ]
+          },
+          "expect": {
+            "raises": "ValueError"
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              3,
+              -4,
+              1,
+              4
+            ]
+          },
+          "expect": {
+            "return": "-1/2"
+          }
+        },
+        {
+          "id": "h2",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              0,
+              5,
+              2,
+              10
+            ]
+          },
+          "expect": {
+            "return": "1/5"
+          }
+        },
+        {
+          "id": "h3",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              5,
+              6,
+              1,
+              6
+            ]
+          },
+          "expect": {
+            "return": "1/1"
+          }
+        }
+      ],
+      "hints": [
+        "`__init__`에서 분모 0 검사 → `math.gcd`로 나눈 값 저장 → 분모가 음수면 분자·분모 부호를 함께 뒤집습니다.",
+        "a/b + c/d = (a×d + c×b) / (b×d) 입니다. `__add__`에서 새 `Fraction`을 만들어 돌려주면 약분은 `__init__`이 해 줍니다.",
+        "`__str__`은 f-string으로 `\"분자/분모\"`를 돌려줍니다."
+      ],
+      "solution": "import math\n\n\nclass Fraction:\n    def __init__(self, numerator, denominator):\n        if denominator == 0:\n            raise ValueError(\"분모는 0이 될 수 없습니다\")\n        g = math.gcd(numerator, denominator)\n        numerator //= g\n        denominator //= g\n        if denominator < 0:\n            numerator, denominator = -numerator, -denominator\n        self.numerator = numerator\n        self.denominator = denominator\n\n    def __add__(self, other):\n        n = self.numerator * other.denominator + other.numerator * self.denominator\n        return Fraction(n, self.denominator * other.denominator)\n\n    def __str__(self):\n        return f\"{self.numerator}/{self.denominator}\"\n\n\ndef add_fractions(a, b, c, d):\n    return str(Fraction(a, b) + Fraction(c, d))\n",
+      "checks": {
+        "required_syntax": [
+          "class"
+        ]
+      }
+    }
+  ]
+}

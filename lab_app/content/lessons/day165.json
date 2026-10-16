@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "day": 165,
+  "title": "프로젝트: MLP와 CNN 비교",
+  "stage": "dl",
+  "week": 24,
+  "is_review": false,
+  "objectives": [
+    "같은 조건에서 두 모델을 공정하게 비교할 수 있다.",
+    "정확도와 매개변수 수를 함께 비교할 수 있다."
+  ],
+  "concepts": [
+    "dl_project",
+    "cnn",
+    "nn_linear"
+  ],
+  "sections": [
+    {
+      "type": "review",
+      "minutes": 2,
+      "title": "어제 배운 내용 떠올리기",
+      "content_md": "어제는 혼동 행렬로 모델의 약점을 찾았습니다. 오늘은 **모델 구조**를 바꿔 비교합니다.",
+      "quiz": [
+        {
+          "id": "d165_review_q1",
+          "question_md": "클래스별 재현율 계산식은?",
+          "choices": [
+            "대각선 / 행 합",
+            "대각선 / 열 합",
+            "행 합 / 전체",
+            "대각선 / 전체"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "minutes": 4,
+      "title": "공정한 비교",
+      "blocks": [
+        {
+          "kind": "text",
+          "md": "모델을 비교할 때는 **나머지 조건을 모두 같게** 해야 합니다. 같은 데이터 분할, 같은 옵티마이저와 학습률, 같은 에폭 수, 같은 시드.\n\n그리고 정확도뿐 아니라 **매개변수 수**(모델 크기), 학습 시간도 함께 봐야 합니다. 정확도가 조금 높아도 모델이 10배 크다면 상황에 따라 작은 모델이 나을 수 있습니다."
+        },
+        {
+          "kind": "code",
+          "code": "import torch\nfrom torch import nn\n\nmlp = nn.Sequential(nn.Flatten(), nn.Linear(64, 32), nn.ReLU(), nn.Linear(32, 10))\ncnn = nn.Sequential(\n    nn.Conv2d(1, 8, 3, padding=1),\n    nn.ReLU(),\n    nn.MaxPool2d(2),\n    nn.Flatten(),\n    nn.Linear(128, 10),\n)\nfor name, model in [(\"MLP\", mlp), (\"CNN\", cnn)]:\n    print(name, model(torch.zeros(1, 1, 8, 8)).shape, sum(p.numel() for p in model.parameters()))\n",
+          "runnable": true,
+          "expected_output": "MLP torch.Size([1, 10]) 2410\nCNN torch.Size([1, 10]) 1370\n",
+          "time_limit_sec": 60
+        },
+        {
+          "kind": "tip",
+          "md": "MLP는 이미지를 64개 숫자로 펼쳐서 보기 때문에 \"이웃한 픽셀\"이라는 정보를 쓰지 못합니다. CNN은 커널로 주변을 함께 봅니다."
+        }
+      ]
+    },
+    {
+      "type": "fill_blank",
+      "minutes": 3,
+      "title": "빈칸 채우기",
+      "intro_md": "매개변수 수를 비교하세요.",
+      "exercise_ids": [
+        "d165_fill_1"
+      ]
+    },
+    {
+      "type": "coding",
+      "minutes": 4,
+      "title": "직접 작성하기",
+      "intro_md": "두 모델을 같은 조건으로 학습해 비교하세요.",
+      "exercise_ids": [
+        "d165_code_1"
+      ]
+    },
+    {
+      "type": "summary",
+      "minutes": 2,
+      "title": "오늘의 핵심 정리",
+      "points": [
+        "비교할 땐 나머지 조건을 모두 같게.",
+        "정확도 + 매개변수 수 + 시간.",
+        "MLP는 픽셀 이웃 관계를 쓰지 못한다.",
+        "CNN은 적은 매개변수로 이미지에 강하다."
+      ],
+      "quiz": [
+        {
+          "id": "d165_summary_q1",
+          "question_md": "공정한 비교를 위해 같게 둘 것이 아닌 것은?",
+          "choices": [
+            "데이터 분할",
+            "학습률",
+            "비교하려는 모델 구조",
+            "에폭 수"
+          ],
+          "answer_index": 2,
+          "explanation_md": ""
+        },
+        {
+          "id": "d165_summary_q2",
+          "question_md": "이미지를 펼쳐서 입력받는 모델은?",
+          "choices": [
+            "MLP",
+            "CNN",
+            "RNN",
+            "둘 다"
+          ],
+          "answer_index": 0,
+          "explanation_md": ""
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "d165_fill_1",
+      "kind": "fill_blank",
+      "title": "크기 비교",
+      "prompt_md": "은닉층 크기 h인 MLP와 채널 c인 프로젝트 CNN의 매개변수 수를 `[MLP, CNN]`으로 반환하세요.",
+      "concepts": [
+        "dl_project"
+      ],
+      "difficulty": 1,
+      "required": true,
+      "starter_code": "import torch\nfrom torch import nn\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.____(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef sizes(h, c):\n    mlp = nn.Sequential(nn.Flatten(), nn.Linear(64, h), nn.ReLU(), nn.Linear(h, 10))\n    count = lambda m: sum(p.____() for p in m.parameters())\n    return [count(mlp), count(CNN(c))]\n",
+      "entry": {
+        "mode": "function",
+        "name": "sizes"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              32,
+              8
+            ]
+          },
+          "expect": {
+            "return": [
+              2410,
+              1898
+            ]
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              128,
+              4
+            ]
+          },
+          "expect": {
+            "return": [
+              9610,
+              666
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "이미지를 64개로 펼치는 층입니다.",
+        "매개변수의 원소 수를 세는 메서드입니다."
+      ],
+      "solution": "import torch\nfrom torch import nn\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef sizes(h, c):\n    mlp = nn.Sequential(nn.Flatten(), nn.Linear(64, h), nn.ReLU(), nn.Linear(h, 10))\n    count = lambda m: sum(p.numel() for p in m.parameters())\n    return [count(mlp), count(CNN(c))]\n",
+      "time_limit_sec": 60
+    },
+    {
+      "id": "d165_code_1",
+      "kind": "coding",
+      "title": "MLP 대 CNN",
+      "prompt_md": "`split_data(seed)`로 데이터를 준비하세요. 두 모델 각각 `torch.manual_seed(0)` 후 만들어 `fit(모델, 학습 DataLoader(섞기), epochs)`로 학습합니다. MLP는 `nn.Sequential(nn.Flatten(), nn.Linear(64, 32), nn.ReLU(), nn.Linear(32, 10))`, CNN은 `CNN()`입니다. `{\"mlp\": [검증 정확도, 매개변수 수], \"cnn\": [...], \"better\": 검증 정확도가 높은 이름(같으면 \"cnn\")}`을 반환하세요.",
+      "concepts": [
+        "dl_project",
+        "cnn"
+      ],
+      "difficulty": 3,
+      "required": true,
+      "starter_code": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef compare_models(seed, epochs):\n    # 여기에 코드를 작성하세요\n    pass\n",
+      "entry": {
+        "mode": "function",
+        "name": "compare_models"
+      },
+      "tests": [
+        {
+          "id": "t1",
+          "hidden": false,
+          "description": "기본",
+          "call": {
+            "args": [
+              0,
+              5
+            ]
+          },
+          "expect": {
+            "return": {
+              "mlp": [
+                0.9444,
+                2410
+              ],
+              "cnn": [
+                0.95,
+                1898
+              ],
+              "better": "cnn"
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        },
+        {
+          "id": "h1",
+          "hidden": true,
+          "description": "",
+          "call": {
+            "args": [
+              1,
+              3
+            ]
+          },
+          "expect": {
+            "return": {
+              "mlp": [
+                0.9139,
+                2410
+              ],
+              "cnn": [
+                0.9139,
+                1898
+              ],
+              "better": "cnn"
+            }
+          },
+          "compare": {
+            "mode": "float",
+            "tol": 0.003
+          }
+        }
+      ],
+      "hints": [
+        "모델 만드는 함수를 딕셔너리에 두고 반복하면 조건을 같게 유지하기 쉽습니다.",
+        "모델마다 DataLoader를 새로 만들어야 섞는 순서도 같아집니다."
+      ],
+      "solution": "import torch\nfrom sklearn.datasets import load_digits\nfrom sklearn.model_selection import train_test_split\nfrom torch import nn, optim\nfrom torch.utils.data import DataLoader, TensorDataset\n\n\ndef split_data(seed):\n    digits = load_digits()\n    X_tmp, X_test, y_tmp, y_test = train_test_split(\n        digits.images, digits.target, test_size=0.2, random_state=seed, stratify=digits.target)\n    X_train, X_val, y_train, y_val = train_test_split(\n        X_tmp, y_tmp, test_size=0.25, random_state=seed, stratify=y_tmp)\n    to_x = lambda a: torch.tensor(a, dtype=torch.float32).unsqueeze(1) / 16\n    pairs = [(X_train, y_train), (X_val, y_val), (X_test, y_test)]\n    return [(to_x(a), torch.tensor(b)) for a, b in pairs]\n\n\ndef make_loader(data, shuffle=False):\n    g = torch.Generator().manual_seed(0)\n    return DataLoader(TensorDataset(*data), batch_size=64, shuffle=shuffle, generator=g)\n\n\nclass CNN(nn.Module):\n    def __init__(self, c=8):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(1, c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),\n            nn.Conv2d(c, 2 * c, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),\n        )\n        self.fc = nn.Linear(2 * c * 4, 10)\n\n    def forward(self, x):\n        return self.fc(self.features(x))\n\n\ndef train_one_epoch(model, loader, optimizer):\n    model.train()\n    total = 0.0\n    for xb, yb in loader:\n        loss = nn.CrossEntropyLoss()(model(xb), yb)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n        total += loss.item() * len(yb)\n    return total / len(loader.dataset)\n\n\ndef evaluate(model, loader):\n    model.eval()\n    correct = 0\n    with torch.no_grad():\n        for xb, yb in loader:\n            correct += (model(xb).argmax(dim=1) == yb).sum().item()\n    return correct / len(loader.dataset)\n\n\ndef fit(model, train_loader, epochs, lr=0.01):\n    optimizer = optim.Adam(model.parameters(), lr=lr)\n    for _ in range(epochs):\n        train_one_epoch(model, train_loader, optimizer)\n    return model\n\n\ndef compare_models(seed, epochs):\n    train, val, _ = split_data(seed)\n    makers = {\n        \"mlp\": lambda: nn.Sequential(nn.Flatten(), nn.Linear(64, 32), nn.ReLU(), nn.Linear(32, 10)),\n        \"cnn\": lambda: CNN(),\n    }\n    results = {}\n    for name, make in makers.items():\n        torch.manual_seed(0)\n        model = fit(make(), make_loader(train, shuffle=True), epochs)\n        n_params = sum(p.numel() for p in model.parameters())\n        results[name] = [round(evaluate(model, make_loader(val)), 4), n_params]\n    results[\"better\"] = \"mlp\" if results[\"mlp\"][0] > results[\"cnn\"][0] else \"cnn\"\n    return results\n",
+      "time_limit_sec": 120
+    }
+  ]
+}
