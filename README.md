@@ -5,7 +5,7 @@
 
 - 하루 수업 구성(15분): 복습 2분 → 핵심 개념 4분 → 빈칸 채우기 3분 → 직접 작성 4분 → 정리·점검 2분
 - 화면: 대시보드 · 오늘의 수업 · 코드 실습 · 오답 노트 · 학습 기록
-- 현재 수업: **Day 1~7** (1주차, Day 7은 누적 복습). 전체 로드맵은 168일(24주)입니다.
+- 현재 수업: **Day 1~14** (1주차 기초 문법, 2주차 리스트와 튜플. Day 7·14는 누적 복습). 전체 로드맵은 168일(24주)입니다.
 - 기술: Python 3.12 이상 · Streamlit · SQLite · JSON 콘텐츠 · pytest
 
 > ⚠️ 이 앱은 **내 PC에서 내가 쓴 코드만** 실행하는 용도입니다. 코드는 별도 프로세스에서 실행되어 앱이 멈추지 않지만, 완전한 보안 샌드박스는 아닙니다. 그래서 앱은 이 PC(`localhost`)에서만 열리도록 되어 있습니다.
@@ -69,7 +69,7 @@ python -m venv .venv
 .venv\Scripts\python -m pytest
 ```
 
-- 156개 테스트, 약 50초. 실제 학습 기록은 건드리지 않고 임시 DB를 씁니다.
+- 173개 테스트, 약 1분. 실제 학습 기록은 건드리지 않고 임시 DB를 씁니다.
 - 커버리지 보기: `.venv\Scripts\python -m pytest --cov=lab_app`
 - 수업 내용이 올바른지 검사하는 테스트도 포함됩니다. 모든 모범 답안이 통과하는지, 시작 코드는 통과하지 않는지, 예제 출력이 맞는지 확인합니다.
 
@@ -107,11 +107,11 @@ Copy-Item lab_app\data\learning.db "learning_backup_$(Get-Date -Format yyyyMMdd)
 - **처음부터 다시 시작**: 앱을 종료하고 `learning.db`를 다른 이름으로 옮기면 다음 실행 때 빈 기록으로 시작합니다. 지우기 전에 백업을 권장합니다.
 - 다른 위치의 DB를 쓰려면 실행 전에 `$env:LAB_DB_PATH = "D:\경로\learning.db"`를 설정합니다.
 
-## 7. 수업 추가하기 (Day 8~)
+## 7. 수업 추가하기 (Day 15~)
 
 수업은 코드와 분리된 JSON 파일입니다. **Python 코드를 고치지 않고** 추가할 수 있습니다.
 
-1. `lab_app\content\lessons\day08.json` 파일을 만듭니다. 형식은 `day01.json`~`day07.json`을 참고하세요.
+1. `lab_app\content\lessons\day15.json` 파일을 만듭니다. 형식은 `day01.json`~`day14.json`을 참고하세요.
    - 필드 설명: `01_design\content_schema.md`
 2. `lab_app\content\curriculum.json`의 `days` 목록에 한 줄을 추가합니다. 7의 배수 Day는 `"is_review": true`입니다.
 3. 검사를 실행합니다.
@@ -122,7 +122,7 @@ Copy-Item lab_app\data\learning.db "learning_backup_$(Get-Date -Format yyyyMMdd)
 
 - 파일 형식이 틀리면 앱 화면에 오류 위치가 표시되고, 테스트도 어디가 틀렸는지 알려 줍니다.
 - 테스트는 섹션 순서·15분 합계, 모범 답안 통과, 시작 코드 불통과, 예제 출력 일치, 힌트에 정답 노출 여부, 한국어 굵게 표시 오류까지 확인합니다.
-- `test_week_one_is_complete_and_clean`은 현재 Day 1~7을 기준으로 작성되어 있습니다. Day를 추가하면 이 테스트의 Day 목록도 함께 수정하세요.
+- `test_weeks_one_and_two_are_complete_and_clean`은 현재 Day 1~14를 기준으로 작성되어 있습니다. Day를 추가하면 이 테스트의 Day 목록과 복습일 목록도 함께 수정하세요.
 
 ## 8. 문제 해결
 
@@ -140,7 +140,7 @@ Copy-Item lab_app\data\learning.db "learning_backup_$(Get-Date -Format yyyyMMdd)
 
 - AI(LLM) 코드 리뷰·힌트: `lab_app\llm\base.py`의 `CodeReviewer`/`HintProvider`를 구현해 연결합니다. 채점 결과는 바꾸지 않고 피드백만 추가하는 구조입니다.
 - 자동 알림, 상세 성취도 분석
-- Day 8 이후 콘텐츠 (2주차: 리스트와 튜플)
+- Day 15 이후 콘텐츠 (3주차: 딕셔너리, 집합, 문자열 심화)
 
 ## 검증된 버전
 
